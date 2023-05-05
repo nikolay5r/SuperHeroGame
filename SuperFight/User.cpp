@@ -15,17 +15,20 @@ void User::setLastName(const MyString& lastName)
 
 void User::setEmail(const MyString& email)
 {
-
+	validation::isEmailValid(email);
+	this->email = email;
 }
 
 void User::setPassword(const MyString& password)
 {
-
+	validation::isPasswordValid(password);
+	this->password = password;
 }
 
 void User::setUsername(const MyString& username)
 {
-
+	validation::isUserNameValid(username);
+	this->userName = username;
 }
 
 void User::setFullName()
