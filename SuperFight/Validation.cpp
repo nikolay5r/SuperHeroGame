@@ -18,13 +18,16 @@ void validation::isNameValid(const MyString& name)
 			throw Regex_Error("There is a capital letter in the middle of the name!");
 }
 
-void validation::isUserNameValid(const MyString& userName)
+void validation::isUserNameValid(const MyString& userName) //at least 5 characters, max - 20
 {
-	static MyString invalidCharacters = ",.?/<>:;\"'({[]})!@#$%^&*\\|+";
+	static MyString invalidCharacters = ",.?/<>:;\"'({[]})!@#$%^&*\\|+ ";
 	size_t userNameLength = userName.length();
 
-	if (userNameLength > 16)
-		throw std::length_error("UserName is too long!");
+	if (userNameLength > 20)
+		throw std::length_error("UserName is too long! It must be below 20 characters!");
+
+	if (userNameLength < 5)
+		throw std::length_error("UserName is too short! It must be at least 5 characters!");
 
 	for (size_t i = 0; i < userNameLength; i++)
 		if (invalidCharacters.find(userName[i]) != std::string::npos)
@@ -46,7 +49,36 @@ void validation::isEmailValid(const MyString& email) //email@abv.bg
 		throw Regex_Error("Invalid Email!");
 }
 
-void validation::isPasswordValid(const MyString& password) //at least one capital, one lower and one number
+void validation::isPasswordValid(const MyString& password) //at least one capital, one lower and one number, at least 5 characters and maximum of 16
 {
+	int countNumbers = 0;
+	int countCapitalLetters = 0;
+	int countLowerLetters = 0;
 
+	size_t passwordLength = password.length();
+
+	if (passwordLength > 16)
+		throw std::length_error("Password is too long! It must be below 16 characters!");
+
+	if (passwordLength < 5)
+		throw std::length_error("Password is too short! It must be at least 5 characters!");
+
+	for (size_t i = 0; i < passwordLength; i++)
+	{
+		if (helper::isDigit(password[i]))
+			countNumbers++;
+		else if (helper::isUpper(password[i]))
+			countCapitalLetters++;
+		else if (helper::isLower(password[i]))
+			countLowerLetters++;
+	}
+
+	if (countNumbers == 0)
+		throw Regex_Error("You should have at least one number in your Password!");
+
+	if (countCapitalLetters == 0)
+		throw Regex_Error("You should have at least one capital letter in your Password!");
+
+	if (countLowerLetters == 0)
+		throw Regex_Error("You should have at least one lower letter in your Password!");
 }
