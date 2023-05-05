@@ -2,6 +2,7 @@
 #include "HelperFunctions.h"
 #include "MyString.h"
 #include "Regex_Error.h"
+#include "Constants.h"
 
 #include <string>
 #include <stdexcept>
@@ -20,18 +21,18 @@ void validation::isNameValid(const MyString& name)
 
 void validation::isUserNameValid(const MyString& userName) //at least 5 characters, max - 20
 {
-	static MyString invalidCharacters = ",.?/<>:;\"'({[]})!@#$%^&*\\|+ ";
+	static MyString invalidCharacters = ",.?/<>:;\"'({[]})!@#$%^ &*\\|+";
 	size_t userNameLength = userName.length();
 
-	if (userNameLength > 20)
-		throw std::length_error("UserName is too long! It must be below 20 characters!");
+	if (userNameLength > constants::MAX_USERNAME_LENGTH)
+		throw std::length_error("UserName is too long!");
 
-	if (userNameLength < 5)
-		throw std::length_error("UserName is too short! It must be at least 5 characters!");
+	if (userNameLength < constants::MIN_USERNAME_LENGTH)
+		throw std::length_error("UserName is too short!");
 
 	for (size_t i = 0; i < userNameLength; i++)
 		if (invalidCharacters.find(userName[i]) != std::string::npos)
-			throw Regex_Error("Invalid characters found in userName! Characters cannot be " + invalidCharacters + "!");
+			throw Regex_Error("Invalid characters found in userName! Characters cannot be " + invalidCharacters + " !");
 }
 
 void validation::isEmailValid(const MyString& email) //email@abv.bg
@@ -40,12 +41,12 @@ void validation::isEmailValid(const MyString& email) //email@abv.bg
 
 	MyString lastPart = email.substr(email.find('@') + 1);
 
-	if (lastPart.length() < 1)
+	if (lastPart.length() == 0)
 		throw Regex_Error("Invalid Email!");
 
 	lastPart = lastPart.substr(lastPart.find('.') + 1);
 
-	if (lastPart.length() < 1)
+	if (lastPart.length() == 0)
 		throw Regex_Error("Invalid Email!");
 }
 
@@ -57,11 +58,11 @@ void validation::isPasswordValid(const MyString& password) //at least one capita
 
 	size_t passwordLength = password.length();
 
-	if (passwordLength > 16)
-		throw std::length_error("Password is too long! It must be below 16 characters!");
+	if (passwordLength > constants::MAX_PASSWORD_LENGTH)
+		throw std::length_error("Password is too long!");
 
-	if (passwordLength < 5)
-		throw std::length_error("Password is too short! It must be at least 5 characters!");
+	if (passwordLength < constants::MIN_PASSWORD_LENGTH)
+		throw std::length_error("Password is too short!");
 
 	for (size_t i = 0; i < passwordLength; i++)
 	{

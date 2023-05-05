@@ -12,6 +12,8 @@ protected:
 
 	MyString fullName = "";
 
+
+
 	void setFirstName(const MyString& firstName);
 	void setLastName(const MyString& lastName);
 	void setEmail(const MyString& email);

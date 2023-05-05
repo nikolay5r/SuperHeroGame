@@ -135,6 +135,7 @@
     <ClCompile Include="Validation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Constants.h" />
     <ClInclude Include="HelperFunctions.h" />
     <ClInclude Include="MyString.h" />
     <ClInclude Include="Regex_Error.h" />

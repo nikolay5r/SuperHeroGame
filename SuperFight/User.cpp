@@ -25,10 +25,10 @@ void User::setPassword(const MyString& password)
 	this->password = password;
 }
 
-void User::setUsername(const MyString& username)
+void User::setUsername(const MyString& userName)
 {
-	validation::isUserNameValid(username);
-	this->userName = username;
+	validation::isUserNameValid(userName);
+	this->userName = userName;
 }
 
 void User::setFullName()
