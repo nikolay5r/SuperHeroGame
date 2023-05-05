@@ -27,3 +27,26 @@ void isUserNameValid(const MyString& userName)
 		if (invalidCharacters.find(userName[i]) != std::string::npos)
 			throw Regex_Error("Invalid characters found in userName! Characters cannot be " + invalidCharacters + "!");
 }
+
+void validation::isEmailValid(const MyString& email)
+{
+	size_t emailLength = email.length();
+
+	try
+	{
+		MyString lastPart = email.substr(email.find('@') + 1);
+
+		if (lastPart.length() < 1)
+			throw Regex_Error("Invalid Email!");
+
+		lastPart = lastPart.substr(lastPart.find('.') + 1);
+
+		if (lastPart.length() < 1)
+			throw Regex_Error("Invalid Email!");
+	}
+	catch (const std::length_error& error)
+	{
+		throw Regex_Error("Invalid Email! The symbol '@' is missing from your email!");
+	}
+
+}
