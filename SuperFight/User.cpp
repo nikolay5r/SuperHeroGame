@@ -25,7 +25,7 @@ void User::setPassword(const MyString& password)
 	this->password = password;
 }
 
-void User::setUsername(const MyString& userName)
+void User::setUserName(const MyString& userName)
 {
 	validation::isUserNameValid(userName);
 	this->userName = userName;
@@ -33,17 +33,19 @@ void User::setUsername(const MyString& userName)
 
 void User::setFullName()
 {
-	fullName = firstName + lastName;
+	fullName = firstName + " " + lastName;
 }
 
-User::User(const MyString& firstName, const MyString& lastName, const MyString& userName, const MyString& email, const MyString& password)
+User::User(const MyString& firstName, const MyString& lastName, const MyString& userName, const MyString& email, const MyString& password, UserRole role)
 {
 	setFirstName(firstName);
 	setLastName(lastName);
 	setFullName();
 	setEmail(email);
 	setPassword(password);
-	setUsername(userName);
+	setUserName(userName);
+
+	this->role = role;
 }
 
 const MyString& User::getPassword() const noexcept
