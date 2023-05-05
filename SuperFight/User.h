@@ -5,7 +5,7 @@ class User
 {
 protected:
 	MyString firstName = "";
-	MyString secondName = "";
+	MyString lastName = "";
 	MyString userName = "";
 	MyString email = "";
 	MyString password = "";
@@ -19,13 +19,13 @@ protected:
 	void setUsername(MyString username);
 	void setFullName();
 public:
-	User(MyString firstName, MyString secondName, MyString username, MyString email, MyString password);
+	User(MyString firstName, MyString lastName, MyString username, MyString email, MyString password);
 
-	const MyString& getPassword() const;
-	const MyString& getEmail() const;
-	const MyString& getUserName() const;
-	const MyString& getFullName() const;
-	const MyString& getFirstName() const;
-	const MyString& getLastName() const;
+	const MyString& getPassword() const noexcept;
+	const MyString& getEmail() const noexcept;
+	const MyString& getUserName() const noexcept;
+	const MyString& getFullName() const noexcept;
+	const MyString& getFirstName() const noexcept;
+	const MyString& getLastName() const noexcept;
 };
 
