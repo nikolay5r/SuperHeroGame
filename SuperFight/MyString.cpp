@@ -4,14 +4,14 @@
 #include <cstring>
 #pragma warning(disable:4996)
 
-const int MyString::SSOFlagMask = 0b10000000;
-const int MyString::lengthMask = 0b01111100;
+const int MyString::SSO_FLAG_MASK = 0b10000000;
+const int MyString::SSO_LENGTH_MASK = 0b01111100;
 
 MyString::MyString(size_t capacity)
 {
 	if (capacity < sizeof(MyString))
 	{
-		_length = MyString::SSOFlagMask;
+		_length = MyString::SSO_FLAG_MASK;
 		_length <<= (sizeof(size_t) - 1) * 8;
 		setSSOLength(capacity);
 	}
@@ -253,7 +253,7 @@ std::istream& operator>>(std::istream& is, MyString& str)
 	{
 		strcpy(str.data._smallString, buff);
 
-		size_t SSOLength = MyString::SSOFlagMask;
+		size_t SSOLength = MyString::SSO_FLAG_MASK;
 		buffLength <<= 2;
 
 		SSOLength |= buffLength;
@@ -305,16 +305,16 @@ bool operator!=(const MyString& lhs, const MyString& rhs)
 bool MyString::isSSO() const
 {
 	size_t temp = _length >> (sizeof(size_t) - 1) * 8;
-	return temp & MyString::SSOFlagMask;
+	return temp & MyString::SSO_FLAG_MASK;
 }
 
 size_t MyString::getLengthInSSO() const
 {
 	size_t temp = _length >> (sizeof(size_t) - 1) * 8;
-	return ((temp & MyString::lengthMask) >> 2);
+	return ((temp & MyString::SSO_LENGTH_MASK) >> 2);
 }
 
-int MyString::find(char data, unsigned index) const
+size_t MyString::find(char data, unsigned index) const
 {
 	const char* ptr = isSSO() ? this->data._smallString : this->data._data;
 	size_t len = length();
@@ -323,20 +323,20 @@ int MyString::find(char data, unsigned index) const
 		if (ptr[i] == data)
 			return i;
 
-	return -1;
+	return std::string::npos;
 }
 
-int MyString::find(char data) const
+size_t MyString::find(char data) const
 {
 	return find(data, 0);
 }
 
-int MyString::find(const char* data) const
+size_t MyString::find(const char* data) const
 {
 	return find(data, 0);
 }
 
-int MyString::find(const char* data, unsigned index) const
+size_t MyString::find(const char* data, unsigned index) const
 {
 	size_t dataLength = strlen(data);
 
@@ -353,5 +353,10 @@ int MyString::find(const char* data, unsigned index) const
 		return index;
 	}
 
-	return -1;
+	return std::string::npos;
+}
+
+MyString MyString::substr(size_t begin) const
+{
+	return substr(begin, length() - begin);
 }

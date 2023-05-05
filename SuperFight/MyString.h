@@ -11,8 +11,8 @@ class MyString
 	size_t _capacity = 0;
 	size_t _length = 0;
 
-	static const int SSOFlagMask;
-	static const int lengthMask;
+	static const int SSO_FLAG_MASK;
+	static const int SSO_LENGTH_MASK;
 
 	void copyFrom(const MyString& data);
 	void free();
@@ -38,16 +38,17 @@ public:
 	MyString& operator+=(const MyString& other);
 
 	MyString substr(size_t begin, size_t howMany) const;
+	MyString substr(size_t begin) const;
 
 	char& operator[](size_t index);
 	char operator[](size_t index) const;
 
 	const char* c_str() const;
 
-	int find(char data) const;
-	int find(char data, unsigned index) const;
-	int find(const char* data) const;
-	int find(const char* data, unsigned index) const;
+	size_t find(char data) const;
+	size_t find(char data, unsigned index) const;
+	size_t find(const char* data) const;
+	size_t find(const char* data, unsigned index) const;
 
 	friend MyString operator+(const MyString& lhs, const MyString& rhs);
 	friend std::istream& operator>>(std::istream&, MyString& str);
