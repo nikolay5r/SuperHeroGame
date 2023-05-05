@@ -14,3 +14,16 @@ void validation::isNameValid(const MyString& name)
 		if (helper::isUpper(name[i]))
 			throw Regex_Error("There is a capital letter in the middle of the name!");
 }
+
+void isUserNameValid(const MyString& userName)
+{
+	static MyString invalidCharacters = ",.?/<>:;\"\'({[]})!@#$%^&*\\|+";
+	size_t userNameLength = userName.length();
+
+	if (userNameLength > 16)
+		throw std::length_error("UserName is too long!");
+
+	for (size_t i = 0; i < userNameLength; i++)
+		if (invalidCharacters.find(userName[i]) != std::string::npos)
+			throw Regex_Error("Invalid characters found in userName! Characters cannot be " + invalidCharacters + "!");
+}
