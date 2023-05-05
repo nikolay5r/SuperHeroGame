@@ -4,4 +4,5 @@
 namespace helper {
 	bool isUpper(char a);
 	bool isLower(char a);
+	bool isDigit(char a);
 }

@@ -12,14 +12,14 @@ protected:
 
 	MyString fullName = "";
 
-	void setFirstName(MyString firstName);
-	void setLastName(MyString fullName);
-	void setEmail(MyString email);
-	void setPassword(MyString password);
-	void setUsername(MyString username);
+	void setFirstName(const MyString& firstName);
+	void setLastName(const MyString& lastName);
+	void setEmail(const MyString& email);
+	void setPassword(const MyString& password);
+	void setUsername(const MyString& username);
 	void setFullName();
 public:
-	User(MyString firstName, MyString lastName, MyString username, MyString email, MyString password);
+	User(const MyString& firstName, const MyString& lastName, const MyString& username, const MyString& email, const MyString& password);
 
 	const MyString& getPassword() const noexcept;
 	const MyString& getEmail() const noexcept;

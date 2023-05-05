@@ -207,7 +207,7 @@ char MyString::operator[](size_t index) const
 MyString MyString::substr(size_t begin, size_t howMany) const
 {
 	if (begin + howMany > length())
-		throw std::length_error("Error, Substr out of range");
+		throw std::length_error("Error, substrs out of range");
 
 	MyString res(howMany + 1);
 

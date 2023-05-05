@@ -1,5 +1,39 @@
+#include "User.h"
+#include "Validation.h"
 
-User::User(MyString firstName, MyString lastName, MyString userName, MyString email, MyString password)
+void User::setFirstName(const MyString& firstName)
+{
+	validation::isNameValid(firstName);
+	this->firstName = firstName;
+}
+
+void User::setLastName(const MyString& lastName)
+{
+	validation::isNameValid(lastName);
+	this->lastName = lastName;
+}
+
+void User::setEmail(const MyString& email)
+{
+
+}
+
+void User::setPassword(const MyString& password)
+{
+
+}
+
+void User::setUsername(const MyString& username)
+{
+
+}
+
+void User::setFullName()
+{
+	fullName = firstName + lastName;
+}
+
+User::User(const MyString& firstName, const MyString& lastName, const MyString& userName, const MyString& email, const MyString& password)
 {
 	setFirstName(firstName);
 	setLastName(lastName);
