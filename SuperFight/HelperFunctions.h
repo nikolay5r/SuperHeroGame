@@ -1,4 +1,6 @@
 #pragma once
+#include "MyString.h"
 
-bool isUpper(char a);
-
+namespace helper {
+	bool isUpper(char a);
+}

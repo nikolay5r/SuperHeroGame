@@ -1,6 +1,7 @@
 #include "HelperFunctions.h"
+#include "Regex_Error.h"
 
-bool isUpper(char a)
+bool helper::isUpper(char a)
 {
 	return a >= 'A' && a <= 'Z';
 }
