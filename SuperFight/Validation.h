@@ -9,4 +9,5 @@ namespace validation
 	void isEmailValid(const MyString& email);
 	void isPasswordValid(const MyString& password);
 	void isNicknameValid(const MyString& nickname);
+	void isPowerValid(unsigned long long power);
 }
