@@ -19,31 +19,31 @@ void validation::isNameValid(const MyString& name)
 	{
 		if (helper::isUpper(name[i]))
 		{
-			throw std::runtime_error("There is a capital letter in the middle of the name!");
+			throw std::runtime_error("There is a capital letter in the middle of the Name!");
 		}
 	}
 }
 
-void validation::isUserNameValid(const MyString& userName) //at least 5 characters, max - 20
+void validation::isUsernameValid(const MyString& username) //at least 5 characters, max - 20
 {
-	static MyString invalidCharacters = ",.?/<>:;\"'({[]})!@#$%^ &*\\|+";
-	size_t userNameLength = userName.length();
+	static MyString invalidUsernameCharacters = ",.?/<>:;\"'({[]})!@#$%^ &*\\|+=";
+	size_t usernameLength = username.length();
 
-	if (userNameLength > constants::MAX_USERNAME_LENGTH)
+	if (usernameLength > constants::MAX_USERNAME_LENGTH)
 	{
-		throw std::length_error("UserName is too long!");
+		throw std::length_error("Username is too long!");
 	}
 
-	if (userNameLength < constants::MIN_USERNAME_LENGTH)
+	if (usernameLength < constants::MIN_USERNAME_LENGTH)
 	{
-		throw std::length_error("UserName is too short!");
+		throw std::length_error("Username is too short!");
 	}
 
-	for (size_t i = 0; i < userNameLength; i++)
+	for (size_t i = 0; i < usernameLength; i++)
 	{
-		if (invalidCharacters.find(userName[i]) != std::string::npos)
+		if (invalidUsernameCharacters.find(username[i]) != std::string::npos)
 		{
-			throw std::runtime_error("Invalid characters found in userName!");
+			throw std::runtime_error("Invalid characters found in Username!");
 		}
 	}
 }
@@ -56,7 +56,7 @@ void validation::isEmailValid(const MyString& email) //email@abv.bg
 
 	if (index == std::string::npos)
 	{
-		throw std::runtime_error("Invalid Email! Missing '@' in your email!");
+		throw std::runtime_error("Invalid Email! Missing '@' in your Email!");
 	}
 
 	MyString lastPart = email.substr(index + 1);
@@ -117,5 +117,35 @@ void validation::isPasswordValid(const MyString& password) //at least one capita
 	if (countLowerLetters == 0)
 	{
 		throw std::runtime_error("You should have at least one lower letter in your Password!");
+	}
+}
+
+void validation::isNicknameValid(const MyString& nickname) // between 3 and 16 characters, capital letters, digits, lower letters and 
+{
+	size_t nicknameLength = nickname.length();
+
+	if (nicknameLength < 3)
+	{
+		throw std::length_error("Nickname should be longer than 3 characters!");
+	}
+
+	if (nicknameLength > 16)
+	{
+		throw std::length_error("Nickname should be below 16 characters!");
+	}
+
+	static MyString invalidNicknameCharacters = ",.?/<>:;\"'({[]})!@#$%^&*\\|+-_=";
+
+	if (!helper::isUpper(nickname[0]))
+	{
+		throw std::runtime_error("First character of Nickname must be a capital letter!");
+	}
+
+	for (size_t i = 1; i < nicknameLength; i++)
+	{
+		if (invalidNicknameCharacters.find(nickname[i]) == std::string::npos)
+		{
+			throw std::runtime_error("Invalid characters found in Nickname!");
+		}
 	}
 }
