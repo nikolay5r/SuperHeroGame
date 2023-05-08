@@ -52,18 +52,27 @@ void validation::isEmailValid(const MyString& email) //email@abv.bg
 {
 	size_t emailLength = email.length();
 
-	MyString lastPart = email.substr(email.find('@') + 1);
+	int index = email.find('@');
 
-	if (lastPart.length() == 0)
+	if (index == std::string::npos)
 	{
-		throw std::runtime_error("Invalid Email!");
+		throw std::runtime_error("Invalid Email! Missing '@' in your email!");
 	}
 
-	lastPart = lastPart.substr(lastPart.find('.') + 1);
+	MyString lastPart = email.substr(index + 1);
 
 	if (lastPart.length() == 0)
 	{
-		throw std::runtime_error("Invalid Email!");
+		throw std::runtime_error("Invalid Email! Missing the address!");
+	}
+
+	index = lastPart.find('.');
+
+	lastPart = lastPart.substr(index + 1);
+
+	if (lastPart.length() == 0 || index == std::string::npos)
+	{
+		throw std::runtime_error("Invalid Email! There is no such address!");
 	}
 }
 
