@@ -4,19 +4,16 @@
 #include "Regex_Error.h"
 int main()
 {
-	try {
-		User user("Franko", "Montoya", "!kdlsakdlaskQ0!", "email@abv.bg", "okokokA1", UserRole::Admin);
-	}
-	catch (const Regex_Error& error)
+	try
 	{
-		std::cout << error.what() << std::endl;
+		User user("ranko", "Montoya", "kdlsakdlaskQ0", "email@abv.bg", "okokok1", UserRole::Admin);
 	}
 	catch (const std::exception& error)
 	{
 		std::cout << error.what() << std::endl;
 	}
-	MyString str("abcdeft");
 
+	MyString str("abcdeft");
 
 	std::cout << str.find("cde", 3);
 }

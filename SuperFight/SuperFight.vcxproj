@@ -130,6 +130,7 @@
     <ClCompile Include="HelperFunctions.cpp" />
     <ClCompile Include="MyString.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="Regex_Error.cpp" />
     <ClCompile Include="User.cpp" />
     <ClCompile Include="Validation.cpp" />
@@ -138,6 +139,7 @@
     <ClInclude Include="Constants.h" />
     <ClInclude Include="HelperFunctions.h" />
     <ClInclude Include="MyString.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="Regex_Error.h" />
     <ClInclude Include="User.h" />
     <ClInclude Include="Validation.h" />
