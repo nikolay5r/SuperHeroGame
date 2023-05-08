@@ -25,12 +25,12 @@ class SuperHero
 	void setLastName(const MyString& lastName);
 	void setFullName();
 	void setNickname(const MyString& nickname);
-	void setPrice(unsigned long long price);
+	void setPrice();
 	void setPower(unsigned long long power);
 
 public:
 
-	SuperHero(const MyString& firstName, const MyString& lastName, const MyString& nickname, unsigned power, SuperHeroPowerType powerType, unsigned price);
+	SuperHero(const MyString& firstName, const MyString& lastName, const MyString& nickname, unsigned power, SuperHeroPowerType powerType);
 	unsigned getPower() const;
 	unsigned getPrice() const;
 	SuperHeroPowerType getPowerType() const;

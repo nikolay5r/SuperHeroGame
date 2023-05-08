@@ -25,17 +25,18 @@ void SuperHero::setNickname(const MyString& nickname)
 	this->nickname = nickname;
 }
 
-void SuperHero::setPrice(unsigned long long price)
+void SuperHero::setPrice()
 {
-
+	price = power * 3 / 2 - 23;
 }
 
 void SuperHero::setPower(unsigned long long power)
 {
-
+	validation::isPowerValid(power);
+	this->power = power;
 }
 
-SuperHero::SuperHero(const MyString& firstName, const MyString& lastName, const MyString& nickname, unsigned power, SuperHeroPowerType powerType, unsigned price)
+SuperHero::SuperHero(const MyString& firstName, const MyString& lastName, const MyString& nickname, unsigned power, SuperHeroPowerType powerType)
 {
 	setFirstName(firstName);
 	setLastName(lastName);
@@ -43,7 +44,7 @@ SuperHero::SuperHero(const MyString& firstName, const MyString& lastName, const 
 	setNickname(nickname);
 	this->powerType = powerType;
 	setPower(power);
-	setPrice(price);
+	setPrice();
 }
 
 unsigned SuperHero::getPower() const
