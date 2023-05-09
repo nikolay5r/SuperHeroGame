@@ -3,6 +3,8 @@
 #include "Validation.h"
 #include "Constants.h"
 
+#include <cstdlib>
+
 const unsigned SuperHero::xpNeededPerLevel[10] = { 3, 5, 10, 20, 30, 40, 50, 75, 90, 100 };
 
 static int isPowerGreater(unsigned attackerPower, unsigned defenderPower)
@@ -92,9 +94,8 @@ const MyString& SuperHero::getNickname() const noexcept
 
 void SuperHero::levelUp()
 {
-	if (level < constants::MAX_LEVEL && (xp >= xpNeededPerLevel[9] || xp >= xpNeededPerLevel[level - 1]))
+	if (level < constants::MAX_LEVEL && ((level >= 10 && xp >= xpNeededPerLevel[9]) || (level < 10 && xp >= xpNeededPerLevel[level - 1])))
 	{
-		level++;
 		if (level >= 10)
 		{
 			xp -= xpNeededPerLevel[9];
@@ -103,6 +104,8 @@ void SuperHero::levelUp()
 		{
 			xp -= xpNeededPerLevel[level - 1];
 		}
+		level++;
+		(allowedPowerUpgrades += 1) *= 1.5;
 	}
 	else
 	{
@@ -132,10 +135,22 @@ int SuperHero::fight(const SuperHero& other) const noexcept
 
 void SuperHero::powerUp()
 {
+	if (powerLevel == allowedPowerUpgrades)
+	{
+		//TODO:
+		throw std::exception("You cannot upgrade your superhero right now!");
+	}
 
+	powerLevel++;
+	power += constants::POWER_TO_ADD;
 }
 
 void SuperHero::changePosition()
 {
 	position == SuperHeroPosition::Attack ? SuperHeroPosition::Defense : SuperHeroPosition::Attack;
+}
+
+void SuperHero::gainXP()
+{
+
 }

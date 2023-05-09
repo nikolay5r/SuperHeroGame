@@ -25,8 +25,10 @@ class SuperHero
 	SuperHeroPowerType powerType;
 	SuperHeroPosition position = SuperHeroPosition::Attack;
 	unsigned price;
-	uint8_t level = 1;
-	unsigned xp = 0;
+	uint8_t level = 0;
+	uint8_t xp = 0;
+	uint8_t powerLevel = 0;
+	uint8_t allowedPowerUpgrades = 1;
 
 	static const unsigned xpNeededPerLevel[10];
 
@@ -53,4 +55,5 @@ public:
 	void levelUp();
 	int fight(const SuperHero& other) const noexcept;
 	void powerUp();
+	void gainXP();
 };
