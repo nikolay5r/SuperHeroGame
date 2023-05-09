@@ -152,5 +152,6 @@ void SuperHero::changePosition()
 
 void SuperHero::gainXP()
 {
-
+	srand(time(0));
+	xp += rand() % 5 + 1;
 }
