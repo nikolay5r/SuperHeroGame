@@ -2,6 +2,8 @@
 #include "MyString.h"
 #include "Validation.h"
 
+const unsigned SuperHero::xpNeededPerLevel[10] = { 3, 5, 10, 20, 30, 40, 50, 75, 90, 100 };
+
 void SuperHero::setFirstName(const MyString& firstName)
 {
 	validation::isNameValid(firstName);
@@ -80,4 +82,30 @@ const MyString& SuperHero::getFullName() const
 const MyString& SuperHero::getNickname() const
 {
 	return nickname;
+}
+
+void SuperHero::levelUp()
+{
+	if (xp >= xpNeededPerLevel[9] || xp >= xpNeededPerLevel[level - 1])
+	{
+		level++;
+		if (level >= 10)
+		{
+			xp -= xpNeededPerLevel[9];
+		}
+		else
+		{
+			xp -= xpNeededPerLevel[level - 1];
+		}
+	}
+	else
+	{
+		//TODO: 
+		throw std::exception("You cannot level up your hero! Not enough xp!");
+	}
+}
+
+void SuperHero::fight(const SuperHero& other)
+{
+
 }

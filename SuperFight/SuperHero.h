@@ -18,8 +18,9 @@ class SuperHero
 	unsigned power;
 	SuperHeroPowerType powerType;
 	unsigned price;
-	/*unsigned xp;
-	unsigned xpNeeded = 5;*/
+	uint8_t level = 1;
+	unsigned xp = 0;
+	static const unsigned xpNeededPerLevel[10];
 
 	void setFirstName(const MyString& firstName);
 	void setLastName(const MyString& lastName);
@@ -39,5 +40,7 @@ public:
 	const MyString& getFullName() const;
 	const MyString& getNickname() const;
 
-	//void levelUp();
+	void levelUp();
+	void fight(const SuperHero& other);
+	void powerUp();
 };
