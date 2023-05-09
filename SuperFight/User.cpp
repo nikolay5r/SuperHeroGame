@@ -36,7 +36,7 @@ void User::setFullName()
 	fullName = firstName + " " + lastName;
 }
 
-User::User(const MyString& firstName, const MyString& lastName, const MyString& username, const MyString& email, const MyString& password, UserRole role)
+User::User(const MyString& firstName, const MyString& lastName, const MyString& username, const MyString& email, const MyString& password)
 {
 	setFirstName(firstName);
 	setLastName(lastName);
@@ -44,13 +44,6 @@ User::User(const MyString& firstName, const MyString& lastName, const MyString& 
 	setEmail(email);
 	setPassword(password);
 	setUsername(username);
-
-	this->role = role;
-}
-
-UserRole User::getRole() const noexcept
-{
-	return role;
 }
 
 const MyString& User::getPassword() const noexcept
