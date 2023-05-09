@@ -3,10 +3,10 @@
 
 enum class SuperHeroPowerType
 {
-	Fire,
+	Air,
 	Water,
 	Earth,
-	Air
+	Fire
 };
 
 class SuperHero
@@ -41,6 +41,6 @@ public:
 	const MyString& getNickname() const;
 
 	void levelUp();
-	void fight(const SuperHero& other);
+	int fight(const SuperHero& other);
 	void powerUp();
 };

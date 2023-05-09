@@ -4,6 +4,11 @@
 
 const unsigned SuperHero::xpNeededPerLevel[10] = { 3, 5, 10, 20, 30, 40, 50, 75, 90, 100 };
 
+static int isPowerGreater(unsigned attackerPower, unsigned defenderPower)
+{
+	return attackerPower >= defenderPower ? (attackerPower == defenderPower ? 0 : 1) : -1;
+}
+
 void SuperHero::setFirstName(const MyString& firstName)
 {
 	validation::isNameValid(firstName);
@@ -105,7 +110,26 @@ void SuperHero::levelUp()
 	}
 }
 
-void SuperHero::fight(const SuperHero& other)
+int SuperHero::fight(const SuperHero& other)
+{
+	if ((powerType == SuperHeroPowerType::Fire && other.powerType == SuperHeroPowerType::Water) ||
+		(powerType == SuperHeroPowerType::Water && other.powerType == SuperHeroPowerType::Earth) ||
+		(powerType == SuperHeroPowerType::Earth && other.powerType == SuperHeroPowerType::Fire))
+	{
+		return isPowerGreater(power, other.power * 2);
+	}
+
+	if ((powerType == SuperHeroPowerType::Fire && other.powerType == SuperHeroPowerType::Earth) ||
+		(powerType == SuperHeroPowerType::Water && other.powerType == SuperHeroPowerType::Fire) ||
+		(powerType == SuperHeroPowerType::Earth && other.powerType == SuperHeroPowerType::Water))
+	{
+		return isPowerGreater(power * 2, other.power);
+	}
+
+	return isPowerGreater(power, other.power);
+}
+
+void SuperHero::powerUp()
 {
 
 }
