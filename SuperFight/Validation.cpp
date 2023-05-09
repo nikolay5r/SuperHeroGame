@@ -24,19 +24,15 @@ void validation::isNameValid(const MyString& name)
 	}
 }
 
-void validation::isUsernameValid(const MyString& username) //at least 5 characters, max - 20
+void validation::isUsernameValid(const MyString& username) //at least 3 characters
 {
 	static MyString invalidUsernameCharacters = ",.?/<>:;\"'({[]})!@#$%^ &*\\|+=";
 	size_t usernameLength = username.length();
 
-	if (usernameLength > constants::MAX_USERNAME_LENGTH)
-	{
-		throw std::length_error("Username is too long!");
-	}
-
 	if (usernameLength < constants::MIN_USERNAME_LENGTH)
 	{
-		throw std::length_error("Username is too short!");
+		//TODO:
+		throw std::length_error("Username should be at least 3 characters!");
 	}
 
 	for (size_t i = 0; i < usernameLength; i++)
@@ -86,6 +82,7 @@ void validation::isPasswordValid(const MyString& password) //at least one capita
 
 	if (passwordLength > constants::MAX_PASSWORD_LENGTH || passwordLength < constants::MIN_PASSWORD_LENGTH)
 	{
+		//TODO:
 		throw std::length_error("Password should be between 5 and 16 characters!");
 	}
 
@@ -120,9 +117,10 @@ void validation::isNicknameValid(const MyString& nickname) // between 3 and 16 c
 	static MyString invalidNicknameCharacters = ",.?/<>:;\"'({[]})!@#$%^&*\\|+-_=";
 	size_t nicknameLength = nickname.length();
 
-	if (nicknameLength < constants::MIN_NICKNAME_LENGTH || nicknameLength > constants::MAX_NICKNAME_LENGTH)
+	if (nicknameLength < constants::MIN_NICKNAME_LENGTH)
 	{
-		throw std::length_error("Nickname should be between 3 and 16 characters!");
+		//TODO:
+		throw std::length_error("Nickname should be at least 3!");
 	}
 
 	if (!helper::isUpper(nickname[0]))
