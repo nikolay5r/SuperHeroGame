@@ -25,7 +25,7 @@ class SuperHero
 	SuperHeroPowerType powerType;
 	SuperHeroPosition position = SuperHeroPosition::Attack;
 	unsigned price;
-	uint8_t level = 0;
+	uint8_t level = 1;
 	uint8_t xp = 0;
 	uint8_t powerLevel = 0;
 	uint8_t allowedPowerUpgrades = 1;

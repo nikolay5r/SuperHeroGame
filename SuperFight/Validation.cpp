@@ -48,7 +48,7 @@ void validation::isEmailValid(const MyString& email) //email@abv.bg
 {
 	size_t emailLength = email.length();
 
-	int index = email.find('@');
+	size_t index = email.find('@');
 
 	if (index == std::string::npos)
 	{
