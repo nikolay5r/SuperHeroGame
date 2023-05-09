@@ -1,6 +1,7 @@
 #include "SuperHero.h"
 #include "MyString.h"
 #include "Validation.h"
+#include "Constants.h"
 
 const unsigned SuperHero::xpNeededPerLevel[10] = { 3, 5, 10, 20, 30, 40, 50, 75, 90, 100 };
 
@@ -21,7 +22,7 @@ void SuperHero::setLastName(const MyString& lastName)
 	this->lastName = lastName;
 }
 
-void SuperHero::setFullName()
+void SuperHero::setFullName() noexcept
 {
 	fullName = firstName + " " + lastName;
 }
@@ -32,7 +33,7 @@ void SuperHero::setNickname(const MyString& nickname)
 	this->nickname = nickname;
 }
 
-void SuperHero::setPrice()
+void SuperHero::setPrice() noexcept
 {
 	price = power * 3 / 2 - 23;
 }
@@ -54,44 +55,44 @@ SuperHero::SuperHero(const MyString& firstName, const MyString& lastName, const 
 	setPrice();
 }
 
-unsigned SuperHero::getPower() const
+unsigned SuperHero::getPower() const noexcept
 {
 	return power;
 }
 
-unsigned SuperHero::getPrice() const
+unsigned SuperHero::getPrice() const noexcept
 {
 	return price;
 }
 
-SuperHeroPowerType SuperHero::getPowerType() const
+SuperHeroPowerType SuperHero::getPowerType() const noexcept
 {
 	return powerType;
 }
 
-const MyString& SuperHero::getFirstName() const
+const MyString& SuperHero::getFirstName() const noexcept
 {
 	return firstName;
 }
 
-const MyString& SuperHero::getLastName() const
+const MyString& SuperHero::getLastName() const noexcept
 {
 	return lastName;
 }
 
-const MyString& SuperHero::getFullName() const
+const MyString& SuperHero::getFullName() const noexcept
 {
 	return fullName;
 }
 
-const MyString& SuperHero::getNickname() const
+const MyString& SuperHero::getNickname() const noexcept
 {
 	return nickname;
 }
 
 void SuperHero::levelUp()
 {
-	if (xp >= xpNeededPerLevel[9] || xp >= xpNeededPerLevel[level - 1])
+	if (level < constants::MAX_LEVEL && (xp >= xpNeededPerLevel[9] || xp >= xpNeededPerLevel[level - 1]))
 	{
 		level++;
 		if (level >= 10)
@@ -106,11 +107,11 @@ void SuperHero::levelUp()
 	else
 	{
 		//TODO: 
-		throw std::exception("You cannot level up your hero! Not enough xp!");
+		throw std::exception("You cannot level up your hero!");
 	}
 }
 
-int SuperHero::fight(const SuperHero& other)
+int SuperHero::fight(const SuperHero& other) const noexcept
 {
 	if ((powerType == SuperHeroPowerType::Fire && other.powerType == SuperHeroPowerType::Water) ||
 		(powerType == SuperHeroPowerType::Water && other.powerType == SuperHeroPowerType::Earth) ||
@@ -132,4 +133,9 @@ int SuperHero::fight(const SuperHero& other)
 void SuperHero::powerUp()
 {
 
+}
+
+void SuperHero::changePosition()
+{
+	position == SuperHeroPosition::Attack ? SuperHeroPosition::Defense : SuperHeroPosition::Attack;
 }
