@@ -293,3 +293,16 @@ void Player::levelUpSuperHero(const MyString& nickname)
 	size_t index = nicknameToIndex(nickname);
 	powerUpSuperHero(index);
 }
+
+void Player::changePositionOfSuperHero(size_t index)
+{
+	isIndexValid(index);
+	//TODO:
+	superHeroes[index]->changePosition();
+}
+
+void Player::changePositionOfSuperHero(const MyString& nickname)
+{
+	size_t index = nicknameToIndex(nickname);
+	changePositionOfSuperHero(index);
+}
