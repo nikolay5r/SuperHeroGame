@@ -46,6 +46,17 @@ User::User(const MyString& firstName, const MyString& lastName, const MyString& 
 	setUsername(username);
 }
 
+User::User(const MyString& firstName, const MyString& lastName, const MyString& username, const MyString& email, const MyString& password, UserRole role)
+	: User(firstName, lastName, username, email, password)
+{
+	this->role = role;
+}
+
+UserRole User::getRole() const noexcept
+{
+	return role;
+}
+
 const MyString& User::getPassword() const noexcept
 {
 	return password;

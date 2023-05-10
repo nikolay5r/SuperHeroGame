@@ -2,6 +2,12 @@
 #include <iostream>
 #include "MyString.h"
 
+enum class UserRole
+{
+	Admin,
+	Player
+};
+
 class User
 {
 protected:
@@ -11,6 +17,7 @@ protected:
 	MyString email = "";
 	MyString password = "";
 	MyString fullName = "";
+	UserRole role = UserRole::Admin;
 
 	void setFirstName(const MyString& firstName);
 	void setLastName(const MyString& lastName);
@@ -20,6 +27,7 @@ protected:
 	void setFullName();
 public:
 	User(const MyString& firstName, const MyString& lastName, const MyString& username, const MyString& email, const MyString& password);
+	User(const MyString& firstName, const MyString& lastName, const MyString& username, const MyString& email, const MyString& password, UserRole role);
 
 	const MyString& getPassword() const noexcept;
 	const MyString& getEmail() const noexcept;
@@ -27,5 +35,6 @@ public:
 	const MyString& getFullName() const noexcept;
 	const MyString& getFirstName() const noexcept;
 	const MyString& getLastName() const noexcept;
+	UserRole getRole() const noexcept;
 };
 
