@@ -256,15 +256,39 @@ void Player::powerUpSuperHero(size_t index)
 	if (coins >= price)
 	{
 		coins -= price;
-	superHeroes[index]->powerUp();
-}
+		superHeroes[index]->powerUp();
+	}
 	else
 	{
-		throw std::exception("You don't have enough coins to make the power upgrade to this superhero!");
+		//TODO:
+		throw std::exception("You don't have enough coins to upgrade the power of this superhero!");
 	}
 }
 
 void Player::powerUpSuperHero(const MyString& nickname)
+{
+	size_t index = nicknameToIndex(nickname);
+	powerUpSuperHero(index);
+}
+
+void Player::levelUpSuperHero(size_t index)
+{
+	isIndexValid(index);
+	unsigned price = constants::INITIAL_PRICE_OF_POWER_UP * superHeroes[index]->getLevel() * 1.2;
+
+	if (coins >= price)
+	{
+		coins -= price;
+		superHeroes[index]->levelUp();
+	}
+	else
+	{
+		//TODO:
+		throw std::exception("You don't have enough coins to level up this superhero!");
+	}
+}
+
+void Player::levelUpSuperHero(const MyString& nickname)
 {
 	size_t index = nicknameToIndex(nickname);
 	powerUpSuperHero(index);

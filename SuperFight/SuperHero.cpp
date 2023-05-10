@@ -159,3 +159,13 @@ void SuperHero::gainXP() noexcept
 	srand(time(0));
 	xp += rand() % 5 + 1;
 }
+
+uint8_t SuperHero::getPowerLevel() const noexcept
+{
+	return powerLevel;
+}
+
+uint8_t SuperHero::getLevel() const noexcept
+{
+	return level;
+}

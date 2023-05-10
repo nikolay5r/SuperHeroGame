@@ -45,6 +45,8 @@ public:
 	void powerUpSuperHero(size_t index);
 	void powerUpSuperHero(const MyString& nickname);
 
+	void levelUpSuperHero(size_t index);
+	void levelUpSuperHero(const MyString& nickname);
 
 	~Player();
 };

@@ -50,6 +50,8 @@ public:
 	const MyString& getFullName() const noexcept;
 	const MyString& getNickname() const noexcept;
 	SuperHeroPosition getPosition() const noexcept;
+	uint8_t getPowerLevel() const noexcept;
+	uint8_t getLevel() const noexcept;
 
 	void changePosition() noexcept;
 	void levelUp();
