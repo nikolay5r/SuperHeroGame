@@ -16,4 +16,5 @@ namespace constants
 	const unsigned COINS_TO_EARN_WHEN_LOGGING_IN = 100;
 	const unsigned INITIAL_PRICE_OF_POWER_UP = 5;
 	const unsigned INITIAL_PRICE_OF_LEVEL_UP = 7;
+	const unsigned INITIAL_PRICE_OF_SUPERHERO = 30;
 }
