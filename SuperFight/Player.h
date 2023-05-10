@@ -33,6 +33,7 @@ public:
 	void addSuperHero(const SuperHero& superHero);
 	void removeSuperHero(const MyString& nickname);
 	void removeSuperHero(size_t index);
+
 	void attack(Player& defender);
 	void attack(Player& defender, size_t defenderIndex);
 	void attack(Player& defender, const MyString& defenderNickname);
@@ -40,6 +41,10 @@ public:
 	void attack(const MyString& attackerNickname, Player& defender);
 	void attack(size_t attackerIndex, Player& defender, size_t defenderIndex);
 	void attack(const MyString& attackerNickname, Player& defender, const MyString& defenderNickname);
+
+	void powerUpSuperHero(size_t index);
+	void powerUpSuperHero(const MyString& nickname);
+
 
 	~Player();
 };

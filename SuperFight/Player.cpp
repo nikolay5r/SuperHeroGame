@@ -246,3 +246,26 @@ void Player::attack(const MyString& attackerNickname, Player& defender, const My
 
 	attack(attackerIndex, defender, defenderIndex);
 }
+
+void Player::powerUpSuperHero(size_t index)
+{
+	isIndexValid(index);
+
+	unsigned price = constants::INITIAL_PRICE_OF_POWER_UP * superHeroes[index]->getPowerLevel() * superHeroes[index]->getLevel() / 2;
+
+	if (coins >= price)
+	{
+		coins -= price;
+	superHeroes[index]->powerUp();
+}
+	else
+	{
+		throw std::exception("You don't have enough coins to make the power upgrade to this superhero!");
+	}
+}
+
+void Player::powerUpSuperHero(const MyString& nickname)
+{
+	size_t index = nicknameToIndex(nickname);
+	powerUpSuperHero(index);
+}
