@@ -158,8 +158,11 @@ void SuperHero::changePosition() noexcept
 
 void SuperHero::gainXP() noexcept
 {
-	srand(time(0));
-	xp += rand() % 5 + 1;
+	if (level != constants::MAX_LEVEL)
+	{
+		srand(time(0));
+		xp += rand() % 5 + 1;
+	}
 }
 
 uint8_t SuperHero::getPowerLevel() const noexcept
