@@ -4,6 +4,27 @@
 #include <iostream>
 #include <stdexcept>
 
+bool Player::isIndexValid(size_t index) const
+{
+	if (index >= numberOfSuperHeroes)
+	{
+		throw std::invalid_argument("There is no such superhero! Error occured when trying to attack!");
+	}
+}
+
+size_t Player::nicknameToIndex(const MyString& nickname) const noexcept
+{
+	for (size_t i = 0; i < numberOfSuperHeroes; i++)
+	{
+		if (superHeroes[i]->getNickname() == nickname)
+		{
+			return i;
+		}
+	}
+
+	return std::string::npos;
+}
+
 void Player::copyFrom(const Player& other)
 {
 	numberOfSuperHeroes = other.numberOfSuperHeroes;
@@ -114,7 +135,7 @@ void Player::removeSuperHero(size_t index)
 {
 	if (index >= numberOfSuperHeroes)
 	{
-		throw std::out_of_range("Index is not valid");
+		throw std::invalid_argument("Invalid index of superhero when trying to delete!");
 	}
 
 	if (superHeroes[index])
@@ -128,4 +149,92 @@ void Player::removeSuperHero(size_t index)
 	{
 		resize(capacity / 2);
 	}
+}
+
+void Player::attack(Player& defender)
+{
+	srand(time(0));
+	size_t attackerIndex = rand() % numberOfSuperHeroes;
+	size_t defenderIndex = rand() % defender.numberOfSuperHeroes;
+
+	attack(attackerIndex, defender, defenderIndex);
+}
+
+void Player::attack(Player& defender, size_t defenderIndex)
+{
+	srand(time(0));
+	size_t attackerIndex = rand() % numberOfSuperHeroes;
+
+	attack(attackerIndex, defender, defenderIndex);
+}
+
+void Player::attack(Player& defender, const MyString& defenderNickname)
+{
+	size_t defenderIndex = defender.nicknameToIndex(defenderNickname);
+	attack(defender, defenderIndex);
+}
+
+void Player::attack(size_t attackerIndex, Player& defender)
+{
+	srand(time(0));
+	size_t defenderIndex = rand() % defender.numberOfSuperHeroes;
+	attack(attackerIndex, defender, defenderIndex);
+}
+
+void Player::attack(const MyString& attackerNickname, Player& defender)
+{
+	size_t attackerIndex = nicknameToIndex(attackerNickname);
+	attack(attackerIndex, defender);
+}
+
+void Player::attack(size_t attackerIndex, Player& defender, size_t defenderIndex)
+{
+	isIndexValid(attackerIndex);
+
+	unsigned attackerPower = superHeroes[attackerIndex]->getPower();
+
+	if (defender.numberOfSuperHeroes == 0)
+	{
+		defender.coins = defender.coins < attackerPower ? 0 : defender.coins - attackerPower;
+	}
+
+	defender.isIndexValid(defenderIndex);
+
+	unsigned defenderPower = defender.superHeroes[defenderIndex]->getPower();
+
+	if (superHeroes[attackerIndex]->fight(*defender.superHeroes[defenderIndex]) == 1)
+	{
+		int resultFromAttack = attackerPower - defenderPower;
+
+		if (defender.superHeroes[defenderIndex]->getPosition() == SuperHeroPosition::Defense)
+		{
+			defender.coins = defender.coins < resultFromAttack ? 0 : defender.coins - resultFromAttack;
+		}
+		coins += resultFromAttack;
+
+		superHeroes[attackerIndex]->gainXP();
+		defender.removeSuperHero(defenderIndex);
+	}
+	else if (superHeroes[attackerIndex]->fight(*defender.superHeroes[defenderIndex]) == 0)
+	{
+		coins = coins < constants::COINS_TO_LOSE_WHEN_TIE ? 0 : coins - constants::COINS_TO_LOSE_WHEN_TIE;
+	}
+	else
+	{
+		int resultFromAttack = (defenderPower - attackerPower) * 2;
+		coins = coins < resultFromAttack ? 0 : coins - resultFromAttack;
+		defender.coins += constants::COINS_TO_WIN_AS_DEFENDER;
+
+		removeSuperHero(attackerIndex);
+		defender.superHeroes[defenderIndex]->gainXP();
+	}
+
+}
+
+void Player::attack(const MyString& attackerNickname, Player& defender, const MyString& defenderNickname)
+{
+	size_t attackerIndex = nicknameToIndex(attackerNickname);
+	size_t defenderIndex = nicknameToIndex(defenderNickname);
+
+	attack(attackerIndex, defender, defenderIndex);
 }

@@ -16,6 +16,10 @@ class Player : User
 	void free();
 	void resize(size_t newCapacity);
 
+	size_t nicknameToIndex(const MyString& nickname) const noexcept;
+
+	bool isIndexValid(size_t index) const;
+
 public:
 
 	Player(const MyString& firstName, const MyString& lastName, const MyString& username, const MyString& email, const MyString& password);
@@ -27,7 +31,13 @@ public:
 
 	void addSuperHero(const SuperHero& superHero);
 	void removeSuperHero(size_t index);
-	void attack(const Player& other);
+	void attack(Player& defender);
+	void attack(Player& defender, size_t defenderIndex);
+	void attack(Player& defender, const MyString& defenderNickname);
+	void attack(size_t attackerIndex, Player& defender);
+	void attack(const MyString& attackerNickname, Player& defender);
+	void attack(size_t attackerIndex, Player& defender, size_t defenderIndex);
+	void attack(const MyString& attackerNickname, Player& defender, const MyString& defenderNickname);
 
 	~Player();
 };

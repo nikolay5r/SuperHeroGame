@@ -49,11 +49,11 @@ public:
 	const MyString& getLastName() const noexcept;
 	const MyString& getFullName() const noexcept;
 	const MyString& getNickname() const noexcept;
+	SuperHeroPosition getPosition() const noexcept;
 
-	void changePosition();
-
+	void changePosition() noexcept;
 	void levelUp();
 	int fight(const SuperHero& other) const noexcept;
 	void powerUp();
-	void gainXP();
+	void gainXP() noexcept;
 };

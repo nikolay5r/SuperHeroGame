@@ -92,6 +92,10 @@ const MyString& SuperHero::getNickname() const noexcept
 	return nickname;
 }
 
+SuperHeroPosition SuperHero::getPosition() const noexcept
+{
+	return position;
+}
 void SuperHero::levelUp()
 {
 	if (level < constants::MAX_LEVEL && ((level >= 10 && xp >= xpNeededPerLevel[9]) || (level < 10 && xp >= xpNeededPerLevel[level - 1])))
@@ -145,12 +149,12 @@ void SuperHero::powerUp()
 	power += constants::POWER_TO_ADD;
 }
 
-void SuperHero::changePosition()
+void SuperHero::changePosition() noexcept
 {
 	position == SuperHeroPosition::Attack ? SuperHeroPosition::Defense : SuperHeroPosition::Attack;
 }
 
-void SuperHero::gainXP()
+void SuperHero::gainXP() noexcept
 {
 	srand(time(0));
 	xp += rand() % 5 + 1;

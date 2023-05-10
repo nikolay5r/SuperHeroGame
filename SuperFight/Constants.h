@@ -11,4 +11,7 @@ namespace constants
 	const unsigned MAX_LEVEL = 50;
 	const unsigned POWER_TO_ADD = 5;
 	const unsigned COINS_TO_START = 100;
+	const unsigned COINS_TO_LOSE_WHEN_TIE = 15;
+	const unsigned COINS_TO_WIN_AS_DEFENDER = 20;
+	const unsigned COINS_TO_EARN_WHEN_LOGGING_IN = 100;
 }
