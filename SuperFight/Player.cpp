@@ -82,6 +82,8 @@ void Player::resize(size_t newCapacity)
 Player::Player(const MyString& firstName, const MyString& lastName, const MyString& username, const MyString& email, const MyString& password)
 	: User(firstName, lastName, username, email, password, UserRole::Player) {}
 
+Player::Player(const User& user) : User(user) {}
+
 Player::Player(const Player& other) : User(other)
 {
 	copyFrom(other);

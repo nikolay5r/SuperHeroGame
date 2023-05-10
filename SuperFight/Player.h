@@ -23,6 +23,7 @@ class Player : User
 public:
 
 	Player(const MyString& firstName, const MyString& lastName, const MyString& username, const MyString& email, const MyString& password);
+	Player(const User& user);
 	Player(const Player& other);
 	Player(Player&& other) noexcept;
 
