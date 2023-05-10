@@ -31,6 +31,7 @@ public:
 	Player& operator=(Player&& other) noexcept;
 
 	void addSuperHero(const SuperHero& superHero);
+	void removeSuperHero(const MyString& nickname);
 	void removeSuperHero(size_t index);
 	void attack(Player& defender);
 	void attack(Player& defender, size_t defenderIndex);

@@ -133,6 +133,12 @@ void Player::addSuperHero(const SuperHero& superHero)
 	superHeroes[numberOfSuperHeroes++] = new SuperHero(superHero);
 }
 
+void Player::removeSuperHero(const MyString& nickname)
+{
+	size_t index = nicknameToIndex(nickname);
+	removeSuperHero(index);
+}
+
 void Player::removeSuperHero(size_t index)
 {
 	if (index >= numberOfSuperHeroes)
@@ -143,8 +149,8 @@ void Player::removeSuperHero(size_t index)
 	if (superHeroes[index])
 	{
 		delete superHeroes[index];
-		superHeroes[index] = superHeroes[--numberOfSuperHeroes];
-		superHeroes[numberOfSuperHeroes + 1] = nullptr;
+		superHeroes[index] = superHeroes[numberOfSuperHeroes - 1];
+		superHeroes[numberOfSuperHeroes--] = nullptr;
 	}
 
 	if (numberOfSuperHeroes < capacity / 4)
