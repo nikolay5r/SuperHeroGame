@@ -96,3 +96,13 @@ Player::~Player()
 {
 	free();
 }
+
+void Player::addSuperHero(const SuperHero& superHero)
+{
+	if (numberOfSuperHeroes == capacity)
+	{
+		resize(capacity * 2);
+	}
+
+	superHeroes[numberOfSuperHeroes++] = new SuperHero(superHero);
+}
