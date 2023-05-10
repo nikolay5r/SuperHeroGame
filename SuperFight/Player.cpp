@@ -1,5 +1,8 @@
 #include "Player.h"
+#include "SuperHero.h"
+#include "Constants.h"
 #include <iostream>
+#include <stdexcept>
 
 void Player::copyFrom(const Player& other)
 {
@@ -42,17 +45,17 @@ void Player::free()
 
 void Player::resize(size_t newCapacity)
 {
-	SuperHero** newSuperheroes = new SuperHero * [newCapacity] {nullptr};
+	SuperHero** newSuperHeroes = new SuperHero * [newCapacity] {nullptr};
 
 	for (size_t i = 0; i < numberOfSuperHeroes; i++)
 	{
-		newSuperheroes[i] = superHeroes[i];
+		newSuperHeroes[i] = superHeroes[i];
 		superHeroes[i] = nullptr;
 	}
 
 	delete[] superHeroes;
 
-	superHeroes = newSuperheroes;
+	superHeroes = newSuperHeroes;
 }
 
 Player::Player(const MyString& firstName, const MyString& lastName, const MyString& username, const MyString& email, const MyString& password)
@@ -105,4 +108,24 @@ void Player::addSuperHero(const SuperHero& superHero)
 	}
 
 	superHeroes[numberOfSuperHeroes++] = new SuperHero(superHero);
+}
+
+void Player::removeSuperHero(size_t index)
+{
+	if (index >= numberOfSuperHeroes)
+	{
+		throw std::out_of_range("Index is not valid");
+	}
+
+	if (superHeroes[index])
+	{
+		delete superHeroes[index];
+		superHeroes[index] = superHeroes[--numberOfSuperHeroes];
+		superHeroes[numberOfSuperHeroes + 1] = nullptr;
+	}
+
+	if (numberOfSuperHeroes < capacity / 4)
+	{
+		resize(capacity / 2);
+	}
 }

@@ -7,7 +7,7 @@
 class Player : User
 {
 	SuperHero** superHeroes = nullptr;
-	size_t capacity = 4;
+	size_t capacity = 2;
 	size_t numberOfSuperHeroes = 0;
 	unsigned coins = constants::COINS_TO_START;
 
@@ -26,7 +26,7 @@ public:
 	Player& operator=(Player&& other) noexcept;
 
 	void addSuperHero(const SuperHero& superHero);
-	void removeSuperHero(int index);
+	void removeSuperHero(size_t index);
 	void attack(const Player& other);
 
 	~Player();
