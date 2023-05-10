@@ -10,4 +10,5 @@ namespace constants
 	const unsigned MIN_POWER = 5;
 	const unsigned MAX_LEVEL = 50;
 	const unsigned POWER_TO_ADD = 5;
+	const unsigned COINS_TO_START = 100;
 }

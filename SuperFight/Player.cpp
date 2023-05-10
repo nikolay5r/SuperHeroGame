@@ -84,6 +84,7 @@ Player& Player::operator=(Player&& other) noexcept
 {
 	if (this != &other)
 	{
+		User::operator=(std::move(other));
 		free();
 		moveFrom(std::move(other));
 	}
