@@ -297,8 +297,15 @@ void Player::levelUpSuperHero(const MyString& nickname)
 void Player::changePositionOfSuperHero(size_t index)
 {
 	isIndexValid(index);
-	//TODO:
-	superHeroes[index]->changePosition();
+	if (!superHeroes[index]->getAttackInfo())
+	{
+		superHeroes[index]->changePosition();
+	}
+	else
+	{
+		//TODO:
+		throw std::exception("This superhero has just attacked! You cannot change its position right now!");
+	}
 }
 
 void Player::changePositionOfSuperHero(const MyString& nickname)

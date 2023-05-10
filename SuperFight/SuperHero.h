@@ -29,6 +29,7 @@ class SuperHero
 	uint8_t xp = 0;
 	uint8_t powerLevel = 0;
 	uint8_t allowedPowerUpgrades = 1;
+	mutable bool hasAttacked = false;
 
 	static const unsigned xpNeededPerLevel[10];
 
@@ -52,6 +53,7 @@ public:
 	SuperHeroPosition getPosition() const noexcept;
 	uint8_t getPowerLevel() const noexcept;
 	uint8_t getLevel() const noexcept;
+	bool getAttackInfo() const noexcept;
 
 	void changePosition() noexcept;
 	void levelUp();

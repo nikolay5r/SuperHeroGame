@@ -120,6 +120,8 @@ void SuperHero::levelUp()
 
 int SuperHero::fight(const SuperHero& other) const noexcept
 {
+	hasAttacked = true;
+
 	if ((powerType == SuperHeroPowerType::Fire && other.powerType == SuperHeroPowerType::Water) ||
 		(powerType == SuperHeroPowerType::Water && other.powerType == SuperHeroPowerType::Earth) ||
 		(powerType == SuperHeroPowerType::Earth && other.powerType == SuperHeroPowerType::Fire))
@@ -168,4 +170,9 @@ uint8_t SuperHero::getPowerLevel() const noexcept
 uint8_t SuperHero::getLevel() const noexcept
 {
 	return level;
+}
+
+bool SuperHero::getAttackInfo() const noexcept
+{
+	return hasAttacked;
 }
