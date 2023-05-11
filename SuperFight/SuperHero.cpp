@@ -37,12 +37,15 @@ void SuperHero::setNickname(const MyString& nickname)
 
 void SuperHero::setPrice() noexcept
 {
-	price = constants::INITIAL_PRICE_OF_SUPERHERO * level * powerLevel * 1.1 / 2;
+	price = constants::INITIAL_PRICE_OF_SUPERHERO * level * (powerLevel + 1) * 1.1 / 2;
 }
 
 void SuperHero::setPower(unsigned long long power)
 {
-	validation::isPowerValid(power);
+	if ((level == 1 && powerLevel == 0 && power > constants::MAX_POWER_ON_FIRST_LEVEL) || power < constants::MIN_POWER)
+	{
+		throw std::invalid_argument("Invalid power!");
+	}
 	this->power = power;
 }
 
