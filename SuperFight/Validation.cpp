@@ -139,8 +139,8 @@ void validation::isNicknameValid(const MyString& nickname) // between 3 and 16 c
 
 void validation::isPowerValid(unsigned long long power)
 {
-	if (power < constants::MIN_POWER || power > constants::MAX_POWER)
+	if (power < constants::MIN_POWER)
 	{
-		throw std::invalid_argument("Power should be between 5 and 50!");
+		throw std::invalid_argument("Invalid power! The power is too little!");
 	}
 }

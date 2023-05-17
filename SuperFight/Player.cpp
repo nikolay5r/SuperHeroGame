@@ -54,10 +54,12 @@ void Player::free()
 			if (superHeroes[i] != nullptr)
 			{
 				delete superHeroes[i];
+				superHeroes[i] = nullptr;
 			}
 		}
 
 		delete[] superHeroes;
+		superHeroes = nullptr;
 		capacity = 0;
 		numberOfSuperHeroes = 0;
 	}
@@ -75,7 +77,6 @@ void Player::resize(size_t newCapacity)
 	}
 
 	delete[] superHeroes;
-
 	superHeroes = newSuperHeroes;
 }
 
@@ -251,7 +252,7 @@ void Player::powerUpSuperHero(size_t index)
 {
 	isIndexValid(index);
 
-	unsigned price = constants::INITIAL_PRICE_OF_POWER_UP * superHeroes[index]->getPowerLevel() * superHeroes[index]->getLevel() / 2;
+	unsigned price = constants::INITIAL_PRICE_OF_POWER_UP * (superHeroes[index]->getPowerLevel() + 1) * superHeroes[index]->getLevel() / 2;
 
 	if (coins >= price)
 	{

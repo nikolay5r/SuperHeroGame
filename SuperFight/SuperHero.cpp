@@ -37,7 +37,7 @@ void SuperHero::setNickname(const MyString& nickname)
 
 void SuperHero::setPrice() noexcept
 {
-	price = constants::INITIAL_PRICE_OF_SUPERHERO * level * (powerLevel + 1) * 1.1 / 2;
+	price = constants::INITIAL_PRICE_OF_SUPERHERO * level * (powerLevel + 1) * 0.55;
 }
 
 void SuperHero::setPower(unsigned long long power)
