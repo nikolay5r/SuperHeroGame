@@ -10,7 +10,6 @@ enum class UserRole
 
 class User
 {
-protected:
 	MyString firstName = "";
 	MyString lastName = "";
 	MyString username = "";
@@ -18,7 +17,7 @@ protected:
 	MyString password = "";
 	MyString fullName = "";
 	UserRole role = UserRole::Admin;
-
+protected:
 	void setFirstName(const MyString& firstName);
 	void setLastName(const MyString& lastName);
 	void setEmail(const MyString& email);
