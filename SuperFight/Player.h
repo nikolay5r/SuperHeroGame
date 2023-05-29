@@ -4,7 +4,7 @@
 #include "MyString.h"
 #include "Constants.h"
 
-class Player : User
+class Player : public User
 {
 	SuperHero** superHeroes = nullptr;
 	size_t capacity = 2;
