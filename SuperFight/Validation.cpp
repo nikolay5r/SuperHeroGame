@@ -2,6 +2,7 @@
 #include "HelperFunctions.h"
 #include "MyString.h"
 #include "Constants.h"
+#include "Regex_Error.h"
 
 #include <string>
 #include <stdexcept>
@@ -10,7 +11,7 @@ void validation::isNameValid(const MyString& name)
 {
 	if (helper::isLower(name[0]))
 	{
-		throw std::runtime_error("Name doesn't begin with capital letter");
+		throw Regex_Error("Name doesn't begin with capital letter");
 	}
 
 	size_t lastNameLength = name.length();
@@ -19,7 +20,7 @@ void validation::isNameValid(const MyString& name)
 	{
 		if (helper::isUpper(name[i]))
 		{
-			throw std::runtime_error("There is a capital letter in the middle of the Name!");
+			throw Regex_Error("There is a capital letter in the middle of the Name!");
 		}
 	}
 }
@@ -39,7 +40,7 @@ void validation::isUsernameValid(const MyString& username) //at least 3 characte
 	{
 		if (invalidUsernameCharacters.find(username[i]) != std::string::npos)
 		{
-			throw std::runtime_error("Invalid characters found in Username!");
+			throw Regex_Error("Invalid characters found in Username!");
 		}
 	}
 }
@@ -52,14 +53,14 @@ void validation::isEmailValid(const MyString& email) //email@abv.bg
 
 	if (index == std::string::npos)
 	{
-		throw std::runtime_error("Invalid Email! Missing '@' in your Email!");
+		throw Regex_Error("Invalid Email! Missing '@' in your Email!");
 	}
 
 	MyString lastPart = email.substr(index + 1);
 
 	if (lastPart.length() == 0)
 	{
-		throw std::runtime_error("Invalid Email! Missing the address!");
+		throw Regex_Error("Invalid Email! Missing the address!");
 	}
 
 	index = lastPart.find('.');
@@ -68,7 +69,7 @@ void validation::isEmailValid(const MyString& email) //email@abv.bg
 
 	if (lastPart.length() == 0 || index == std::string::npos)
 	{
-		throw std::runtime_error("Invalid Email! There is no such address!");
+		throw Regex_Error("Invalid Email! There is no such address!");
 	}
 }
 
@@ -98,17 +99,17 @@ void validation::isPasswordValid(const MyString& password) //at least one capita
 
 	if (countNumbers == 0)
 	{
-		throw std::runtime_error("You should have at least one number in your Password!");
+		throw Regex_Error("You should have at least one number in your Password!");
 	}
 
 	if (countCapitalLetters == 0)
 	{
-		throw std::runtime_error("You should have at least one capital letter in your Password!");
+		throw Regex_Error("You should have at least one capital letter in your Password!");
 	}
 
 	if (countLowerLetters == 0)
 	{
-		throw std::runtime_error("You should have at least one lower letter in your Password!");
+		throw Regex_Error("You should have at least one lower letter in your Password!");
 	}
 }
 
@@ -125,14 +126,14 @@ void validation::isNicknameValid(const MyString& nickname) // between 3 and 16 c
 
 	if (!helper::isUpper(nickname[0]))
 	{
-		throw std::runtime_error("First character of Nickname must be a capital letter!");
+		throw Regex_Error("First character of Nickname must be a capital letter!");
 	}
 
 	for (size_t i = 1; i < nicknameLength; i++)
 	{
 		if (invalidNicknameCharacters.find(nickname[i]) == std::string::npos)
 		{
-			throw std::runtime_error("Invalid characters found in Nickname!");
+			throw Regex_Error("Invalid characters found in Nickname!");
 		}
 	}
 }
