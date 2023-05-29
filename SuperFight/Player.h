@@ -3,32 +3,21 @@
 #include "SuperHero.h"
 #include "MyString.h"
 #include "Constants.h"
+#include "MyVector.hpp"
 
 class Player : public User
 {
-	SuperHero** superHeroes = nullptr;
-	size_t capacity = 2;
-	size_t numberOfSuperHeroes = 0;
+	MyVector<SuperHero> superHeroes;
 	unsigned coins = constants::COINS_TO_START;
-
-	void copyFrom(const Player& other);
-	void moveFrom(Player&& other) noexcept;
-	void free();
-	void resize(size_t newCapacity);
 
 	size_t nicknameToIndex(const MyString& nickname) const noexcept;
 
-	bool isIndexValid(size_t index) const;
+	bool attestIndex(size_t index) const;
 
 public:
 
 	Player(const MyString& firstName, const MyString& lastName, const MyString& username, const MyString& email, const MyString& password);
 	Player(const User& user);
-	Player(const Player& other);
-	Player(Player&& other) noexcept;
-
-	Player& operator=(const Player& other);
-	Player& operator=(Player&& other) noexcept;
 
 	void addSuperHero(const SuperHero& superHero);
 	void removeSuperHero(const MyString& nickname);
@@ -50,7 +39,5 @@ public:
 
 	void changePositionOfSuperHero(size_t index);
 	void changePositionOfSuperHero(const MyString& nickname);
-
-	~Player();
 };
 
