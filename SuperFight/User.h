@@ -16,7 +16,8 @@ class User
 	MyString email;
 	MyString password;
 	MyString fullName;
-	UserRole role = UserRole::Admin;
+	UserRole role;
+
 protected:
 	void setFirstName(const MyString& firstName);
 	void setLastName(const MyString& lastName);
@@ -25,7 +26,6 @@ protected:
 	void setUsername(const MyString& username);
 	void setFullName();
 public:
-	User(const MyString& firstName, const MyString& lastName, const MyString& username, const MyString& email, const MyString& password);
 	User(const MyString& firstName, const MyString& lastName, const MyString& username, const MyString& email, const MyString& password, UserRole role);
 
 	const MyString& getPassword() const noexcept;
