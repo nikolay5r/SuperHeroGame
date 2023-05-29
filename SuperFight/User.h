@@ -10,12 +10,12 @@ enum class UserRole
 
 class User
 {
-	MyString firstName = "";
-	MyString lastName = "";
-	MyString username = "";
-	MyString email = "";
-	MyString password = "";
-	MyString fullName = "";
+	MyString firstName;
+	MyString lastName;
+	MyString username;
+	MyString email;
+	MyString password;
+	MyString fullName;
 	UserRole role = UserRole::Admin;
 protected:
 	void setFirstName(const MyString& firstName);

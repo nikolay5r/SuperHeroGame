@@ -6,7 +6,7 @@ class Regex_Error
 	MyString message = "";
 public:
 	explicit Regex_Error(const char* message);
-	explicit Regex_Error(const MyString message);
+	explicit Regex_Error(const MyString& message);
 
 	virtual ~Regex_Error() noexcept;
 

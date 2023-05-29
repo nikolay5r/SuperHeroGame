@@ -3,6 +3,9 @@
 
 namespace constants
 {
+	const short RESIZE_COEF = 2;
+	const short INITIAL_CAPACITY = 4;
+
 	const size_t MAX_PASSWORD_LENGTH = 16;
 	const size_t MIN_USERNAME_LENGTH = 3;
 	const size_t MIN_PASSWORD_LENGTH = 5;
