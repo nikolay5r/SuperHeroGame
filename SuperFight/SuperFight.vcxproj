@@ -140,6 +140,7 @@
     <ClInclude Include="Constants.h" />
     <ClInclude Include="HelperFunctions.h" />
     <ClInclude Include="MyString.h" />
+    <ClInclude Include="MyVector.hpp" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Regex_Error.h" />
     <ClInclude Include="SuperHero.h" />
