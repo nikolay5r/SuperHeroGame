@@ -20,6 +20,10 @@ public:
 	Player(const User& user);
 	Player(User&& user);
 
+
+	Player& operator=(const Player& other);
+	Player& operator=(Player&& other) noexcept;
+
 	void addSuperHero(const SuperHero& superHero);
 	void removeSuperHero(const MyString& nickname);
 	void removeSuperHero(size_t index);
