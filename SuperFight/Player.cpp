@@ -39,6 +39,16 @@ void Player::addSuperHero(const SuperHero& superHero)
 	superHeroes.push_back(superHero);
 }
 
+void Player::addSuperHero(SuperHero&& superHero)
+{
+	superHeroes.push_back(std::move(superHero));
+}
+
+void Player::addSuperHero(const MyString& firstName, const MyString& lastName, const MyString& nickname, unsigned power, SuperHeroPowerType powerType)
+{
+	superHeroes.push_back(SuperHero(firstName, lastName, nickname, power, powerType));
+}
+
 void Player::removeSuperHero(const MyString& nickname)
 {
 	size_t index = nicknameToIndex(nickname);

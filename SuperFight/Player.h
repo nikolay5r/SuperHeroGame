@@ -21,6 +21,8 @@ public:
 	Player(User&& user);
 
 	void addSuperHero(const SuperHero& superHero);
+	void addSuperHero(SuperHero&& superHero);
+	void addSuperHero(const MyString& firstName, const MyString& lastName, const MyString& nickname, unsigned power, SuperHeroPowerType powerType);
 	void removeSuperHero(const MyString& nickname);
 	void removeSuperHero(size_t index);
 
