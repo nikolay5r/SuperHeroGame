@@ -2,7 +2,7 @@
 
 
 Regex_Error::Regex_Error(const char* message) : message(message) {}
-Regex_Error::Regex_Error(const MyString message) : message(message) {}
+Regex_Error::Regex_Error(const MyString& message) : message(message) {}
 
 Regex_Error::~Regex_Error() noexcept {}
 
