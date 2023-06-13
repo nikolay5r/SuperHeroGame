@@ -8,3 +8,8 @@ Admin::Admin(const MyString& firstName, const MyString& lastName, const MyString
 Admin::Admin(const User& user) : User(user) {}
 
 Admin::Admin(User&& user) : User(std::move(user)) {}
+
+void Admin::print() const
+{
+	std::cout << username << " | " << fullName << " | " << email;
+}

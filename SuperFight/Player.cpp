@@ -219,3 +219,8 @@ void Player::changePositionOfSuperHero(const MyString& nickname)
 	size_t index = nicknameToIndex(nickname);
 	changePositionOfSuperHero(index);
 }
+
+void Player::print() const
+{
+	std::cout << username << " | " << fullName << " | " << email << " | " << superHeroes.size() << " | " << coins;
+}
