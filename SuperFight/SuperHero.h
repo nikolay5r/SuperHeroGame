@@ -41,6 +41,8 @@ class SuperHero
 	void setPower(unsigned long long power);
 
 public:
+	SuperHero() = default;
+
 	SuperHero(const MyString& firstName, const MyString& lastName, const MyString& nickname, unsigned power, SuperHeroPowerType powerType);
 	unsigned getPower() const noexcept;
 	unsigned getPrice() const noexcept;

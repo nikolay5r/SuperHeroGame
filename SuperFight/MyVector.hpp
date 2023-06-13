@@ -52,6 +52,11 @@ public:
 template <typename T>
 void MyVector<T>::resize(size_t capacity)
 {
+	if (cap == capacity)
+	{
+		return;
+	}
+
 	this->cap = capacity;
 	T* newData = new T[capacity];
 
@@ -65,7 +70,7 @@ void MyVector<T>::resize(size_t capacity)
 }
 
 template <typename T>
-void MyVector<T>::moveFrom(MyVector&& other) noexcept
+void MyVector<T>::moveFrom(MyVector<T>&& other) noexcept
 {
 	count = other.count;
 	cap = other.cap;
@@ -76,7 +81,7 @@ void MyVector<T>::moveFrom(MyVector&& other) noexcept
 }
 
 template <typename T>
-void MyVector<T>::copyFrom(const MyVector& other)
+void MyVector<T>::copyFrom(const MyVector<T>& other)
 {
 	count = other.count;
 	cap = other.cap;
@@ -140,7 +145,6 @@ MyVector<T>& MyVector<T>::operator=(MyVector<T>&& other)
 template <typename T>
 MyVector<T>::MyVector(size_t capacity) : cap(capacity)
 {
-	count = capacity;
 	data = new T[capacity];
 }
 
