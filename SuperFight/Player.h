@@ -4,6 +4,7 @@
 #include "MyString.h"
 #include "Constants.h"
 #include "MyVector.hpp"
+#include "UserFactory.h"
 
 class Player : public User
 {
@@ -42,5 +43,9 @@ public:
 
 	void changePositionOfSuperHero(size_t index);
 	void changePositionOfSuperHero(const MyString& nickname);
+
+	void print() const override;
+
+	friend class PlayerFactory;
 };
 

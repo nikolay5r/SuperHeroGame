@@ -10,6 +10,7 @@ enum class UserRole
 
 class User
 {
+protected:
 	MyString firstName;
 	MyString lastName;
 	MyString username;
@@ -18,7 +19,6 @@ class User
 	MyString fullName;
 	UserRole role;
 
-protected:
 	void setFirstName(const MyString& firstName);
 	void setLastName(const MyString& lastName);
 	void setEmail(const MyString& email);
