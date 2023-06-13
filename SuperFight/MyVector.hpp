@@ -5,7 +5,7 @@
 template <typename T>
 class MyVector
 {
-	T* data = nullptr;
+	void* data = nullptr;
 	size_t count = 0;
 	size_t cap = 0;
 
@@ -30,10 +30,10 @@ public:
 
 	void push_back(const T& element);
 	void push_back(T&& element);
-	T pop_back();
+	T& pop_back();
 	void erase();
 	void clear();
-	T pop_at(size_t index);
+	T& pop_at(size_t index);
 	void push_at(const T& element, size_t index);
 	void push_at(T&& element, size_t index);
 
@@ -58,14 +58,15 @@ void MyVector<T>::resize(size_t capacity)
 	}
 
 	this->cap = capacity;
-	T* newData = new T[capacity];
+	T* newData = static_cast<T*>(data);
+	T* oldData = static_cast<T*>(data);
 
 	for (size_t i = 0; i < count; i++)
 	{
-		newData[i] = std::move(data[i]);
+		newData[i] = std::move(oldData[i]);
 	}
 
-	delete[] data;
+	delete[] oldData;
 	data = newData;
 }
 
@@ -85,11 +86,12 @@ void MyVector<T>::copyFrom(const MyVector<T>& other)
 {
 	count = other.count;
 	cap = other.cap;
-	data = new T[cap];
+	T* myData = static_cast<T*>(data);
+	T* otherData = static_cast<T*>(other.data);
 
 	for (int i = 0; i < count; i++)
 	{
-		data[i] = other.data[i];
+		myData[i] = otherData[i];
 	}
 }
 
@@ -98,7 +100,10 @@ void MyVector<T>::free()
 {
 	if (data)
 	{
-		delete[] data;
+		count = 0;
+		cap = 0;
+		T* myData = static_cast<T*>(data);
+		delete[] myData;
 		data = nullptr;
 	}
 }
@@ -145,16 +150,18 @@ MyVector<T>& MyVector<T>::operator=(MyVector<T>&& other)
 template <typename T>
 MyVector<T>::MyVector(size_t capacity) : cap(capacity)
 {
-	data = new T[capacity];
+	data = malloc(capacity * sizeof(T));
 }
 
 template <typename T>
 MyVector<T>::MyVector(size_t capacity, const T& defaultValue) : MyVector(capacity)
 {
 	count = capacity;
+
+	T* myData = static_cast<T*>(data);
 	for (size_t i = 0; i < count; i++)
 	{
-		data[i] = defaultValue;
+		myData[i] = defaultValue;
 	}
 }
 
@@ -162,18 +169,22 @@ template <typename T>
 void MyVector<T>::push_back(const T& element)
 {
 	upsizeIfNeeded();
-	data[count++] = element;
+
+	T* myData = static_cast<T*>(data);
+	myData[count++] = element;
 }
 
 template <typename T>
 void MyVector<T>::push_back(T&& element)
 {
 	upsizeIfNeeded();
-	data[count++] = std::move(element);
+
+	T* myData = static_cast<T*>(data);
+	myData[count++] = std::move(element);
 }
 
 template <typename T>
-T MyVector<T>::pop_back()
+T& MyVector<T>::pop_back()
 {
 	if (isEmpty())
 	{
@@ -182,7 +193,8 @@ T MyVector<T>::pop_back()
 
 	downsizeIfNeeded();
 
-	return data[--count];
+	T* myData = static_cast<T*>(data);
+	return myData[--count];
 }
 
 template <typename T>
@@ -200,7 +212,7 @@ void MyVector<T>::clear()
 }
 
 template <typename T>
-T MyVector<T>::pop_at(size_t index)
+T& MyVector<T>::pop_at(size_t index)
 {
 	if (index < count)
 	{
@@ -212,14 +224,15 @@ T MyVector<T>::pop_at(size_t index)
 		throw std::logic_error("Vector is empty!");
 	}
 
+	T* myData = static_cast<T*>(data);
 	for (size_t i = index; i < count - 1; i++)
 	{
-		T temp = data[i];
-		data[i] = data[i + 1];
-		data[i + 1] = temp;
+		T temp = myData[i];
+		myData[i] = myData[i + 1];
+		myData[i + 1] = temp;
 	}
 
-	return data[--count];
+	return myData[--count];
 }
 
 template <typename T>
@@ -237,13 +250,16 @@ void MyVector<T>::push_at(const T& element, size_t index)
 
 	upsizeIfNeeded();
 
+
+	T* myData = static_cast<T*>(data);
 	for (size_t i = count; i > index; i--)
 	{
-		T temp = data[i];
-		data[i] = data[i - 1];
-		data[i - 1] = temp;
+		T temp = myData[i];
+		myData[i] = myData[i - 1];
+		myData[i - 1] = temp;
 	}
 
+	count++;
 	data[index] = element;
 }
 
@@ -262,6 +278,8 @@ void MyVector<T>::push_at(T&& element, size_t index)
 
 	upsizeIfNeeded();
 
+
+	T* myData = static_cast<T*>(data);
 	for (size_t i = count; i > index; i--)
 	{
 		T temp = data[i];
@@ -269,6 +287,7 @@ void MyVector<T>::push_at(T&& element, size_t index)
 		data[i - 1] = temp;
 	}
 
+	count++;
 	data[index] = std::move(element);
 }
 
@@ -288,19 +307,21 @@ size_t MyVector<T>::capacity() const
 template <typename T>
 bool MyVector<T>::isEmpty() const
 {
-	return cap == 0;
+	return count == 0;
 }
 
 template <typename T>
 T& MyVector<T>::operator[](size_t index)
 {
-	return data[index];
+	T* myData = static_cast<T*>(data);
+	return myData[index];
 }
 
 template <typename T>
 T MyVector<T>::operator[](size_t index) const
 {
-	return data[index];
+	T* myData = static_cast<T*>(data);
+	return myData[index];
 }
 
 template <typename T>
@@ -330,9 +351,10 @@ void MyVector<T>::downsizeIfNeeded()
 template <typename T>
 bool MyVector<T>::contains(const T& element) const
 {
+	T* myData = static_cast<T*>(data);
 	for (size_t i = 0; i < count; i++)
 	{
-		if (data[i] == element)
+		if (myData[i] == element)
 		{
 			return true;
 		}
