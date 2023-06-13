@@ -21,10 +21,10 @@ class SuperHero
 	MyString lastName;
 	MyString fullName;
 	MyString nickname;
-	unsigned power;
-	SuperHeroPowerType powerType;
+	unsigned power = 0;
+	SuperHeroPowerType powerType = SuperHeroPowerType::Air;
 	SuperHeroPosition position = SuperHeroPosition::Attack;
-	unsigned price;
+	unsigned price = 0;
 	uint8_t level = 1;
 	uint8_t xp = 0;
 	uint8_t powerLevel = 0;
@@ -41,7 +41,6 @@ class SuperHero
 	void setPower(unsigned long long power);
 
 public:
-
 	SuperHero(const MyString& firstName, const MyString& lastName, const MyString& nickname, unsigned power, SuperHeroPowerType powerType);
 	unsigned getPower() const noexcept;
 	unsigned getPrice() const noexcept;
