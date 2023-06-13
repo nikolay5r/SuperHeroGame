@@ -35,5 +35,9 @@ public:
 	const MyString& getFirstName() const noexcept;
 	const MyString& getLastName() const noexcept;
 	UserRole getRole() const noexcept;
+
+	virtual void print() const = 0;
+
+	virtual ~User() = default;
 };
 
