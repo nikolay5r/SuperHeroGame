@@ -13,11 +13,22 @@ public:
 	static UserFactory* getInstance();
 	static void freeInstance();
 
-	Player* createPlayerFromBinary(std::ifstream&) const;
-	Admin* createAdminFromBinary(std::ifstream&) const;
-	Player* createPlayerFromConsole(std::istream&) const;
-	Admin* createAdminFromConsole(std::istream&) const;
+	virtual User* readFromBinary(std::ifstream&) const = 0;
+	virtual User* createAdminFromConsole() const = 0;
 
-	~UserFactory();
+	virtual ~UserFactory();
 };
 
+class PlayerFactory : public UserFactory
+{
+public:
+	User* readFromBinary(std::ifstream&) const;
+	User* createAdminFromConsole() const;
+};
+
+class AdminFactory : public UserFactory
+{
+public:
+	User* readFromBinary(std::ifstream&) const override;
+	User* createAdminFromConsole() const override;
+};
