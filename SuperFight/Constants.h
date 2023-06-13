@@ -21,4 +21,6 @@ namespace constants
 	const unsigned INITIAL_PRICE_OF_POWER_UP = 5;
 	const unsigned INITIAL_PRICE_OF_LEVEL_UP = 7;
 	const unsigned INITIAL_PRICE_OF_SUPERHERO = 30;
+
+	const unsigned MAX_CAPACITY_OF_PLAYERS_TO_LOAD = 50;
 }

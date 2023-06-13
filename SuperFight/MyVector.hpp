@@ -1,4 +1,5 @@
 #pragma once
+#include "Constants.h"
 #include <iostream>
 
 template <typename T>
@@ -9,8 +10,8 @@ class MyVector
 	size_t cap = 0;
 
 	void resize(size_t capacity);
-	void moveFrom(MyVector&& other) noexcept;
-	void copyFrom(const MyVector& other);
+	void copyFrom(const MyVector<T>& other);
+	void moveFrom(MyVector<T>&& other) noexcept;
 	void free();
 
 	void upsizeIfNeeded();
@@ -21,11 +22,11 @@ public:
 	MyVector();
 	explicit MyVector(size_t capacity);
 	MyVector(size_t capacity, const T& defaultValue);
-	MyVector(const MyVector& other);
-	MyVector(MyVector&& other) noexcept;
+	MyVector(const MyVector<T>& other);
+	MyVector(MyVector<T>&& other) noexcept;
 
-	MyVector& operator=(const MyVector& other);
-	MyVector& operator=(MyVector&& other);
+	MyVector<T>& operator=(const MyVector<T>& other);
+	MyVector<T>& operator=(MyVector<T>&& other);
 
 	void push_back(const T& element);
 	void push_back(T&& element);
@@ -47,9 +48,6 @@ public:
 
 	~MyVector();
 };
-
-static const int INITIAL_CAPACITY = 4;
-static const int RESIZE_COEF = 2;
 
 template <typename T>
 void MyVector<T>::resize(size_t capacity)
@@ -101,7 +99,7 @@ void MyVector<T>::free()
 }
 
 template <typename T>
-MyVector<T>::MyVector() : MyVector(INITIAL_CAPACITY) {}
+MyVector<T>::MyVector() : MyVector(constants::INITIAL_CAPACITY) {}
 
 template <typename T>
 MyVector<T>::MyVector(const MyVector<T>& other)
@@ -187,7 +185,7 @@ template <typename T>
 void MyVector<T>::erase()
 {
 	count = 0;
-	cap = INITIAL_CAPACITY;
+	cap = constants::INITIAL_CAPACITY;
 	resize(cap);
 }
 
@@ -312,16 +310,16 @@ void MyVector<T>::upsizeIfNeeded()
 {
 	if (count == cap)
 	{
-		resize(cap * RESIZE_COEF);
+		resize(cap * constants::RESIZE_COEF);
 	}
 }
 
 template <typename T>
 void MyVector<T>::downsizeIfNeeded()
 {
-	if (count * RESIZE_COEF * RESIZE_COEF <= cap)
+	if (count * constants::RESIZE_COEF * constants::RESIZE_COEF <= cap)
 	{
-		resize(cap / RESIZE_COEF);
+		resize(cap / constants::RESIZE_COEF);
 	}
 }
 
