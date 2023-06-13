@@ -27,18 +27,16 @@ void validation::isNameValid(const MyString& name)
 
 void validation::isUsernameValid(const MyString& username) //at least 3 characters
 {
-	static MyString invalidUsernameCharacters = ",.?/<>:;\"'({[]})!@#$%^ &*\\|+=";
 	size_t usernameLength = username.length();
 
-	if (usernameLength < constants::MIN_USERNAME_LENGTH)
+	if (usernameLength > constants::MAX_USERNAME_LENGTH)
 	{
-		//TODO:
-		throw std::length_error("Username should be at least 3 characters!");
+		throw std::length_error("Username should be no longer than 16 characters!");
 	}
 
 	for (size_t i = 0; i < usernameLength; i++)
 	{
-		if (invalidUsernameCharacters.find(username[i]) != std::string::npos)
+		if (username[i] < 'a' || username[i] > 'z')
 		{
 			throw Regex_Error("Invalid characters found in Username!");
 		}
