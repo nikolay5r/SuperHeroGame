@@ -6,29 +6,33 @@
 
 class UserFactory
 {
-	static UserFactory* instance;
-	UserFactory();
-
 public:
-	static UserFactory* getInstance();
-	static void freeInstance();
-
 	virtual User* readFromBinary(std::ifstream&) const = 0;
 	virtual User* createFromConsole() const = 0;
 
-	virtual ~UserFactory();
+	virtual ~UserFactory() = default;
 };
 
 class PlayerFactory : public UserFactory
 {
 public:
-	User* readFromBinary(std::ifstream&) const;
-	User* createFromConsole() const;
+	PlayerFactory() = default;
+
+	PlayerFactory(const PlayerFactory&) = delete;
+	PlayerFactory& operator=(const PlayerFactory&) = delete;
+
+	User* readFromBinary(std::ifstream&) const override;
+	User* createFromConsole() const override;
 };
 
 class AdminFactory : public UserFactory
 {
 public:
+	AdminFactory() = default;
+
+	AdminFactory(const AdminFactory&) = delete;
+	AdminFactory& operator=(const AdminFactory&) = delete;
+
 	User* readFromBinary(std::ifstream&) const override;
 	User* createFromConsole() const override;
 };

@@ -1,17 +1,6 @@
 #include "UserFactory.h"
 #include "Validation.h"
 
-UserFactory* UserFactory::getInstance()
-{
-	UserFactory::instance = new UserFactory();
-	return UserFactory::instance;
-}
-
-void UserFactory::freeInstance()
-{
-	delete UserFactory::instance;
-}
-
 User* PlayerFactory::readFromBinary(std::ifstream& ifs) const
 {
 	if (ifs.is_open())
@@ -90,9 +79,4 @@ User* AdminFactory::createFromConsole() const
 	validation::isEmailValid(email);
 
 	return new Admin(firstName, lastName, username, email, password);
-}
-
-UserFactory::~UserFactory()
-{
-	delete UserFactory::instance;
 }
