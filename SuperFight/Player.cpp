@@ -7,11 +7,11 @@
 #include <fstream>
 #include "File_Error.h"
 
-static unsigned findPlayerIndexInFileThroughUsername(const MyString& usernameToFind)
+static int findPlayerIndexInFileThroughUsername(const MyString& usernameToFind)
 {
-	std::ifstream usernamesFile("playerUsernames.bin", std::ios::binary);
+	std::ifstream usernamesFile(constants::PLAYERS_USERNAMES_FILE_PATH.c_str(), std::ios::binary);
 
-	unsigned indexInPlayersFile = 0;
+	int indexInPlayersFile = 0;
 	while (!usernamesFile.eof())
 	{
 		size_t length = 0;
@@ -36,7 +36,7 @@ static unsigned findPlayerIndexInFileThroughUsername(const MyString& usernameToF
 	}
 
 	usernamesFile.close();
-	throw std::invalid_argument("Username is not valid exists!");
+	return -1;
 }
 
 static size_t getFileSize(std::ifstream& file)
@@ -349,7 +349,12 @@ User* PlayerFactory::readFromBinaryByUsername(std::ifstream& file, const MyStrin
 		throw File_Error("File couldn't open!");
 	}
 
-	unsigned index = findPlayerIndexInFileThroughUsername(usernameToFind);
+	int index = findPlayerIndexInFileThroughUsername(usernameToFind);
+
+	if (index == -1)
+	{
+		throw std::invalid_argument("Username is not valid!");
+	}
 
 	return readFromBinaryByIndex(file, index);
 }
@@ -391,6 +396,11 @@ User* PlayerFactory::createFromConsole() const
 	std::cout << "Enter email of the player: ";
 	std::cin >> email;
 	validation::isEmailValid(email);
+
+	if (findPlayerIndexInFileThroughUsername(username) != -1)
+	{
+		throw std::invalid_argument("User with that username already exists!");
+	}
 
 	return new Player(firstName, lastName, username, email, password);
 }
