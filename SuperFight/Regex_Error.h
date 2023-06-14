@@ -8,7 +8,7 @@ public:
 	explicit Regex_Error(const char* message);
 	explicit Regex_Error(const MyString& message);
 
-	virtual ~Regex_Error() noexcept;
+	virtual ~Regex_Error() noexcept = default;
 
 	virtual const char* what() const noexcept;
 };

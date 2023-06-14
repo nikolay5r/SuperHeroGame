@@ -128,6 +128,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Admin.cpp" />
+    <ClCompile Include="File_Error.cpp" />
     <ClCompile Include="HelperFunctions.cpp" />
     <ClCompile Include="MyString.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -141,6 +142,7 @@
   <ItemGroup>
     <ClInclude Include="Admin.h" />
     <ClInclude Include="Constants.h" />
+    <ClInclude Include="File_Error.h" />
     <ClInclude Include="HelperFunctions.h" />
     <ClInclude Include="MyString.h" />
     <ClInclude Include="MyVector.hpp" />
