@@ -26,6 +26,7 @@ class PlayerSystem : public System
 	void logout();
 	void login();
 	void reg();
+	void showMarket();
 public:
 
 	static System* getInstance();

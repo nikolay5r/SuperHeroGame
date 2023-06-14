@@ -52,7 +52,7 @@ void PlayerSystem::logout()
 
 void PlayerSystem::login()
 {
-	std::ifstream file("players.bin", std::ios::binary);
+	std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::binary);
 
 	if (!file.is_open())
 	{
@@ -81,34 +81,30 @@ void PlayerSystem::login()
 	file.close();
 }
 
-void PlayerSystem::login()
+void PlayerSystem::reg()
 {
-	std::ifstream file("players.bin", std::ios::binary);
-
-	if (!file.is_open())
-	{
-		throw File_Error("File couldn't open!");
-	}
-
-	MyString temp;
-	std::cout << "Enter username: ";
-	std::cin >> temp;
-	validation::isUsernameValid(temp);
-
 	UserFactory* factory = PlayerFactory::getInstance();
-	User* user = factory->readFromBinaryByUsername(file, temp);
-	std::cout << "Enter password: ";
-	std::cin >> temp;
+	User* user = factory->createFromConsole();
+	currentUser = user;
+}
 
-	if (user->getPassword() != temp)
+void PlayerSystem::showMarket()
+{
+	std::ifstream file;
+
+	MyString buff = "";
+	if (buff == "")
 	{
-		delete user;
-		file.close();
-		return;
+		file.open(constants::MARKET_SUPERHEROES_FILE_PATH.c_str(), std::ios::in | std::ios::binary);
 	}
 
-	currentUser = user;
-	file.close();
+	for (size_t i = 0; i < 15; i++)
+	{
+		SuperHeroFactory* factory = SuperHeroFactory::getInstance();
+		SuperHero* superhero = factory->readFromBinary(file);
+		superhero->print();
+		delete superhero;
+	}
 }
 
 void PlayerSystem::run()
@@ -117,6 +113,7 @@ void PlayerSystem::run()
 	int n = -1;
 	MyString buff = "";
 
+	//TODO: try{...} catch(...){}
 	while (end)
 	{
 		if (currentUser)
@@ -138,7 +135,7 @@ void PlayerSystem::run()
 				logout();
 				break;
 			case 1:
-				//show players
+				showMarket();
 				break;
 			case 2:
 				//show market
@@ -165,7 +162,7 @@ void PlayerSystem::run()
 			}
 			else if (buff == "register")
 			{
-
+				reg();
 			}
 			else
 			{
