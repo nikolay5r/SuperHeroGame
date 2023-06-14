@@ -59,4 +59,24 @@ public:
 	int fight(const SuperHero& other) const noexcept;
 	void powerUp();
 	void gainXP() noexcept;
+
+	friend class SuperHeroFactory;
+};
+
+class SuperHeroFactory
+{
+	static SuperHeroFactory* instance;
+	SuperHeroFactory() = default;
+public:
+	static SuperHeroFactory* getInstance();
+
+	SuperHeroFactory(const SuperHeroFactory&) = delete;
+	SuperHeroFactory& operator=(const SuperHeroFactory&) = delete;
+
+	SuperHero* readFromBinary(std::ifstream&) const;
+	void readFromBinary(std::ifstream&, const MyString& nickname) const;
+	void createFromConsole() const;
+
+	static void freeInstance();
+	virtual ~SuperHeroFactory();
 };

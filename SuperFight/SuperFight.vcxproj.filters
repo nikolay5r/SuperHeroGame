@@ -42,7 +42,7 @@
     <ClCompile Include="Admin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="UserFactory.cpp">
+    <ClCompile Include="System.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -77,7 +77,7 @@
     <ClInclude Include="Admin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UserFactory.h">
+    <ClInclude Include="System.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

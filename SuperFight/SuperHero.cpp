@@ -2,7 +2,7 @@
 #include "MyString.h"
 #include "Validation.h"
 #include "Constants.h"
-
+#include <fstream>
 #include <cstdlib>
 
 const unsigned SuperHero::xpNeededPerLevel[10] = { 3, 5, 10, 20, 30, 40, 50, 75, 90, 100 };
@@ -181,4 +181,113 @@ uint8_t SuperHero::getLevel() const noexcept
 bool SuperHero::getAttackInfo() const noexcept
 {
 	return hasAttacked;
+}
+
+/// 
+
+SuperHeroFactory* SuperHeroFactory::getInstance()
+{
+	if (!instance)
+	{
+		SuperHeroFactory::instance = new SuperHeroFactory();
+	}
+
+	return SuperHeroFactory::instance;
+}
+
+static SuperHeroPowerType fromNumberToPowerType(unsigned n)
+{
+	switch (n)
+	{
+	case 0:
+		return SuperHeroPowerType::Air;
+	case 1:
+		return SuperHeroPowerType::Water;
+	case 2:
+		return SuperHeroPowerType::Earth;
+	case 3:
+		return SuperHeroPowerType::Fire;
+	default:
+		//TODO: ERROR
+		break;
+	}
+}
+
+static SuperHeroPosition fromNumberToPostion(unsigned n)
+{
+	switch (n)
+	{
+	case 0:
+		return SuperHeroPosition::Attack;
+	case 1:
+		return SuperHeroPosition::Defense;
+	default:
+		//TODO: ERROR
+		break;
+	}
+}
+
+SuperHeroFactory* SuperHeroFactory::instance = nullptr;
+
+SuperHero* SuperHeroFactory::readFromBinary(std::ifstream& file) const
+{
+	if (!file.is_open())
+	{
+		//error
+		return nullptr;
+	}
+
+	size_t n;
+	file.read((char*)&n, sizeof(n));
+	char* firstName = new char[n + 1];
+	file.read(firstName, n + 1);
+
+	file.read((char*)&n, sizeof(n));
+	char* lastName = new char[n + 1];
+	file.read(lastName, n + 1);
+
+	file.read((char*)&n, sizeof(n));
+	char* nickname = new char[n + 1];
+	file.read(nickname, n + 1);
+
+	unsigned power = 0;
+	file.read((char*)&power, sizeof(power));
+	unsigned temp = 0;
+	file.read((char*)&temp, sizeof(temp));
+	SuperHeroPowerType type = static_cast<SuperHeroPowerType>(temp);
+
+	SuperHero* superhero = new SuperHero(firstName, lastName, nickname, power, type);
+
+	file.read((char*)&temp, sizeof(temp));
+	superhero->position = static_cast<SuperHeroPosition>(temp);
+
+	file.read((char*)&superhero->price, sizeof(superhero->price));
+	file.read((char*)&superhero->level, sizeof(superhero->level));
+	file.read((char*)&superhero->xp, sizeof(superhero->xp));
+	file.read((char*)&superhero->powerLevel, sizeof(superhero->powerLevel));
+	file.read((char*)&superhero->allowedPowerUpgrades, sizeof(superhero->allowedPowerUpgrades));
+
+	return superhero;
+}
+
+void SuperHeroFactory::readFromBinary(std::ifstream&, const MyString& nickname) const
+{
+	return;
+}
+
+void SuperHeroFactory::createFromConsole() const
+{
+	return;
+}
+
+void SuperHeroFactory::freeInstance()
+{
+	delete SuperHeroFactory::instance;
+	SuperHeroFactory::instance = nullptr;
+}
+
+SuperHeroFactory::~SuperHeroFactory()
+{
+	delete SuperHeroFactory::instance;
+	SuperHeroFactory::instance = nullptr;
 }
