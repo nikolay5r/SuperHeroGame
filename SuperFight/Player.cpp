@@ -6,6 +6,48 @@
 #include <stdexcept>
 #include <fstream>
 
+static unsigned findPlayerIndexInFileThroughUsername(const MyString& usernameToFind)
+{
+	std::ifstream usernamesFile("playerUsernames.bin", std::ios::binary);
+
+	unsigned indexInPlayersFile = 0;
+	while (!usernamesFile.eof())
+	{
+		size_t length = 0;
+		usernamesFile.read((char*)&length, sizeof(length));
+		char* username = new char[length + 1];
+		usernamesFile.read(username, length + 1);
+		usernamesFile.read((char*)&indexInPlayersFile, sizeof(indexInPlayersFile));
+
+		if (usernameToFind == username)
+		{
+			usernamesFile.close();
+			delete[] username;
+			return indexInPlayersFile;
+		}
+
+		delete[] username;
+
+		if (usernamesFile.eof())
+		{
+			break;
+		}
+	}
+
+	usernamesFile.close();
+	throw std::invalid_argument("Username is not valid exists!");
+}
+
+static size_t getFileSize(std::ifstream& file)
+{
+	size_t curr = file.tellg();
+	file.seekg(0, std::ios::end);
+	size_t size = file.tellg();
+	file.seekg(curr);
+
+	return size;
+}
+
 bool Player::attestIndex(size_t index) const
 {
 	if (index >= superHeroes.size())
@@ -274,15 +316,44 @@ User* PlayerFactory::readFromBinary(std::ifstream& file) const
 		player->addSuperHero(*superhero);
 		delete superhero;
 	}
+
+	return player;
 }
 
-User* PlayerFactory::readFromBinary(std::ifstream& file, const MyString& username) const
+User* PlayerFactory::readFromBinaryByIndex(std::ifstream& file, unsigned index) const
+{
+	if (!file.is_open())
+	{
+		//TODO: error
+		return nullptr;
+	}
+
+	unsigned fileIndex = file.tellg();
+
+	if (index < getFileSize(file))
+	{
+		//TODO: error
+		throw std::invalid_argument("Given index is invalid! Bigger than size of file!");
+	}
+
+	file.seekg(index);
+	User* user = readFromBinary(file);
+	file.seekg(fileIndex);
+
+	return user;
+}
+
+User* PlayerFactory::readFromBinaryByUsername(std::ifstream& file, const MyString& usernameToFind) const
 {
 	if (file.is_open())
 	{
 		//TODO: File error;
 		return nullptr;
 	}
+
+	unsigned index = findPlayerIndexInFileThroughUsername(usernameToFind);
+
+	return readFromBinaryByIndex(file, index);
 }
 
 UserFactory* PlayerFactory::getInstance()

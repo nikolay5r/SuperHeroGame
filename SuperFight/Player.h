@@ -57,7 +57,8 @@ public:
 	PlayerFactory(const PlayerFactory&) = delete;
 	PlayerFactory& operator=(const PlayerFactory&) = delete;
 
-	User* readFromBinary(std::ifstream&) const override;
-	User* readFromBinary(std::ifstream&, const MyString& username) const override;
+	User* readFromBinary(std::ifstream& file) const override;
+	User* readFromBinaryByIndex(std::ifstream& file, unsigned index) const override;
+	User* readFromBinaryByUsername(std::ifstream& file, const MyString& usernameToFind) const override;
 	User* createFromConsole() const override;
 };

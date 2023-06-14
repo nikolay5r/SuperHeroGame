@@ -24,7 +24,8 @@ public:
 	AdminFactory(const AdminFactory&) = delete;
 	AdminFactory& operator=(const AdminFactory&) = delete;
 
-	User* readFromBinary(std::ifstream&) const override { return nullptr; };
-	User* readFromBinary(std::ifstream&, const MyString& username) const override;
+	User* readFromBinary(std::ifstream& file) const override { return nullptr; };
+	User* readFromBinaryByIndex(std::ifstream& file, unsigned index) const override { return nullptr; };
+	User* readFromBinaryByUsername(std::ifstream& file, const MyString& usernameToFind) const override;
 	User* createFromConsole() const override;
 };

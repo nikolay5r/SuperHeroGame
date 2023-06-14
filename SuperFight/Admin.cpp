@@ -16,7 +16,7 @@ void Admin::print() const
 	std::cout << username << " | " << fullName << " | " << email;
 }
 
-User* AdminFactory::readFromBinary(std::ifstream& file, const MyString& username) const
+User* AdminFactory::readFromBinaryByUsername(std::ifstream& file, const MyString& username) const
 {
 	if (file.is_open())
 	{
