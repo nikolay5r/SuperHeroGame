@@ -44,6 +44,8 @@ public:
 	void changePositionOfSuperHero(const MyString& nickname);
 
 	void print() const override;
+	size_t getNumberOfSuperHeroes() const;
+	const MyVector<SuperHero>& getSuperHeroes() const;
 
 	friend class PlayerFactory;
 };
@@ -62,3 +64,5 @@ public:
 	User* readFromBinaryByUsername(std::ifstream& file, const MyString& usernameToFind) const override;
 	User* createFromConsole() const override;
 };
+
+void savePlayerToFile(const Player& player);

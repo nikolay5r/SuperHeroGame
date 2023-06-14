@@ -52,6 +52,8 @@ public:
 	SuperHeroPosition getPosition() const noexcept;
 	uint8_t getPowerLevel() const noexcept;
 	uint8_t getLevel() const noexcept;
+	uint8_t getXP() const noexcept;
+	uint8_t getAllowedPowerUpgrades() const noexcept;
 	bool getAttackInfo() const noexcept;
 
 	void changePosition() noexcept;
@@ -82,3 +84,5 @@ public:
 	static void freeInstance();
 	virtual ~SuperHeroFactory();
 };
+
+void saveSuperHeroToFile(std::ofstream& file, const SuperHero& superhero);

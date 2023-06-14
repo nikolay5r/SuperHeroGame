@@ -210,6 +210,16 @@ void SuperHero::print() const
 	std::cout << price << " coins | " << level << " level | " << powerLevel << " power level" << std::endl;
 }
 
+uint8_t SuperHero::getXP() const noexcept
+{
+	return xp;
+}
+
+uint8_t SuperHero::getAllowedPowerUpgrades() const noexcept
+{
+	return allowedPowerUpgrades;
+}
+
 /// 
 
 SuperHeroFactory* SuperHeroFactory::getInstance()
@@ -285,4 +295,48 @@ SuperHeroFactory::~SuperHeroFactory()
 {
 	delete SuperHeroFactory::instance;
 	SuperHeroFactory::instance = nullptr;
+}
+
+void saveSuperHeroToFile(std::ofstream& file, const SuperHero& superhero)
+{
+	if (!file.is_open())
+	{
+		throw File_Error("File couldn't open!");
+	}
+
+	size_t size = superhero.getFirstName().length();
+	file.write((const char*)&size, sizeof(size));
+	file.write(superhero.getFirstName().c_str(), sizeof(size) + 1);
+
+	size = superhero.getLastName().length();
+	file.write((const char*)&size, sizeof(size));
+	file.write(superhero.getLastName().c_str(), sizeof(size) + 1);
+
+	size = superhero.getNickname().length();
+	file.write((const char*)&size, sizeof(size));
+	file.write(superhero.getNickname().c_str(), sizeof(size) + 1);
+
+	unsigned p = superhero.getPower();
+	file.write((const char*)&p, sizeof(p));
+
+	SuperHeroPowerType type = superhero.getPowerType();
+	file.write((const char*)&type, sizeof(type));
+
+	SuperHeroPosition pos = superhero.getPosition();
+	file.write((const char*)&pos, sizeof(pos));
+
+	p = superhero.getPrice();
+	file.write((const char*)&p, sizeof(p));
+
+	uint8_t n = superhero.getLevel();
+	file.write((const char*)&n, sizeof(n));
+
+	n = superhero.getXP();
+	file.write((const char*)&n, sizeof(n));
+
+	n = superhero.getPowerLevel();
+	file.write((const char*)&n, sizeof(n));
+
+	n = superhero.getAllowedPowerUpgrades();
+	file.write((const char*)&n, sizeof(n));
 }

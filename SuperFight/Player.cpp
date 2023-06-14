@@ -267,7 +267,21 @@ void Player::changePositionOfSuperHero(const MyString& nickname)
 
 void Player::print() const
 {
-	std::cout << username << " | " << fullName << " | " << email << " | " << superHeroes.size() << " | " << coins << std::endl;
+	std::cout << username << " | " << coins << " coins | " << superHeroes.size();
+	for (size_t i = 0; i < superHeroes.size(); i++)
+	{
+		std::cout << superHeroes[i].getNickname();
+	}
+}
+
+size_t Player::getNumberOfSuperHeroes() const
+{
+	return superHeroes.size();
+}
+
+const MyVector<SuperHero>& Player::getSuperHeroes() const
+{
+	return superHeroes;
 }
 
 User* PlayerFactory::readFromBinary(std::ifstream& file) const
@@ -403,4 +417,52 @@ User* PlayerFactory::createFromConsole() const
 	}
 
 	return new Player(firstName, lastName, username, email, password);
+}
+
+//TODO: abstraction--
+void savePlayerToFile(const Player& player)
+{
+	std::ofstream playersFile(constants::PLAYERS_FILE_PATH.c_str(), std::ios::binary | std::ios::app);
+	std::ofstream usernamesFile(constants::PLAYERS_USERNAMES_FILE_PATH.c_str(), std::ios::binary | std::ios::app);
+
+	if (!playersFile.is_open() || !usernamesFile.is_open())
+	{
+		throw File_Error("File couldn't open!");
+	}
+
+	int index = playersFile.tellp();
+
+	size_t size = player.getFirstName().length();
+	playersFile.write((const char*)&size, sizeof(size));
+	playersFile.write(player.getFirstName().c_str(), sizeof(size) + 1);
+
+	size = player.getLastName().length();
+	playersFile.write((const char*)&size, sizeof(size));
+	playersFile.write(player.getLastName().c_str(), sizeof(size) + 1);
+
+	size = player.getUsername().length();
+	playersFile.write((const char*)&size, sizeof(size));
+	playersFile.write(player.getUsername().c_str(), sizeof(size) + 1);
+	usernamesFile.write((const char*)&size, sizeof(size));
+	usernamesFile.write(player.getUsername().c_str(), sizeof(size) + 1);
+	usernamesFile.write((const char*)&index, sizeof(index));
+	usernamesFile.close();
+
+	size = player.getEmail().length();
+	playersFile.write((const char*)&size, sizeof(size));
+	playersFile.write(player.getEmail().c_str(), sizeof(size) + 1);
+
+	size = player.getPassword().length();
+	playersFile.write((const char*)&size, sizeof(size));
+	playersFile.write(player.getPassword().c_str(), sizeof(size) + 1);
+
+	size = player.getNumberOfSuperHeroes();
+	playersFile.write((const char*)&size, sizeof(size));
+
+	const MyVector<SuperHero>& superheroes = player.getSuperHeroes();
+
+	for (size_t i = 0; i < size; i++)
+	{
+		saveSuperHeroToFile(playersFile, superheroes[i]);
+	}
 }

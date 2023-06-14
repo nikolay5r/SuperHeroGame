@@ -85,6 +85,8 @@ void PlayerSystem::reg()
 {
 	UserFactory* factory = PlayerFactory::getInstance();
 	User* user = factory->createFromConsole();
+	const Player& player = static_cast<const Player&>(*user);
+	savePlayerToFile(player);
 	currentUser = user;
 }
 
@@ -174,18 +176,6 @@ void PlayerSystem::showMarket() const
 	}
 
 	file.close();
-}
-
-void PlayerSystem::savePlayer() const
-{
-	std::ofstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::binary);
-
-	if (!file.is_open())
-	{
-		throw File_Error("File couldn't open!");
-	}
-
-
 }
 
 void PlayerSystem::run()
