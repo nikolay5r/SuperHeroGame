@@ -4,7 +4,6 @@
 #include "MyString.h"
 #include "Constants.h"
 #include "MyVector.hpp"
-#include "UserFactory.h"
 
 class Player : public User
 {
@@ -49,3 +48,16 @@ public:
 	friend class PlayerFactory;
 };
 
+class PlayerFactory : public UserFactory
+{
+	PlayerFactory() = default;
+public:
+	static UserFactory* getInstance();
+
+	PlayerFactory(const PlayerFactory&) = delete;
+	PlayerFactory& operator=(const PlayerFactory&) = delete;
+
+	User* readFromBinary(std::ifstream&) const override;
+	User* readFromBinary(std::ifstream&, const MyString& username) const override;
+	User* createFromConsole() const override;
+};

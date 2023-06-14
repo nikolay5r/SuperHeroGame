@@ -81,3 +81,17 @@ const MyString& User::getLastName() const noexcept
 {
 	return lastName;
 }
+
+UserFactory* UserFactory::instance = nullptr;
+
+void UserFactory::freeInstance()
+{
+	delete UserFactory::instance;
+	UserFactory::instance = nullptr;
+}
+
+UserFactory::~UserFactory()
+{
+	delete UserFactory::instance;
+	UserFactory::instance = nullptr;
+}

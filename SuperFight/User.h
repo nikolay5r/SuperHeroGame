@@ -41,3 +41,19 @@ public:
 	virtual ~User() = default;
 };
 
+class UserFactory
+{
+protected:
+	static UserFactory* instance;
+	UserFactory() = default;
+public:
+	UserFactory(const UserFactory&) = delete;
+	UserFactory& operator=(const UserFactory&) = delete;
+
+	virtual User* readFromBinary(std::ifstream&) const = 0;
+	virtual User* readFromBinary(std::ifstream&, const MyString& username) const = 0;
+	virtual User* createFromConsole() const = 0;
+
+	static void freeInstance();
+	virtual ~UserFactory();
+};

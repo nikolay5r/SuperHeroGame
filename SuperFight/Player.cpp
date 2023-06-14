@@ -1,8 +1,10 @@
 #include "Player.h"
 #include "SuperHero.h"
 #include "Constants.h"
+#include "Validation.h"
 #include <iostream>
 #include <stdexcept>
+#include <fstream>
 
 bool Player::attestIndex(size_t index) const
 {
@@ -223,4 +225,103 @@ void Player::changePositionOfSuperHero(const MyString& nickname)
 void Player::print() const
 {
 	std::cout << username << " | " << fullName << " | " << email << " | " << superHeroes.size() << " | " << coins;
+}
+
+User* PlayerFactory::readFromBinary(std::ifstream& file) const
+{
+	if (file.is_open())
+	{
+		//TODO: File error;
+		return nullptr;
+	}
+
+	size_t n;
+	file.read((char*)&n, sizeof(n));
+	char* firstName = new char[n + 1];
+	file.read(firstName, n + 1);
+
+	file.read((char*)&n, sizeof(n));
+	char* lastName = new char[n + 1];
+	file.read(lastName, n + 1);
+
+	file.read((char*)&n, sizeof(n));
+	char* username = new char[n + 1];
+	file.read(username, n + 1);
+
+	file.read((char*)&n, sizeof(n));
+	char* email = new char[n + 1];
+	file.read(email, n + 1);
+
+	file.read((char*)&n, sizeof(n));
+	char* password = new char[n + 1];
+	file.read(password, n + 1);
+
+	Player* player = new Player(firstName, lastName, username, email, password);
+
+	delete[] firstName;
+	delete[] lastName;
+	delete[] username;
+	delete[] email;
+	delete[] password;
+
+	size_t count;
+	file.read((char*)&count, sizeof(count));
+	SuperHeroFactory* factory = SuperHeroFactory::getInstance();
+	SuperHero* superhero;
+	for (size_t i = 0; i < count; i++)
+	{
+		superhero = factory->readFromBinary(file);
+		player->addSuperHero(*superhero);
+		delete superhero;
+	}
+}
+
+User* PlayerFactory::readFromBinary(std::ifstream& file, const MyString& username) const
+{
+	if (file.is_open())
+	{
+		//TODO: File error;
+		return nullptr;
+	}
+}
+
+UserFactory* PlayerFactory::getInstance()
+{
+	if (UserFactory::instance == nullptr)
+	{
+		UserFactory::instance = new PlayerFactory();
+	}
+
+	return UserFactory::instance;
+}
+
+User* PlayerFactory::createFromConsole() const
+{
+	MyString firstName;
+	MyString lastName;
+	MyString username;
+	MyString email;
+	MyString password;
+
+	std::cout << "Enter first name of the player: ";
+	std::cin >> firstName;
+	validation::isNameValid(firstName);
+
+	std::cout << "Enter last name of the player: ";
+	std::cin >> lastName;
+	validation::isNameValid(lastName);
+
+	std::cout << "Enter username of the player: ";
+	std::cin >> username;
+	validation::isUsernameValid(username);
+
+	std::cout << "Enter password for the player: ";
+	std::cin >> password;
+	validation::isPasswordValid(password);
+
+	std::cout << "Enter email of the player: ";
+	std::cin >> email;
+	validation::isEmailValid(email);
+
+	return new Player(firstName, lastName, username, email, password);
 }
