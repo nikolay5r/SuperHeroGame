@@ -22,8 +22,10 @@ namespace constants
 	const unsigned INITIAL_PRICE_OF_LEVEL_UP = 7;
 	const unsigned INITIAL_PRICE_OF_SUPERHERO = 30;
 
-	const MyString& PLAYERS_FILE_PATH = "players.bin";
-	const MyString& PLAYERS_USERNAMES_FILE_PATH = "playersUsernames.bin";
-	const MyString& MARKET_SUPERHEROES_FILE_PATH = "marketSuperheroes.bin";
-	const MyString& SOLD_SUPERHEROES_FILE_PATH = "soldSuperheroes.bin";
+	const unsigned ENTITIES_TO_LOAD = 15;
+
+	const MyString PLAYERS_FILE_PATH = "players.bin";
+	const MyString PLAYERS_USERNAMES_FILE_PATH = "playersUsernames.bin";
+	const MyString MARKET_SUPERHEROES_FILE_PATH = "marketSuperheroes.bin";
+	const MyString SOLD_SUPERHEROES_FILE_PATH = "soldSuperheroes.bin";
 }

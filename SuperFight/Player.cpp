@@ -267,7 +267,7 @@ void Player::changePositionOfSuperHero(const MyString& nickname)
 
 void Player::print() const
 {
-	std::cout << username << " | " << fullName << " | " << email << " | " << superHeroes.size() << " | " << coins;
+	std::cout << username << " | " << fullName << " | " << email << " | " << superHeroes.size() << " | " << coins << std::endl;
 }
 
 User* PlayerFactory::readFromBinary(std::ifstream& file) const

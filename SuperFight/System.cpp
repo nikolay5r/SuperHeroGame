@@ -88,23 +88,104 @@ void PlayerSystem::reg()
 	currentUser = user;
 }
 
-void PlayerSystem::showMarket()
+void PlayerSystem::showPlayers() const
 {
-	std::ifstream file;
+	std::ifstream file(constants::MARKET_SUPERHEROES_FILE_PATH.c_str(), std::ios::in | std::ios::binary);;
 
-	MyString buff = "";
-	if (buff == "")
+	while (!file.eof())
 	{
-		file.open(constants::MARKET_SUPERHEROES_FILE_PATH.c_str(), std::ios::in | std::ios::binary);
+		for (size_t i = 0; i < constants::ENTITIES_TO_LOAD; i++)
+		{
+			if (file.eof())
+			{
+				break;
+			}
+			SuperHeroFactory* factory = SuperHeroFactory::getInstance();
+			SuperHero* superhero = factory->readFromBinary(file);
+			superhero->print();
+			delete superhero;
+		}
+		if (file.eof())
+		{
+			break;
+		}
+		else
+		{
+			MyString buff;
+			std::cout << "If you want to see more superheroes enter 'forward' if you want to go back enter 'back': ";
+			std::cin >> buff;
+			if (buff == "forward")
+			{
+				continue;
+			}
+			else if (buff == "back")
+			{
+				break;
+			}
+			else
+			{
+				throw std::invalid_argument("Invalid keyword was entered!");
+			}
+		}
 	}
 
-	for (size_t i = 0; i < 15; i++)
+	file.close();
+}
+
+void PlayerSystem::showMarket() const
+{
+	std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::in | std::ios::binary);;
+
+	while (!file.eof())
 	{
-		SuperHeroFactory* factory = SuperHeroFactory::getInstance();
-		SuperHero* superhero = factory->readFromBinary(file);
-		superhero->print();
-		delete superhero;
+		for (size_t i = 0; i < constants::ENTITIES_TO_LOAD; i++)
+		{
+			if (file.eof())
+			{
+				break;
+			}
+			UserFactory* factory = PlayerFactory::getInstance();
+			User* player = factory->readFromBinary(file);
+			player->print();
+			delete player;
+		}
+		if (file.eof())
+		{
+			break;
+		}
+		else
+		{
+			MyString buff;
+			std::cout << "If you want to see more players enter 'forward' if you want to go back enter 'back': ";
+			std::cin >> buff;
+			if (buff == "forward")
+			{
+				continue;
+			}
+			else if (buff == "back")
+			{
+				break;
+			}
+			else
+			{
+				throw std::invalid_argument("Invalid keyword was entered!");
+			}
+		}
 	}
+
+	file.close();
+}
+
+void PlayerSystem::savePlayer() const
+{
+	std::ofstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::binary);
+
+	if (!file.is_open())
+	{
+		throw File_Error("File couldn't open!");
+	}
+
+
 }
 
 void PlayerSystem::run()
@@ -135,10 +216,10 @@ void PlayerSystem::run()
 				logout();
 				break;
 			case 1:
-				showMarket();
+				showPlayers();
 				break;
 			case 2:
-				//show market
+				showMarket();
 				break;
 			case 3:
 				end = true;
