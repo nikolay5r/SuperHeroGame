@@ -6,6 +6,8 @@
 #include "MyVector.hpp"
 #include <fstream>
 #include <iostream>
+#include "Validation.h"
+#include "Regex_Error.h"
 
 System* System::instance = nullptr;
 
@@ -43,33 +45,62 @@ System* AdminSystem::getInstance()
 
 void PlayerSystem::logout()
 {
+	delete currentUser;
 	currentUser = nullptr;
 }
 
 void PlayerSystem::login()
 {
+	std::ifstream file("players.bin", std::ios::binary);
 
+	if (!file.is_open())
+	{
+		//TODO: file error
+		return;
+	}
+
+	MyString temp;
+	std::cout << "Enter username: ";
+	std::cin >> temp;
+	validation::isUsernameValid(temp);
+
+	UserFactory* factory = PlayerFactory::getInstance();
+	User* user = factory->readFromBinaryByUsername(file, temp);
+	std::cout << "Enter password: ";
+	std::cin >> temp;
+
+	if (user->getPassword() != temp)
+	{
+		delete user;
+		file.close();
+		//TODO: password error
+		return;
+	}
+
+	currentUser = user;
+	file.close();
 }
 
 void PlayerSystem::run()
 {
 	bool end = false;
-
-	std::fstream file("players.bin", std::ios::in | std::ios::binary | std::ios::out);
-	std::fstream s("a.bin", std::ios::in | std::ios::binary | std::ios::out);
+	int n = -1;
+	MyString buff = "";
 
 	while (end)
 	{
 		if (currentUser)
 		{
-			std::cout << "Enter a command:" << std::endl
-				<< "  0 - logout" << std::endl
-				<< "  1 - show all players" << std::endl
-				<< "  2 - show market" << std::endl
-				<< "  3 - exit" << std::endl;
+			if (n == -1)
+			{
+				std::cout << "Enter a command:" << std::endl
+					<< "  0 - logout" << std::endl
+					<< "  1 - show all players" << std::endl
+					<< "  2 - show market" << std::endl
+					<< "  3 - exit" << std::endl;
 
-			int n;
-			std::cin >> n;
+				std::cin >> n;
+			}
 
 			switch (n)
 			{
@@ -77,7 +108,7 @@ void PlayerSystem::run()
 				logout();
 				break;
 			case 1:
-
+				//show players
 				break;
 			case 2:
 				//show market
@@ -92,9 +123,11 @@ void PlayerSystem::run()
 		}
 		else
 		{
-			MyString buff;
-			std::cout << "Enter 'login' if you already have an account and 'register' if you don't: ";
-			std::cin >> buff;
+			if (buff == "")
+			{
+				std::cout << "Enter 'login' if you already have an account and 'register' if you don't: ";
+				std::cin >> buff;
+			}
 
 			if (buff == "login")
 			{
