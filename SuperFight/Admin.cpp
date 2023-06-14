@@ -3,6 +3,7 @@
 #include "Validation.h"
 #include <utility>
 #include <fstream>
+#include "File_Error.h"
 
 Admin::Admin(const MyString& firstName, const MyString& lastName, const MyString& username, const MyString& email, const MyString& password)
 	: User(firstName, lastName, username, email, password, UserRole::Admin) {}
@@ -18,10 +19,9 @@ void Admin::print() const
 
 User* AdminFactory::readFromBinaryByUsername(std::ifstream& file, const MyString& username) const
 {
-	if (file.is_open())
+	if (!file.is_open())
 	{
-		//TODO: File error;
-		return nullptr;
+		throw File_Error("File couldn't open!");
 	}
 }
 

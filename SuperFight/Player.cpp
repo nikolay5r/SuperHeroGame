@@ -5,6 +5,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <fstream>
+#include "File_Error.h"
 
 static unsigned findPlayerIndexInFileThroughUsername(const MyString& usernameToFind)
 {
@@ -273,8 +274,7 @@ User* PlayerFactory::readFromBinary(std::ifstream& file) const
 {
 	if (file.is_open())
 	{
-		//TODO: File error;
-		return nullptr;
+		throw File_Error("File couldn't open!");
 	}
 
 	size_t n;
@@ -324,7 +324,7 @@ User* PlayerFactory::readFromBinaryByIndex(std::ifstream& file, unsigned index) 
 {
 	if (!file.is_open())
 	{
-		//TODO: error
+		throw File_Error("File couldn't open!");
 		return nullptr;
 	}
 
@@ -332,7 +332,6 @@ User* PlayerFactory::readFromBinaryByIndex(std::ifstream& file, unsigned index) 
 
 	if (index < getFileSize(file))
 	{
-		//TODO: error
 		throw std::invalid_argument("Given index is invalid! Bigger than size of file!");
 	}
 
@@ -345,10 +344,9 @@ User* PlayerFactory::readFromBinaryByIndex(std::ifstream& file, unsigned index) 
 
 User* PlayerFactory::readFromBinaryByUsername(std::ifstream& file, const MyString& usernameToFind) const
 {
-	if (file.is_open())
+	if (!file.is_open())
 	{
-		//TODO: File error;
-		return nullptr;
+		throw File_Error("File couldn't open!");
 	}
 
 	unsigned index = findPlayerIndexInFileThroughUsername(usernameToFind);

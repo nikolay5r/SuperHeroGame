@@ -8,6 +8,7 @@
 #include <iostream>
 #include "Validation.h"
 #include "Regex_Error.h"
+#include "File_Error.h"
 
 System* System::instance = nullptr;
 
@@ -55,8 +56,7 @@ void PlayerSystem::login()
 
 	if (!file.is_open())
 	{
-		//TODO: file error
-		return;
+		throw File_Error("File couldn't open!");
 	}
 
 	MyString temp;
@@ -74,6 +74,36 @@ void PlayerSystem::login()
 		delete user;
 		file.close();
 		//TODO: password error
+		return;
+	}
+
+	currentUser = user;
+	file.close();
+}
+
+void PlayerSystem::login()
+{
+	std::ifstream file("players.bin", std::ios::binary);
+
+	if (!file.is_open())
+	{
+		throw File_Error("File couldn't open!");
+	}
+
+	MyString temp;
+	std::cout << "Enter username: ";
+	std::cin >> temp;
+	validation::isUsernameValid(temp);
+
+	UserFactory* factory = PlayerFactory::getInstance();
+	User* user = factory->readFromBinaryByUsername(file, temp);
+	std::cout << "Enter password: ";
+	std::cin >> temp;
+
+	if (user->getPassword() != temp)
+	{
+		delete user;
+		file.close();
 		return;
 	}
 
@@ -135,7 +165,7 @@ void PlayerSystem::run()
 			}
 			else if (buff == "register")
 			{
-				//register
+
 			}
 			else
 			{
