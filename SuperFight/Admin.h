@@ -1,6 +1,5 @@
 #pragma once
 #include "User.h"
-#include "UserFactory.h"
 
 class Admin : public User
 {

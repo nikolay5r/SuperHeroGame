@@ -6,7 +6,6 @@ int main()
 {
 	try
 	{
-		User user("ranko", "Montoya", "kdlsakdlaskQ0", "email@abv.bg", "okokok1", UserRole::Admin);
 	}
 	catch (const std::exception& error)
 	{
