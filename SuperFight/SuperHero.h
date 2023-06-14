@@ -60,6 +60,8 @@ public:
 	void powerUp();
 	void gainXP() noexcept;
 
+	void print() const;
+
 	friend class SuperHeroFactory;
 };
 

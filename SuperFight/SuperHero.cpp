@@ -2,8 +2,10 @@
 #include "MyString.h"
 #include "Validation.h"
 #include "Constants.h"
+#include <iostream>
 #include <fstream>
 #include <cstdlib>
+#include "File_Error.h"
 
 const unsigned SuperHero::xpNeededPerLevel[10] = { 3, 5, 10, 20, 30, 40, 50, 75, 90, 100 };
 
@@ -183,6 +185,31 @@ bool SuperHero::getAttackInfo() const noexcept
 	return hasAttacked;
 }
 
+void SuperHero::print() const
+{
+	std::cout << nickname << " | " << power << " | ";
+	switch (powerType)
+	{
+	case SuperHeroPowerType::Air:
+		std::cout << "Air" << " | ";
+		break;
+	case SuperHeroPowerType::Water:
+		std::cout << "Water" << " | ";
+		break;
+	case SuperHeroPowerType::Earth:
+		std::cout << "Earth" << " | ";
+		break;
+	case SuperHeroPowerType::Fire:
+		std::cout << "Fire" << " | ";
+		break;
+	default:
+		throw std::logic_error("Something went wrong with the power type!");
+		break;
+	}
+
+	std::cout << price << " coins | " << level << " level | " << powerLevel << " power level" << std::endl;
+}
+
 /// 
 
 SuperHeroFactory* SuperHeroFactory::getInstance()
@@ -195,37 +222,6 @@ SuperHeroFactory* SuperHeroFactory::getInstance()
 	return SuperHeroFactory::instance;
 }
 
-static SuperHeroPowerType fromNumberToPowerType(unsigned n)
-{
-	switch (n)
-	{
-	case 0:
-		return SuperHeroPowerType::Air;
-	case 1:
-		return SuperHeroPowerType::Water;
-	case 2:
-		return SuperHeroPowerType::Earth;
-	case 3:
-		return SuperHeroPowerType::Fire;
-	default:
-		//TODO: ERROR
-		break;
-	}
-}
-
-static SuperHeroPosition fromNumberToPostion(unsigned n)
-{
-	switch (n)
-	{
-	case 0:
-		return SuperHeroPosition::Attack;
-	case 1:
-		return SuperHeroPosition::Defense;
-	default:
-		//TODO: ERROR
-		break;
-	}
-}
 
 SuperHeroFactory* SuperHeroFactory::instance = nullptr;
 
@@ -233,8 +229,7 @@ SuperHero* SuperHeroFactory::readFromBinary(std::ifstream& file) const
 {
 	if (!file.is_open())
 	{
-		//error
-		return nullptr;
+		throw File_Error("File couldn't open!");
 	}
 
 	size_t n;
