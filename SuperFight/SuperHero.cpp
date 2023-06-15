@@ -275,7 +275,38 @@ SuperHero* SuperHeroFactory::readFromBinary(std::ifstream& file) const
 	return superhero;
 }
 
-void SuperHeroFactory::readFromBinary(std::ifstream&, const MyString& nickname) const
+SuperHero* SuperHeroFactory::readFromBinary(std::ifstream& file, int index) const
+{
+	if (!file.is_open())
+	{
+		throw File_Error("File couldn't open!");
+		return nullptr;
+	}
+
+	unsigned fileIndex = file.tellg();
+
+	if (index < helper::getFileSize(file))
+	{
+		throw std::invalid_argument("Given index is invalid! Bigger than size of file!");
+	}
+
+	file.seekg(index);
+	SuperHero* superHero = readFromBinary(file);
+	file.seekg(fileIndex);
+
+	return superHero;
+}
+
+SuperHero* SuperHeroFactory::readFromBinary(std::ifstream& file, const MyString& nickname, const MyString& filePathToReadNickname) const
+{
+	if (!file.is_open())
+	{
+		throw File_Error("File couldn't open!");
+	}
+
+	int index = helper::findEntityIndexInFile(filePathToReadNickname, nickname);
+
+	if (index == -1)
 {
 	return;
 }
