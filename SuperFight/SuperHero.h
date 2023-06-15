@@ -78,11 +78,13 @@ public:
 	SuperHeroFactory& operator=(const SuperHeroFactory&) = delete;
 
 	SuperHero* readFromBinary(std::ifstream&) const;
-	void readFromBinary(std::ifstream&, const MyString& nickname) const;
+	SuperHero* readFromBinary(std::ifstream&, int index) const;
+	SuperHero* readFromBinary(std::ifstream&, const MyString& nickname, const MyString& filePathToReadNickname) const;
 	void createFromConsole() const;
 
 	static void freeInstance();
 	virtual ~SuperHeroFactory();
 };
 
-void saveSuperHeroToFile(std::ofstream& file, const SuperHero& superhero);
+void saveToFile(std::ofstream& file, const SuperHero& superhero);
+SuperHero* buy(std::ifstream& file);

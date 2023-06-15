@@ -26,6 +26,9 @@ namespace constants
 
 	const MyString PLAYERS_FILE_PATH = "players.bin";
 	const MyString PLAYERS_USERNAMES_FILE_PATH = "playersUsernames.bin";
+	const MyString OWNED_SUPERHEROES_NICKNAMES_FILE_PATH = "ownedSuperheroesNicknames.bin";
+	const MyString MARKET_SUPERHEROES_NICKNAMES_FILE_PATH = "marketSuperheroesNicknames.bin";
 	const MyString MARKET_SUPERHEROES_FILE_PATH = "marketSuperheroes.bin";
 	const MyString SOLD_SUPERHEROES_FILE_PATH = "soldSuperheroes.bin";
+	const MyString SOLD_SUPERHEROES_NICKNAMES_FILE_PATH = "soldSuperheroesNicknames.bin";
 }

@@ -370,7 +370,7 @@ User* PlayerFactory::createFromConsole() const
 	std::cin >> email;
 	validation::isEmailValid(email);
 
-	if (helper::findEntityIndexInFile(username) != -1)
+	if (helper::findEntityIndexInFile(constants::PLAYERS_USERNAMES_FILE_PATH, username) != -1)
 	{
 		throw std::invalid_argument("User with that username already exists!");
 	}
@@ -393,27 +393,28 @@ void savePlayerToFile(const Player& player)
 
 	size_t size = player.getFirstName().length();
 	playersFile.write((const char*)&size, sizeof(size));
-	playersFile.write(player.getFirstName().c_str(), sizeof(size) + 1);
+	playersFile.write(player.getFirstName().c_str(), size + 1);
 
 	size = player.getLastName().length();
 	playersFile.write((const char*)&size, sizeof(size));
-	playersFile.write(player.getLastName().c_str(), sizeof(size) + 1);
+	playersFile.write(player.getLastName().c_str(), size + 1);
 
 	size = player.getUsername().length();
 	playersFile.write((const char*)&size, sizeof(size));
-	playersFile.write(player.getUsername().c_str(), sizeof(size) + 1);
+	playersFile.write(player.getUsername().c_str(), size + 1);
+
 	usernamesFile.write((const char*)&size, sizeof(size));
-	usernamesFile.write(player.getUsername().c_str(), sizeof(size) + 1);
+	usernamesFile.write(player.getUsername().c_str(), size + 1);
 	usernamesFile.write((const char*)&index, sizeof(index));
 	usernamesFile.close();
 
 	size = player.getEmail().length();
 	playersFile.write((const char*)&size, sizeof(size));
-	playersFile.write(player.getEmail().c_str(), sizeof(size) + 1);
+	playersFile.write(player.getEmail().c_str(), size + 1);
 
 	size = player.getPassword().length();
 	playersFile.write((const char*)&size, sizeof(size));
-	playersFile.write(player.getPassword().c_str(), sizeof(size) + 1);
+	playersFile.write(player.getPassword().c_str(), size + 1);
 
 	size = player.getNumberOfSuperHeroes();
 	playersFile.write((const char*)&size, sizeof(size));

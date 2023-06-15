@@ -297,24 +297,32 @@ SuperHeroFactory::~SuperHeroFactory()
 	SuperHeroFactory::instance = nullptr;
 }
 
-void saveSuperHeroToFile(std::ofstream& file, const SuperHero& superhero)
+void saveToFile(std::ofstream& file, const SuperHero& superhero)
 {
-	if (!file.is_open())
+	std::ofstream nicknamesFile(constants::OWNED_SUPERHEROES_NICKNAMES_FILE_PATH.c_str(), std::ios::binary);
+
+	if (!file.is_open() || !nicknamesFile.is_open())
 	{
 		throw File_Error("File couldn't open!");
 	}
 
+	int index = file.tellp();
+
 	size_t size = superhero.getFirstName().length();
 	file.write((const char*)&size, sizeof(size));
-	file.write(superhero.getFirstName().c_str(), sizeof(size) + 1);
+	file.write(superhero.getFirstName().c_str(), size + 1);
 
 	size = superhero.getLastName().length();
 	file.write((const char*)&size, sizeof(size));
-	file.write(superhero.getLastName().c_str(), sizeof(size) + 1);
+	file.write(superhero.getLastName().c_str(), size + 1);
 
 	size = superhero.getNickname().length();
 	file.write((const char*)&size, sizeof(size));
-	file.write(superhero.getNickname().c_str(), sizeof(size) + 1);
+	file.write(superhero.getNickname().c_str(), size + 1);
+
+	nicknamesFile.write((const char*)&size, sizeof(size));
+	nicknamesFile.write(superhero.getNickname().c_str(), size + 1);
+	nicknamesFile.write((const char*)&index, sizeof(index));
 
 	unsigned p = superhero.getPower();
 	file.write((const char*)&p, sizeof(p));
