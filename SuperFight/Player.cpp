@@ -6,48 +6,7 @@
 #include <stdexcept>
 #include <fstream>
 #include "File_Error.h"
-
-static int findPlayerIndexInFileThroughUsername(const MyString& usernameToFind)
-{
-	std::ifstream usernamesFile(constants::PLAYERS_USERNAMES_FILE_PATH.c_str(), std::ios::binary);
-
-	int indexInPlayersFile = 0;
-	while (!usernamesFile.eof())
-	{
-		size_t length = 0;
-		usernamesFile.read((char*)&length, sizeof(length));
-		char* username = new char[length + 1];
-		usernamesFile.read(username, length + 1);
-		usernamesFile.read((char*)&indexInPlayersFile, sizeof(indexInPlayersFile));
-
-		if (usernameToFind == username)
-		{
-			usernamesFile.close();
-			delete[] username;
-			return indexInPlayersFile;
-		}
-
-		delete[] username;
-
-		if (usernamesFile.eof())
-		{
-			break;
-		}
-	}
-
-	usernamesFile.close();
-	return -1;
-}
-
-static size_t getFileSize(std::ifstream& file)
-{
-	size_t curr = file.tellg();
-	file.seekg(0, std::ios::end);
-	size_t size = file.tellg();
-	file.seekg(curr);
-
-	return size;
-}
+#include "HelperFunctions.h"
 
 bool Player::attestIndex(size_t index) const
 {
@@ -267,10 +226,10 @@ void Player::changePositionOfSuperHero(const MyString& nickname)
 
 void Player::print() const
 {
-	std::cout << username << " | " << coins << " coins | " << superHeroes.size();
+	std::cout << username << " " << coins << " coins" << std::endl;
 	for (size_t i = 0; i < superHeroes.size(); i++)
 	{
-		std::cout << superHeroes[i].getNickname();
+		std::cout << "\t" << i << ". " << superHeroes[i].getNickname() << std::endl;
 	}
 }
 
@@ -334,7 +293,7 @@ User* PlayerFactory::readFromBinary(std::ifstream& file) const
 	return player;
 }
 
-User* PlayerFactory::readFromBinaryByIndex(std::ifstream& file, unsigned index) const
+User* PlayerFactory::readFromBinary(std::ifstream& file, int index) const
 {
 	if (!file.is_open())
 	{
@@ -344,7 +303,7 @@ User* PlayerFactory::readFromBinaryByIndex(std::ifstream& file, unsigned index) 
 
 	unsigned fileIndex = file.tellg();
 
-	if (index < getFileSize(file))
+	if (index < helper::getFileSize(file))
 	{
 		throw std::invalid_argument("Given index is invalid! Bigger than size of file!");
 	}
@@ -356,21 +315,21 @@ User* PlayerFactory::readFromBinaryByIndex(std::ifstream& file, unsigned index) 
 	return user;
 }
 
-User* PlayerFactory::readFromBinaryByUsername(std::ifstream& file, const MyString& usernameToFind) const
+User* PlayerFactory::readFromBinary(std::ifstream& file, const MyString& usernameToFind) const
 {
 	if (!file.is_open())
 	{
 		throw File_Error("File couldn't open!");
 	}
 
-	int index = findPlayerIndexInFileThroughUsername(usernameToFind);
+	int index = helper::findEntityIndexInFile(constants::PLAYERS_FILE_PATH, usernameToFind);
 
 	if (index == -1)
 	{
 		throw std::invalid_argument("Username is not valid!");
 	}
 
-	return readFromBinaryByIndex(file, index);
+	return readFromBinary(file, index);
 }
 
 UserFactory* PlayerFactory::getInstance()
@@ -411,7 +370,7 @@ User* PlayerFactory::createFromConsole() const
 	std::cin >> email;
 	validation::isEmailValid(email);
 
-	if (findPlayerIndexInFileThroughUsername(username) != -1)
+	if (helper::findEntityIndexInFile(username) != -1)
 	{
 		throw std::invalid_argument("User with that username already exists!");
 	}
@@ -463,6 +422,6 @@ void savePlayerToFile(const Player& player)
 
 	for (size_t i = 0; i < size; i++)
 	{
-		saveSuperHeroToFile(playersFile, superheroes[i]);
+		saveToFile(playersFile, superheroes[i]);
 	}
 }
