@@ -1,5 +1,6 @@
 #pragma once
 #include "MyString.h"
+#include "Entity.h"
 
 enum class SuperHeroPowerType
 {
@@ -15,7 +16,7 @@ enum class SuperHeroPosition
 	Defense
 };
 
-class SuperHero
+class SuperHero : public Entity
 {
 	unsigned power = 0;
 	SuperHeroPowerType powerType = SuperHeroPowerType::Air;
@@ -66,6 +67,7 @@ public:
 	SuperHeroFactory& operator=(const SuperHeroFactory&) = delete;
 
 	SuperHero* readFromBinary(std::ifstream&) const;
+	SuperHero* readFromBinary(const MyString&, const MyString& nickname) const;
 	SuperHero* readFromBinary(std::ifstream&, const MyString& nickname) const;
 	void createFromConsole() const;
 
@@ -74,4 +76,6 @@ public:
 };
 
 void saveToFile(std::ofstream& file, const SuperHero& superhero);
-SuperHero* buy(std::ifstream& file);
+void saveToFile(const MyString& fileName, const SuperHero& superhero);
+void removeFromFile(const MyString& fileName, const SuperHero& superhero);
+SuperHero* buy(const MyString& nickname);

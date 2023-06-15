@@ -141,16 +141,15 @@ size_t helper::getFileSize(std::ifstream& file)
 	return size;
 }
 
-void helper::deleteDataFromFile(std::ifstream& file, int indexStart, int indexEnd)
+void helper::deleteDataFromFile(const MyString& fileName, int indexStart, int indexEnd)
 {
+	std::ifstream file(fileName.c_str(), std::ios::binary);
 	std::ofstream newFile("newFile.bin", std::ios::binary);
 
 	if (!file.is_open() || !newFile.is_open())
 	{
 		throw File_Error("File couldn't open!");
 	}
-
-	file.seekg(0, std::ios::beg);
 
 	//We are making a buffer to store the data from 0 index of the file to the start index of the player and then transfering the data to the new file
 	char* buffer = new char[indexStart + 1];
@@ -168,14 +167,21 @@ void helper::deleteDataFromFile(std::ifstream& file, int indexStart, int indexEn
 
 	file.close();
 	newFile.close();
-	if (rename("newFile.bin", constants::PLAYERS_FILE_PATH.c_str()) != 0)
+	if (rename("newFile.bin", fileName.c_str()) != 0)
 	{
-		throw File_Error("Error with renaming the files when trying to remove a player!");
+		throw File_Error("Error with renaming the files when trying to remove an entity!");
 	}
 }
 
-void helper::getStartIndexAndEndIndexOfEntityInFile(std::ifstream& file, int& indexStart, int& indexEnd, const Entity& entity)
+void helper::getStartIndexAndEndIndexOfEntityInFile(const MyString& fileName, int& indexStart, int& indexEnd, const Entity& entity)
 {
+	std::ifstream file(fileName.c_str(), std::ios::binary);
+
+	if (!file.is_open())
+	{
+		throw File_Error("File couldn't open!");
+	}
+
 	if (const User* user = dynamic_cast<const User*>(&entity))
 	{
 		switch (user->getRole())
@@ -194,4 +200,6 @@ void helper::getStartIndexAndEndIndexOfEntityInFile(std::ifstream& file, int& in
 	{
 		getStartIndexAndEndIndexOfSuperHeroInFile(file, indexStart, indexEnd, static_cast<const SuperHero&>(entity));
 	}
+
+	file.close();
 }

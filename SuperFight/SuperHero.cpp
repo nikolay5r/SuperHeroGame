@@ -231,6 +231,20 @@ SuperHero* SuperHeroFactory::readFromBinary(std::ifstream& file) const
 	return superhero;
 }
 
+SuperHero* SuperHeroFactory::readFromBinary(const MyString& fileName, const MyString& nickname) const
+{
+	std::ifstream file(fileName.c_str(), std::ios::binary);
+
+	if (!file.is_open())
+	{
+		throw File_Error("File couldn't open!");
+	}
+
+	SuperHero* superhero = readFromBinary(file, nickname);
+	file.close();
+	return superhero;
+}
+
 SuperHero* SuperHeroFactory::readFromBinary(std::ifstream& file, const MyString& nickname) const
 {
 	if (!file.is_open())
@@ -313,13 +327,34 @@ void saveToFile(std::ofstream& file, const SuperHero& superhero)
 	file.write((const char*)&n, sizeof(n));
 }
 
-SuperHero* buy(std::ifstream& file, const MyString& nickname)
+SuperHero* buy(const MyString& nickname)
 {
+	SuperHeroFactory* factory = SuperHeroFactory::getInstance();
+	SuperHero* superhero = factory->readFromBinary(constants::MARKET_SUPERHEROES_FILE_PATH, nickname);
+	removeFromFile(constants::MARKET_SUPERHEROES_FILE_PATH, *superhero);
+	saveToFile(constants::SOLD_SUPERHEROES_FILE_PATH, *superhero);
+
+	return superhero;
+}
+
+void removeFromFile(const MyString& fileName, const SuperHero& superhero)
+{
+	int indexStart = -1;
+	int indexEnd = -1;
+	helper::getStartIndexAndEndIndexOfEntityInFile(fileName, indexStart, indexEnd, superhero);
+	helper::deleteDataFromFile(fileName, indexStart, indexEnd);
+}
+
+void saveToFile(const MyString& fileName, const SuperHero& superhero)
+{
+	std::ofstream file(fileName.c_str(), std::ios::binary | std::ios::app);
+
 	if (!file.is_open())
 	{
 		throw File_Error("File couldn't open!");
 	}
 
-	SuperHeroFactory* factory = SuperHeroFactory::getInstance();
-	return nullptr;
+	saveToFile(file, superhero);
+
+	file.close();
 }

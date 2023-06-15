@@ -423,17 +423,9 @@ void saveToFile(const Player& player)
 
 void removeFromFile(const Player& player)
 {
-	std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::binary);
-	std::ofstream newFile("newFile.bin", std::ios::binary);
-
-	if (!file.is_open() || !newFile.is_open())
-	{
-		throw File_Error("File couldn't open!");
-	}
-
 	int indexStart = -1;
 	int indexEnd = -1;
 
-	helper::getStartIndexAndEndIndexOfEntityInFile(file, indexStart, indexEnd, player);
-	helper::deleteDataFromFile(file, indexStart, indexEnd);
+	helper::getStartIndexAndEndIndexOfEntityInFile(constants::PLAYERS_FILE_PATH, indexStart, indexEnd, player);
+	helper::deleteDataFromFile(constants::PLAYERS_FILE_PATH, indexStart, indexEnd);
 }

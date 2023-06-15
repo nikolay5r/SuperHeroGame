@@ -9,6 +9,7 @@
 #include "Validation.h"
 #include "Regex_Error.h"
 #include "File_Error.h"
+#include "SuperHero.h"
 
 System* System::instance = nullptr;
 
@@ -46,6 +47,7 @@ System* AdminSystem::getInstance()
 
 void PlayerSystem::logout()
 {
+	//try
 	removeFromFile(*currentUser);
 	saveToFile(*currentUser);
 
@@ -58,6 +60,9 @@ void PlayerSystem::logout()
 
 void PlayerSystem::login()
 {
+	//try
+
+	//move to factory
 	std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::binary);
 
 	if (!file.is_open())
@@ -66,9 +71,9 @@ void PlayerSystem::login()
 	}
 
 	MyString temp;
-	std::cout << "Enter username: ";
+	std::cout << "Enter nickname: ";
 	std::cin >> temp;
-	validation::isUsernameValid(temp);
+	validation::isNicknameValid(temp);
 
 	UserFactory* factory = PlayerFactory::getInstance();
 	User* user = factory->readFromBinary(file, temp);
@@ -90,21 +95,29 @@ void PlayerSystem::login()
 
 void PlayerSystem::reg()
 {
+	//try
 	UserFactory* factory = PlayerFactory::getInstance();
 	User* user = factory->createFromConsole();
 	currentUser = user;
 }
 
-void PlayerSystem::buySuperHero(std::ifstream& file) const
+void PlayerSystem::buySuperHero() const
 {
 	MyString buff;
 	std::cout << "Enter the nickname of the superhero: ";
 	std::cin >> buff;
 
+	SuperHero* superhero = buy(buff);
+
+	Player* player = static_cast<Player*>(currentUser);
+	player->addSuperHero(*superhero);
+
+	delete superhero;
 }
 
 void PlayerSystem::showMarket() const
 {
+	//try
 	std::ifstream file(constants::MARKET_SUPERHEROES_FILE_PATH.c_str(), std::ios::in | std::ios::binary);;
 
 	while (!file.eof())
@@ -140,7 +153,7 @@ void PlayerSystem::showMarket() const
 			}
 			else if (buff == "buy")
 			{
-				buySuperHero(file);
+				buySuperHero();
 			}
 			else if (buff == "sell")
 			{
@@ -158,6 +171,7 @@ void PlayerSystem::showMarket() const
 
 void PlayerSystem::showPlayers() const
 {
+	//try
 	std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::in | std::ios::binary);;
 
 	while (!file.eof())

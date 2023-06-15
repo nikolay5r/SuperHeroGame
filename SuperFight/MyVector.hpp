@@ -102,8 +102,7 @@ void MyVector<T>::free()
 	{
 		count = 0;
 		cap = 0;
-		T* myData = static_cast<T*>(data);
-		delete[] myData;
+		std::free(data);
 		data = nullptr;
 	}
 }
