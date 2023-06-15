@@ -234,13 +234,15 @@ SuperHero* SuperHeroFactory::readFromBinary(std::ifstream& file) const
 SuperHero* SuperHeroFactory::readFromBinary(const MyString& fileName, const MyString& nickname) const
 {
 	std::ifstream file(fileName.c_str(), std::ios::binary);
+	SuperHero* superhero = nullptr;
+	//try
 
 	if (!file.is_open())
 	{
 		throw File_Error("File couldn't open!");
 	}
 
-	SuperHero* superhero = readFromBinary(file, nickname);
+	superhero = readFromBinary(file, nickname);
 	file.close();
 	return superhero;
 }
@@ -252,9 +254,11 @@ SuperHero* SuperHeroFactory::readFromBinary(std::ifstream& file, const MyString&
 		throw File_Error("File couldn't open!");
 	}
 
+	SuperHero* curr = nullptr;
+	//try
 	while (!file.eof())
 	{
-		SuperHero* curr = readFromBinary(file);
+		curr = readFromBinary(file);
 		if (curr->getNickname() == nickname)
 		{
 			return curr;
@@ -329,8 +333,10 @@ void saveToFile(std::ofstream& file, const SuperHero& superhero)
 
 SuperHero* buy(const MyString& nickname)
 {
+	SuperHero* superhero = nullptr;
+	//try
 	SuperHeroFactory* factory = SuperHeroFactory::getInstance();
-	SuperHero* superhero = factory->readFromBinary(constants::MARKET_SUPERHEROES_FILE_PATH, nickname);
+	superhero = factory->readFromBinary(constants::MARKET_SUPERHEROES_FILE_PATH, nickname);
 	removeFromFile(constants::MARKET_SUPERHEROES_FILE_PATH, *superhero);
 	saveToFile(constants::SOLD_SUPERHEROES_FILE_PATH, *superhero);
 
@@ -357,4 +363,15 @@ void saveToFile(const MyString& fileName, const SuperHero& superhero)
 	saveToFile(file, superhero);
 
 	file.close();
+}
+
+void sell(const MyString& nickname)
+{
+	SuperHero* superhero = nullptr;
+	//try
+	SuperHeroFactory* factory = SuperHeroFactory::getInstance();
+	superhero = factory->readFromBinary(constants::SOLD_SUPERHEROES_FILE_PATH, nickname);
+	removeFromFile(constants::SOLD_SUPERHEROES_FILE_PATH, *superhero);
+	saveToFile(constants::MARKET_SUPERHEROES_FILE_PATH, *superhero);
+	delete superhero;
 }

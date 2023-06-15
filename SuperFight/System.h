@@ -34,6 +34,7 @@ class PlayerSystem : public System
 	void showMarket() const override;
 	void showPlayers() const override;
 	void buySuperHero() const;
+	void sellSuperHero() const;
 public:
 
 	static System* getInstance();

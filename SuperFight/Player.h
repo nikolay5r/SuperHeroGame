@@ -23,8 +23,17 @@ public:
 	void addSuperHero(const SuperHero& superHero);
 	void addSuperHero(SuperHero&& superHero);
 	void addSuperHero(const MyString& firstName, const MyString& lastName, const MyString& nickname, unsigned power, SuperHeroPowerType powerType);
+
+	void buySuperHero(const SuperHero* superHero);
+	void buySuperHero(const SuperHero& superHero);
+	void buySuperHero(SuperHero&& superHero);
+	void buySuperHero(const MyString& firstName, const MyString& lastName, const MyString& nickname, unsigned power, SuperHeroPowerType powerType);
+
 	void removeSuperHero(const MyString& nickname);
 	void removeSuperHero(size_t index);
+
+	void sellSuperHero(const MyString& nickname);
+	void sellSuperHero(size_t index);
 
 	void attack(Player& defender);
 	void attack(Player& defender, size_t defenderIndex);

@@ -99,19 +99,37 @@ void PlayerSystem::reg()
 	UserFactory* factory = PlayerFactory::getInstance();
 	User* user = factory->createFromConsole();
 	currentUser = user;
+	srand(time(0));
+	static_cast<Player*>(user)->addSuperHero(user->getFirstName(), user->getLastName(), user->getNickname(), rand() % 30 + 5, SuperHeroPowerType::Earth);
+}
+
+void PlayerSystem::sellSuperHero() const
+{
+	//try
+	Player* player = static_cast<Player*>(currentUser);
+	if (player->getNumberOfSuperHeroes() == 0)
+	{
+		throw std::logic_error("You have no superheroes to sell!");
+	}
+	MyString buff;
+	std::cout << "Enter nickname of the superhero you want to sell: ";
+	std::cin >> buff;
+	player->sellSuperHero(buff);
+	sell(buff);
 }
 
 void PlayerSystem::buySuperHero() const
 {
+	SuperHero* superhero = nullptr;
+	//try
 	MyString buff;
 	std::cout << "Enter the nickname of the superhero: ";
 	std::cin >> buff;
 
-	SuperHero* superhero = buy(buff);
+	superhero = buy(buff);
 
 	Player* player = static_cast<Player*>(currentUser);
-	player->addSuperHero(*superhero);
-
+	player->buySuperHero(*superhero);
 	delete superhero;
 }
 
@@ -157,7 +175,7 @@ void PlayerSystem::showMarket() const
 			}
 			else if (buff == "sell")
 			{
-
+				sellSuperHero();
 			}
 			else
 			{

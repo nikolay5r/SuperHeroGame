@@ -60,7 +60,55 @@ void Player::addSuperHero(SuperHero&& superHero)
 
 void Player::addSuperHero(const MyString& firstName, const MyString& lastName, const MyString& nickname, unsigned power, SuperHeroPowerType powerType)
 {
+	if (superHeroes.size() == constants::MAX_NUMBER_OF_SUPERHEROES_PER_PLAYER)
+	{
+		throw std::logic_error("You reached the limit of superheroes and cannot add more! Have to sell someone first!");
+	}
+
 	superHeroes.push_back(SuperHero(firstName, lastName, nickname, power, powerType));
+}
+
+void Player::buySuperHero(const SuperHero* superHero)
+{
+	if (coins < superHero->getPrice())
+	{
+		throw std::logic_error("Not enough coins! Cannot afford it!");
+	}
+	coins -= superHero->getPrice();
+	addSuperHero(*superHero);
+}
+
+void Player::buySuperHero(const SuperHero& superHero)
+{
+	if (coins < superHero.getPrice())
+	{
+		throw std::logic_error("Not enough coins! Cannot afford it!");
+	}
+	coins -= superHero.getPrice();
+	addSuperHero(superHero);
+}
+
+void Player::buySuperHero(SuperHero&& superHero)
+{
+	unsigned price = superHero.getPrice();
+	if (coins < price)
+	{
+		//TODO
+		throw std::logic_error("Not enough coins! Cannot afford it!");
+	}
+	coins -= price;
+	addSuperHero(std::move(superHero));
+}
+
+void Player::buySuperHero(const MyString& firstName, const MyString& lastName, const MyString& nickname, unsigned power, SuperHeroPowerType powerType)
+{
+	addSuperHero(firstName, lastName, nickname, power, powerType);
+	if (coins < superHeroes[superHeroes.size() - 1].getPrice())
+	{
+		removeSuperHero(superHeroes.size() - 1);
+		throw std::logic_error("Not enough coins! Cannot afford it!");
+	}
+	coins -= superHeroes[superHeroes.size() - 1].getPrice();
 }
 
 void Player::removeSuperHero(const MyString& nickname)
@@ -77,6 +125,23 @@ void Player::removeSuperHero(size_t index)
 	}
 
 	superHeroes.pop_at(index);
+}
+
+void Player::sellSuperHero(const MyString& nickname)
+{
+	size_t index = nicknameToIndex(nickname);
+	coins += superHeroes[index].getPrice() / 2;
+	removeSuperHero(nickname);
+}
+
+void Player::sellSuperHero(size_t index)
+{
+	if (index >= superHeroes.size())
+	{
+		throw std::invalid_argument("Invalid index of superhero when trying to delete!");
+	}
+	coins += superHeroes[index].getPrice() / 2;
+	removeSuperHero(index);
 }
 
 void Player::attack(Player& defender)
