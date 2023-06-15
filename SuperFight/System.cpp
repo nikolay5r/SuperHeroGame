@@ -46,6 +46,12 @@ System* AdminSystem::getInstance()
 
 void PlayerSystem::logout()
 {
+	removeFromFile(*currentUser);
+	saveToFile(*currentUser);
+
+	UserFactory::freeInstance();
+	SuperHeroFactory::freeInstance();
+
 	delete currentUser;
 	currentUser = nullptr;
 }
@@ -65,7 +71,7 @@ void PlayerSystem::login()
 	validation::isUsernameValid(temp);
 
 	UserFactory* factory = PlayerFactory::getInstance();
-	User* user = factory->readFromBinaryByUsername(file, temp);
+	User* user = factory->readFromBinary(file, temp);
 	std::cout << "Enter password: ";
 	std::cin >> temp;
 
@@ -77,6 +83,7 @@ void PlayerSystem::login()
 		return;
 	}
 
+	removeFromFile(*user);
 	currentUser = user;
 	file.close();
 }
@@ -85,12 +92,18 @@ void PlayerSystem::reg()
 {
 	UserFactory* factory = PlayerFactory::getInstance();
 	User* user = factory->createFromConsole();
-	const Player& player = static_cast<const Player&>(*user);
-	savePlayerToFile(player);
 	currentUser = user;
 }
 
-void PlayerSystem::showPlayers() const
+void PlayerSystem::buySuperHero(std::ifstream& file) const
+{
+	MyString buff;
+	std::cout << "Enter the nickname of the superhero: ";
+	std::cin >> buff;
+
+}
+
+void PlayerSystem::showMarket() const
 {
 	std::ifstream file(constants::MARKET_SUPERHEROES_FILE_PATH.c_str(), std::ios::in | std::ios::binary);;
 
@@ -114,7 +127,8 @@ void PlayerSystem::showPlayers() const
 		else
 		{
 			MyString buff;
-			std::cout << "If you want to see more superheroes enter 'forward' if you want to go back enter 'back': ";
+			std::cout << "If you want to see more superheroes enter 'forward' if you want to go back enter 'back';" << std::endl
+				<< "If you want to buy a superhero enter 'buy' or if you want to sell enter 'sell': ";
 			std::cin >> buff;
 			if (buff == "forward")
 			{
@@ -123,6 +137,14 @@ void PlayerSystem::showPlayers() const
 			else if (buff == "back")
 			{
 				break;
+			}
+			else if (buff == "buy")
+			{
+				buySuperHero(file);
+			}
+			else if (buff == "sell")
+			{
+
 			}
 			else
 			{
@@ -134,7 +156,7 @@ void PlayerSystem::showPlayers() const
 	file.close();
 }
 
-void PlayerSystem::showMarket() const
+void PlayerSystem::showPlayers() const
 {
 	std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::in | std::ios::binary);;
 
@@ -158,7 +180,7 @@ void PlayerSystem::showMarket() const
 		else
 		{
 			MyString buff;
-			std::cout << "If you want to see more players enter 'forward' if you want to go back enter 'back': ";
+			std::cout << "If you want to see more players enter 'forward' or if you want to go back enter 'back'";
 			std::cin >> buff;
 			if (buff == "forward")
 			{
@@ -167,6 +189,10 @@ void PlayerSystem::showMarket() const
 			else if (buff == "back")
 			{
 				break;
+			}
+			else if (buff == "buy")
+			{
+
 			}
 			else
 			{
@@ -212,6 +238,7 @@ void PlayerSystem::run()
 				showMarket();
 				break;
 			case 3:
+				logout();
 				end = true;
 				break;
 			default:

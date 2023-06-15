@@ -28,3 +28,6 @@ public:
 	User* readFromBinary(std::ifstream& file, const MyString& usernameToFind) const override;
 	User* createFromConsole() const override;
 };
+
+void saveToFile(const Admin& admin);
+void removeFromFile(const Admin& admin);

@@ -63,8 +63,8 @@ User* AdminFactory::createFromConsole() const
 	}
 	catch (const std::invalid_argument&)
 	{
-	return new Admin(firstName, lastName, username, email, password);
-}
+		return new Admin(firstName, lastName, username, email, password);
+	}
 
 	throw std::invalid_argument("User with that username already exists!");
 
@@ -78,4 +78,14 @@ UserFactory* AdminFactory::getInstance()
 	}
 
 	return UserFactory::instance;
+}
+
+void saveToFile(const Admin& admin)
+{
+	return;
+}
+
+void removeFromFile(const Admin& admin)
+{
+
 }

@@ -33,6 +33,7 @@ class PlayerSystem : public System
 	void reg() override;
 	void showMarket() const override;
 	void showPlayers() const override;
+	void buySuperHero(std::ifstream& file) const;
 public:
 
 	static System* getInstance();

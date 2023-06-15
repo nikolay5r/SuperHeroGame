@@ -255,7 +255,7 @@ const MyVector<SuperHero>& Player::getSuperHeroes() const
 
 User* PlayerFactory::readFromBinary(std::ifstream& file) const
 {
-	if (file.is_open())
+	if (!file.is_open())
 	{
 		throw File_Error("File couldn't open!");
 	}
@@ -316,15 +316,15 @@ User* PlayerFactory::readFromBinary(std::ifstream& file, const MyString& usernam
 		if (file.eof())
 		{
 			break;
-	}
+		}
 		if (curr->getUsername() == usernameToFind)
-{
+		{
 			return curr;
-	}
+		}
 	}
 
-		throw std::invalid_argument("Username is not valid!");
-	}
+	throw std::invalid_argument("Username is not valid!");
+}
 
 UserFactory* PlayerFactory::getInstance()
 {
@@ -372,8 +372,8 @@ User* PlayerFactory::createFromConsole() const
 	}
 	catch (const std::invalid_argument&)
 	{
-	return new Player(firstName, lastName, username, email, password);
-}
+		return new Player(firstName, lastName, username, email, password);
+	}
 
 	throw std::invalid_argument("User with that username already exists!");
 }
@@ -381,7 +381,6 @@ User* PlayerFactory::createFromConsole() const
 void saveToFile(const Player& player)
 {
 	std::ofstream playersFile(constants::PLAYERS_FILE_PATH.c_str(), std::ios::binary | std::ios::app);
-	std::ofstream usernamesFile(constants::PLAYERS_USERNAMES_FILE_PATH.c_str(), std::ios::binary | std::ios::app);
 
 	if (!playersFile.is_open())
 	{
@@ -418,5 +417,58 @@ void saveToFile(const Player& player)
 	for (size_t i = 0; i < size; i++)
 	{
 		saveToFile(playersFile, superheroes[i]);
+	}
+}
+
+void removeFromFile(const Player& player)
+{
+	std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::binary);
+	std::ofstream newFile("newFile.bin", std::ios::binary);
+
+	int indexStart = 0;
+	int indexEnd = 0;
+
+	UserFactory* factory = PlayerFactory::getInstance();
+
+	if (!file.is_open() || !newFile.is_open())
+	{
+		throw File_Error("File couldn't open!");
+	}
+
+	while (!file.eof())
+	{
+		indexStart = file.tellg();
+		User* curr = factory->readFromBinary(file);
+		if (file.eof())
+		{
+			break;
+		}
+		if (player.getUsername() == curr->getUsername())
+		{
+			indexEnd = file.tellg();
+		}
+	}
+
+	file.seekg(0, std::ios::beg);
+
+	//We are making a buffer to store the data from 0 index of the file to the start index of the player and then transfering the data to the new file
+	char* buffer = new char[indexStart + 1];
+	file.read(buffer, indexStart);
+	newFile.write((const char*)&buffer, indexStart);
+	delete[] buffer;
+
+	//The same we are doing for the rest of the data after the player's data
+	size_t fileSize = helper::getFileSize(file);
+	file.seekg(indexEnd);
+	buffer = new char[fileSize - indexEnd + 1];
+	file.read(buffer, fileSize - indexEnd);
+	newFile.write((const char*)&buffer, fileSize - indexEnd);
+	delete[] buffer;
+
+	file.close();
+	newFile.close();
+	if (rename("newFile.bin", constants::PLAYERS_FILE_PATH.c_str()) != 0)
+	{
+		throw File_Error("Error with renaming the files when trying to remove a player!");
 	}
 }

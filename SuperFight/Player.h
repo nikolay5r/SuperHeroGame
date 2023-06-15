@@ -60,9 +60,9 @@ public:
 	PlayerFactory& operator=(const PlayerFactory&) = delete;
 
 	User* readFromBinary(std::ifstream& file) const override;
-	User* readFromBinary(std::ifstream& file, int index) const override;
 	User* readFromBinary(std::ifstream& file, const MyString& usernameToFind) const override;
 	User* createFromConsole() const override;
 };
 
-void savePlayerToFile(const Player& player);
+void saveToFile(const Player& player);
+void removeFromFile(const Player& player);
