@@ -7,5 +7,4 @@ namespace helper {
 	bool isLower(char a);
 	bool isDigit(char a);
 	size_t getFileSize(std::ifstream& file);
-	int findEntityIndexInFile(const MyString& filePath, const MyString& usernameToFind);
 }

@@ -4,6 +4,8 @@
 #include <utility>
 #include <fstream>
 #include "File_Error.h"
+#include "HelperFunctions.h"
+#include "Constants.h"
 
 Admin::Admin(const MyString& firstName, const MyString& lastName, const MyString& username, const MyString& email, const MyString& password)
 	: User(firstName, lastName, username, email, password, UserRole::Admin) {}
@@ -53,7 +55,19 @@ User* AdminFactory::createFromConsole() const
 	std::cin >> email;
 	validation::isEmailValid(email);
 
+	try
+	{
+		std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::binary);
+		readFromBinary(file, username);
+		file.close();
+	}
+	catch (const std::invalid_argument&)
+	{
 	return new Admin(firstName, lastName, username, email, password);
+}
+
+	throw std::invalid_argument("User with that username already exists!");
+
 }
 
 UserFactory* AdminFactory::getInstance()

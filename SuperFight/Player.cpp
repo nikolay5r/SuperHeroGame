@@ -40,11 +40,21 @@ Player::Player(User&& user) : User(std::move(user)) {}
 
 void Player::addSuperHero(const SuperHero& superHero)
 {
+	if (superHeroes.size() == constants::MAX_NUMBER_OF_SUPERHEROES_PER_PLAYER)
+	{
+		throw std::logic_error("You reached the limit of superheroes and cannot add more! Have to sell someone first!");
+	}
+
 	superHeroes.push_back(superHero);
 }
 
 void Player::addSuperHero(SuperHero&& superHero)
 {
+	if (superHeroes.size() == constants::MAX_NUMBER_OF_SUPERHEROES_PER_PLAYER)
+	{
+		throw std::logic_error("You reached the limit of superheroes and cannot add more! Have to sell someone first!");
+	}
+
 	superHeroes.push_back(std::move(superHero));
 }
 
@@ -293,28 +303,6 @@ User* PlayerFactory::readFromBinary(std::ifstream& file) const
 	return player;
 }
 
-User* PlayerFactory::readFromBinary(std::ifstream& file, int index) const
-{
-	if (!file.is_open())
-	{
-		throw File_Error("File couldn't open!");
-		return nullptr;
-	}
-
-	unsigned fileIndex = file.tellg();
-
-	if (index < helper::getFileSize(file))
-	{
-		throw std::invalid_argument("Given index is invalid! Bigger than size of file!");
-	}
-
-	file.seekg(index);
-	User* user = readFromBinary(file);
-	file.seekg(fileIndex);
-
-	return user;
-}
-
 User* PlayerFactory::readFromBinary(std::ifstream& file, const MyString& usernameToFind) const
 {
 	if (!file.is_open())
@@ -322,15 +310,21 @@ User* PlayerFactory::readFromBinary(std::ifstream& file, const MyString& usernam
 		throw File_Error("File couldn't open!");
 	}
 
-	int index = helper::findEntityIndexInFile(constants::PLAYERS_FILE_PATH, usernameToFind);
-
-	if (index == -1)
+	while (!file.eof())
 	{
-		throw std::invalid_argument("Username is not valid!");
+		User* curr = readFromBinary(file);
+		if (file.eof())
+		{
+			break;
+	}
+		if (curr->getUsername() == usernameToFind)
+{
+			return curr;
+	}
 	}
 
-	return readFromBinary(file, index);
-}
+		throw std::invalid_argument("Username is not valid!");
+	}
 
 UserFactory* PlayerFactory::getInstance()
 {
@@ -370,21 +364,26 @@ User* PlayerFactory::createFromConsole() const
 	std::cin >> email;
 	validation::isEmailValid(email);
 
-	if (helper::findEntityIndexInFile(constants::PLAYERS_USERNAMES_FILE_PATH, username) != -1)
+	try
 	{
-		throw std::invalid_argument("User with that username already exists!");
+		std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::binary);
+		readFromBinary(file, username);
+		file.close();
 	}
-
+	catch (const std::invalid_argument&)
+	{
 	return new Player(firstName, lastName, username, email, password);
 }
 
-//TODO: abstraction--
-void savePlayerToFile(const Player& player)
+	throw std::invalid_argument("User with that username already exists!");
+}
+
+void saveToFile(const Player& player)
 {
 	std::ofstream playersFile(constants::PLAYERS_FILE_PATH.c_str(), std::ios::binary | std::ios::app);
 	std::ofstream usernamesFile(constants::PLAYERS_USERNAMES_FILE_PATH.c_str(), std::ios::binary | std::ios::app);
 
-	if (!playersFile.is_open() || !usernamesFile.is_open())
+	if (!playersFile.is_open())
 	{
 		throw File_Error("File couldn't open!");
 	}
@@ -402,11 +401,6 @@ void savePlayerToFile(const Player& player)
 	size = player.getUsername().length();
 	playersFile.write((const char*)&size, sizeof(size));
 	playersFile.write(player.getUsername().c_str(), size + 1);
-
-	usernamesFile.write((const char*)&size, sizeof(size));
-	usernamesFile.write(player.getUsername().c_str(), size + 1);
-	usernamesFile.write((const char*)&index, sizeof(index));
-	usernamesFile.close();
 
 	size = player.getEmail().length();
 	playersFile.write((const char*)&size, sizeof(size));

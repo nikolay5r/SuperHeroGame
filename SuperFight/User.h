@@ -51,10 +51,12 @@ public:
 	UserFactory& operator=(const UserFactory&) = delete;
 
 	virtual User* readFromBinary(std::ifstream& file) const = 0;
-	virtual User* readFromBinary(std::ifstream& file, int index) const = 0;
 	virtual User* readFromBinary(std::ifstream& file, const MyString& username) const = 0;
 	virtual User* createFromConsole() const = 0;
 
 	static void freeInstance();
 	virtual ~UserFactory();
 };
+
+void saveToFile(const User& user);
+void removeFromFile(const User& user);

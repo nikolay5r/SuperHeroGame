@@ -78,8 +78,7 @@ public:
 	SuperHeroFactory& operator=(const SuperHeroFactory&) = delete;
 
 	SuperHero* readFromBinary(std::ifstream&) const;
-	SuperHero* readFromBinary(std::ifstream&, int index) const;
-	SuperHero* readFromBinary(std::ifstream&, const MyString& nickname, const MyString& filePathToReadNickname) const;
+	SuperHero* readFromBinary(std::ifstream&, const MyString& nickname) const;
 	void createFromConsole() const;
 
 	static void freeInstance();

@@ -1,4 +1,6 @@
 #include "User.h"
+#include "Player.h"
+#include "Admin.h"
 #include "Validation.h"
 
 void User::setFirstName(const MyString& firstName)
@@ -94,4 +96,46 @@ UserFactory::~UserFactory()
 {
 	delete UserFactory::instance;
 	UserFactory::instance = nullptr;
+}
+
+void saveToFile(const User& user)
+{
+	switch (user.getRole())
+	{
+	case UserRole::Admin:
+	{
+		const Admin& admin = static_cast<const Admin&>(user);
+		saveToFile(admin);
+		break;
+	}
+	case UserRole::Player:
+	{
+		const Player& player = static_cast<const Player&>(user);
+		saveToFile(player);
+		break;
+	}
+	default:
+		break;
+	}
+}
+
+void removeFromFile(const User& user)
+{
+	switch (user.getRole())
+	{
+	case UserRole::Admin:
+	{
+		const Admin& admin = static_cast<const Admin&>(user);
+		removeFromFile(admin);
+		break;
+	}
+	case UserRole::Player:
+	{
+		const Player& player = static_cast<const Player&>(user);
+		removeFromFile(player);
+		break;
+	}
+	default:
+		break;
+	}
 }

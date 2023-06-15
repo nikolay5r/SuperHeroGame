@@ -6,6 +6,7 @@
 #include <fstream>
 #include <cstdlib>
 #include "File_Error.h"
+#include "HelperFunctions.h"
 
 const unsigned SuperHero::xpNeededPerLevel[10] = { 3, 5, 10, 20, 30, 40, 50, 75, 90, 100 };
 
@@ -275,40 +276,23 @@ SuperHero* SuperHeroFactory::readFromBinary(std::ifstream& file) const
 	return superhero;
 }
 
-SuperHero* SuperHeroFactory::readFromBinary(std::ifstream& file, int index) const
-{
-	if (!file.is_open())
-	{
-		throw File_Error("File couldn't open!");
-		return nullptr;
-	}
-
-	unsigned fileIndex = file.tellg();
-
-	if (index < helper::getFileSize(file))
-	{
-		throw std::invalid_argument("Given index is invalid! Bigger than size of file!");
-	}
-
-	file.seekg(index);
-	SuperHero* superHero = readFromBinary(file);
-	file.seekg(fileIndex);
-
-	return superHero;
-}
-
-SuperHero* SuperHeroFactory::readFromBinary(std::ifstream& file, const MyString& nickname, const MyString& filePathToReadNickname) const
+SuperHero* SuperHeroFactory::readFromBinary(std::ifstream& file, const MyString& nickname) const
 {
 	if (!file.is_open())
 	{
 		throw File_Error("File couldn't open!");
 	}
 
-	int index = helper::findEntityIndexInFile(filePathToReadNickname, nickname);
+	while (!file.eof())
+	{
+		SuperHero* curr = readFromBinary(file);
+		if (curr->getNickname() == nickname)
+		{
+			return curr;
+		}
+	}
 
-	if (index == -1)
-{
-	return;
+	throw std::invalid_argument("Nickname is not valid!");
 }
 
 void SuperHeroFactory::createFromConsole() const
@@ -330,9 +314,7 @@ SuperHeroFactory::~SuperHeroFactory()
 
 void saveToFile(std::ofstream& file, const SuperHero& superhero)
 {
-	std::ofstream nicknamesFile(constants::OWNED_SUPERHEROES_NICKNAMES_FILE_PATH.c_str(), std::ios::binary);
-
-	if (!file.is_open() || !nicknamesFile.is_open())
+	if (!file.is_open())
 	{
 		throw File_Error("File couldn't open!");
 	}
@@ -350,10 +332,6 @@ void saveToFile(std::ofstream& file, const SuperHero& superhero)
 	size = superhero.getNickname().length();
 	file.write((const char*)&size, sizeof(size));
 	file.write(superhero.getNickname().c_str(), size + 1);
-
-	nicknamesFile.write((const char*)&size, sizeof(size));
-	nicknamesFile.write(superhero.getNickname().c_str(), size + 1);
-	nicknamesFile.write((const char*)&index, sizeof(index));
 
 	unsigned p = superhero.getPower();
 	file.write((const char*)&p, sizeof(p));
@@ -378,4 +356,15 @@ void saveToFile(std::ofstream& file, const SuperHero& superhero)
 
 	n = superhero.getAllowedPowerUpgrades();
 	file.write((const char*)&n, sizeof(n));
+}
+
+SuperHero* buy(std::ifstream& file, const MyString& nickname)
+{
+	if (!file.is_open())
+	{
+		throw File_Error("File couldn't open!");
+	}
+
+	SuperHeroFactory* factory = SuperHeroFactory::getInstance();
+	return nullptr;
 }
