@@ -7,35 +7,13 @@
 #include <cstdlib>
 #include "File_Error.h"
 #include "HelperFunctions.h"
+#include "Entity.h"
 
 const unsigned SuperHero::xpNeededPerLevel[10] = { 3, 5, 10, 20, 30, 40, 50, 75, 90, 100 };
 
 static int isPowerGreater(unsigned attackerPower, unsigned defenderPower)
 {
 	return attackerPower >= defenderPower ? (attackerPower == defenderPower ? 0 : 1) : -1;
-}
-
-void SuperHero::setFirstName(const MyString& firstName)
-{
-	validation::isNameValid(firstName);
-	this->firstName = firstName;
-}
-
-void SuperHero::setLastName(const MyString& lastName)
-{
-	validation::isNameValid(lastName);
-	this->lastName = lastName;
-}
-
-void SuperHero::setFullName() noexcept
-{
-	fullName = firstName + " " + lastName;
-}
-
-void SuperHero::setNickname(const MyString& nickname)
-{
-	validation::isNicknameValid(nickname);
-	this->nickname = nickname;
 }
 
 void SuperHero::setPrice() noexcept
@@ -53,11 +31,8 @@ void SuperHero::setPower(unsigned long long power)
 }
 
 SuperHero::SuperHero(const MyString& firstName, const MyString& lastName, const MyString& nickname, unsigned power, SuperHeroPowerType powerType)
+	: Entity(firstName, lastName, nickname)
 {
-	setFirstName(firstName);
-	setLastName(lastName);
-	setFullName();
-	setNickname(nickname);
 	this->powerType = powerType;
 	setPower(power);
 	setPrice();
@@ -76,26 +51,6 @@ unsigned SuperHero::getPrice() const noexcept
 SuperHeroPowerType SuperHero::getPowerType() const noexcept
 {
 	return powerType;
-}
-
-const MyString& SuperHero::getFirstName() const noexcept
-{
-	return firstName;
-}
-
-const MyString& SuperHero::getLastName() const noexcept
-{
-	return lastName;
-}
-
-const MyString& SuperHero::getFullName() const noexcept
-{
-	return fullName;
-}
-
-const MyString& SuperHero::getNickname() const noexcept
-{
-	return nickname;
 }
 
 SuperHeroPosition SuperHero::getPosition() const noexcept

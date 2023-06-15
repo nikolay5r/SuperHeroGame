@@ -25,20 +25,20 @@ void validation::isNameValid(const MyString& name)
 	}
 }
 
-void validation::isUsernameValid(const MyString& username) //at least 3 characters
+void validation::isNicknameValid(const MyString& nickname) //at least 3 characters
 {
-	size_t usernameLength = username.length();
+	size_t nicknameLength = nickname.length();
 
-	if (usernameLength > constants::MAX_USERNAME_LENGTH)
+	if (nicknameLength > constants::MAX_USERNAME_LENGTH)
 	{
-		throw std::length_error("Username should be no longer than 16 characters!");
+		throw std::length_error("Nickname should be no longer than 16 characters!");
 	}
 
-	for (size_t i = 0; i < usernameLength; i++)
+	for (size_t i = 0; i < nicknameLength; i++)
 	{
-		if (username[i] < 'a' || username[i] > 'z')
+		if (nickname[i] < 'a' || nickname[i] > 'z')
 		{
-			throw Regex_Error("Invalid characters found in Username!");
+			throw Regex_Error("Invalid characters found in Nickname!");
 		}
 	}
 }
@@ -108,31 +108,6 @@ void validation::isPasswordValid(const MyString& password) //at least one capita
 	if (countLowerLetters == 0)
 	{
 		throw Regex_Error("You should have at least one lower letter in your Password!");
-	}
-}
-
-void validation::isNicknameValid(const MyString& nickname) // between 3 and 16 characters, capital letters, digits, lower letters and 
-{
-	static MyString invalidNicknameCharacters = ",.?/<>:;\"'({[]})!@#$%^&*\\|+-_=";
-	size_t nicknameLength = nickname.length();
-
-	if (nicknameLength < constants::MIN_NICKNAME_LENGTH)
-	{
-		//TODO:
-		throw std::length_error("Nickname should be at least 3!");
-	}
-
-	if (!helper::isUpper(nickname[0]))
-	{
-		throw Regex_Error("First character of Nickname must be a capital letter!");
-	}
-
-	for (size_t i = 1; i < nicknameLength; i++)
-	{
-		if (invalidNicknameCharacters.find(nickname[i]) == std::string::npos)
-		{
-			throw Regex_Error("Invalid characters found in Nickname!");
-		}
 	}
 }
 

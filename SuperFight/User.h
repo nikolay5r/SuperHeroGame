@@ -1,6 +1,8 @@
 #pragma once
 #include <iostream>
 #include "MyString.h"
+#include "User.h"
+#include "Entity.h"
 
 enum class UserRole
 {
@@ -8,35 +10,21 @@ enum class UserRole
 	Player
 };
 
-class User
+class User : public Entity
 {
 protected:
-	MyString firstName;
-	MyString lastName;
-	MyString username;
 	MyString email;
 	MyString password;
-	MyString fullName;
 	UserRole role;
 
-	void setFirstName(const MyString& firstName);
-	void setLastName(const MyString& lastName);
 	void setEmail(const MyString& email);
 	void setPassword(const MyString& password);
-	void setUsername(const MyString& username);
-	void setFullName();
 public:
-	User(const MyString& firstName, const MyString& lastName, const MyString& username, const MyString& email, const MyString& password, UserRole role);
+	User(const MyString& firstName, const MyString& lastName, const MyString& nickname, const MyString& email, const MyString& password, UserRole role);
 
 	const MyString& getPassword() const noexcept;
 	const MyString& getEmail() const noexcept;
-	const MyString& getUsername() const noexcept;
-	const MyString& getFullName() const noexcept;
-	const MyString& getFirstName() const noexcept;
-	const MyString& getLastName() const noexcept;
 	UserRole getRole() const noexcept;
-
-	virtual void print() const = 0;
 
 	virtual ~User() = default;
 };
@@ -51,7 +39,7 @@ public:
 	UserFactory& operator=(const UserFactory&) = delete;
 
 	virtual User* readFromBinary(std::ifstream& file) const = 0;
-	virtual User* readFromBinary(std::ifstream& file, const MyString& username) const = 0;
+	virtual User* readFromBinary(std::ifstream& file, const MyString& nickname) const = 0;
 	virtual User* createFromConsole() const = 0;
 
 	static void freeInstance();

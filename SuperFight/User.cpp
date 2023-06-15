@@ -3,18 +3,6 @@
 #include "Admin.h"
 #include "Validation.h"
 
-void User::setFirstName(const MyString& firstName)
-{
-	validation::isNameValid(firstName);
-	this->firstName = firstName;
-}
-
-void User::setLastName(const MyString& lastName)
-{
-	validation::isNameValid(lastName);
-	this->lastName = lastName;
-}
-
 void User::setEmail(const MyString& email)
 {
 	validation::isEmailValid(email);
@@ -27,26 +15,11 @@ void User::setPassword(const MyString& password)
 	this->password = password;
 }
 
-void User::setUsername(const MyString& username)
+User::User(const MyString& firstName, const MyString& lastName, const MyString& nickname, const MyString& email, const MyString& password, UserRole role)
+	: Entity(firstName, lastName, nickname), role(role)
 {
-	validation::isUsernameValid(username);
-	this->username = username;
-}
-
-void User::setFullName()
-{
-	fullName = firstName + " " + lastName;
-}
-
-User::User(const MyString& firstName, const MyString& lastName, const MyString& username, const MyString& email, const MyString& password, UserRole role)
-	: role(role)
-{
-	setFirstName(firstName);
-	setLastName(lastName);
-	setFullName();
 	setEmail(email);
 	setPassword(password);
-	setUsername(username);
 }
 
 UserRole User::getRole() const noexcept
@@ -62,26 +35,6 @@ const MyString& User::getPassword() const noexcept
 const MyString& User::getEmail() const noexcept
 {
 	return email;
-}
-
-const MyString& User::getUsername() const noexcept
-{
-	return username;
-}
-
-const MyString& User::getFullName() const noexcept
-{
-	return fullName;
-}
-
-const MyString& User::getFirstName() const noexcept
-{
-	return firstName;
-}
-
-const MyString& User::getLastName() const noexcept
-{
-	return lastName;
 }
 
 UserFactory* UserFactory::instance = nullptr;

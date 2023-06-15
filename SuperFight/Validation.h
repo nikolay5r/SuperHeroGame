@@ -5,7 +5,7 @@
 namespace validation
 {
 	void isNameValid(const MyString& name);
-	void isUsernameValid(const MyString& username);
+	void isNicknameValid(const MyString& nickname);
 	void isEmailValid(const MyString& email);
 	void isPasswordValid(const MyString& password);
 	void isNicknameValid(const MyString& nickname);

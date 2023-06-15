@@ -7,8 +7,8 @@
 #include "HelperFunctions.h"
 #include "Constants.h"
 
-Admin::Admin(const MyString& firstName, const MyString& lastName, const MyString& username, const MyString& email, const MyString& password)
-	: User(firstName, lastName, username, email, password, UserRole::Admin) {}
+Admin::Admin(const MyString& firstName, const MyString& lastName, const MyString& nickname, const MyString& email, const MyString& password)
+	: User(firstName, lastName, nickname, email, password, UserRole::Admin) {}
 
 Admin::Admin(const User& user) : User(user) {}
 
@@ -16,10 +16,10 @@ Admin::Admin(User&& user) : User(std::move(user)) {}
 
 void Admin::print() const
 {
-	std::cout << username << " | " << fullName << " | " << email;
+	std::cout << nickname << " | " << fullName << " | " << email;
 }
 
-User* AdminFactory::readFromBinary(std::ifstream& file, const MyString& username) const
+User* AdminFactory::readFromBinary(std::ifstream& file, const MyString& nickname) const
 {
 	if (!file.is_open())
 	{
@@ -31,7 +31,7 @@ User* AdminFactory::createFromConsole() const
 {
 	MyString firstName;
 	MyString lastName;
-	MyString username;
+	MyString nickname;
 	MyString email;
 	MyString password;
 
@@ -43,9 +43,9 @@ User* AdminFactory::createFromConsole() const
 	std::cin >> lastName;
 	validation::isNameValid(lastName);
 
-	std::cout << "Enter username of the admin: ";
-	std::cin >> username;
-	validation::isUsernameValid(username);
+	std::cout << "Enter nickname of the admin: ";
+	std::cin >> nickname;
+	validation::isNicknameValid(nickname);
 
 	std::cout << "Enter password for the admin: ";
 	std::cin >> password;
@@ -58,15 +58,15 @@ User* AdminFactory::createFromConsole() const
 	try
 	{
 		std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::binary);
-		readFromBinary(file, username);
+		readFromBinary(file, nickname);
 		file.close();
 	}
 	catch (const std::invalid_argument&)
 	{
-		return new Admin(firstName, lastName, username, email, password);
+		return new Admin(firstName, lastName, nickname, email, password);
 	}
 
-	throw std::invalid_argument("User with that username already exists!");
+	throw std::invalid_argument("User with that nickname already exists!");
 
 }
 

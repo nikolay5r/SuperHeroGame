@@ -7,7 +7,7 @@ namespace constants
 	const short INITIAL_CAPACITY = 4;
 
 	const size_t MAX_PASSWORD_LENGTH = 16;
-	const size_t MAX_USERNAME_LENGTH = 3;
+	const size_t MAX_USERNAME_LENGTH = 16;
 	const size_t MIN_PASSWORD_LENGTH = 5;
 	const size_t MIN_NICKNAME_LENGTH = 3;
 	const unsigned MAX_POWER_ON_FIRST_LEVEL = 50;
