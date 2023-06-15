@@ -31,8 +31,8 @@ size_t Player::nicknameToIndex(const MyString& nickname) const noexcept
 	return std::string::npos;
 }
 
-Player::Player(const MyString& firstName, const MyString& lastName, const MyString& username, const MyString& email, const MyString& password)
-	: User(firstName, lastName, username, email, password, UserRole::Player) {}
+Player::Player(const MyString& firstName, const MyString& lastName, const MyString& nickname, const MyString& email, const MyString& password)
+	: User(firstName, lastName, nickname, email, password, UserRole::Player) {}
 
 Player::Player(const User& user) : User(user) {}
 
@@ -236,7 +236,7 @@ void Player::changePositionOfSuperHero(const MyString& nickname)
 
 void Player::print() const
 {
-	std::cout << username << " " << coins << " coins" << std::endl;
+	std::cout << nickname << " " << coins << " coins" << std::endl;
 	for (size_t i = 0; i < superHeroes.size(); i++)
 	{
 		std::cout << "\t" << i << ". " << superHeroes[i].getNickname() << std::endl;
@@ -270,8 +270,8 @@ User* PlayerFactory::readFromBinary(std::ifstream& file) const
 	file.read(lastName, n + 1);
 
 	file.read((char*)&n, sizeof(n));
-	char* username = new char[n + 1];
-	file.read(username, n + 1);
+	char* nickname = new char[n + 1];
+	file.read(nickname, n + 1);
 
 	file.read((char*)&n, sizeof(n));
 	char* email = new char[n + 1];
@@ -281,11 +281,11 @@ User* PlayerFactory::readFromBinary(std::ifstream& file) const
 	char* password = new char[n + 1];
 	file.read(password, n + 1);
 
-	Player* player = new Player(firstName, lastName, username, email, password);
+	Player* player = new Player(firstName, lastName, nickname, email, password);
 
 	delete[] firstName;
 	delete[] lastName;
-	delete[] username;
+	delete[] nickname;
 	delete[] email;
 	delete[] password;
 
@@ -303,7 +303,7 @@ User* PlayerFactory::readFromBinary(std::ifstream& file) const
 	return player;
 }
 
-User* PlayerFactory::readFromBinary(std::ifstream& file, const MyString& usernameToFind) const
+User* PlayerFactory::readFromBinary(std::ifstream& file, const MyString& nicknameToFind) const
 {
 	if (!file.is_open())
 	{
@@ -317,13 +317,13 @@ User* PlayerFactory::readFromBinary(std::ifstream& file, const MyString& usernam
 		{
 			break;
 		}
-		if (curr->getUsername() == usernameToFind)
+		if (curr->getNickname() == nicknameToFind)
 		{
 			return curr;
 		}
 	}
 
-	throw std::invalid_argument("Username is not valid!");
+	throw std::invalid_argument("Nickname is not valid!");
 }
 
 UserFactory* PlayerFactory::getInstance()
@@ -340,7 +340,7 @@ User* PlayerFactory::createFromConsole() const
 {
 	MyString firstName;
 	MyString lastName;
-	MyString username;
+	MyString nickname;
 	MyString email;
 	MyString password;
 
@@ -352,9 +352,9 @@ User* PlayerFactory::createFromConsole() const
 	std::cin >> lastName;
 	validation::isNameValid(lastName);
 
-	std::cout << "Enter username of the player: ";
-	std::cin >> username;
-	validation::isUsernameValid(username);
+	std::cout << "Enter nickname of the player: ";
+	std::cin >> nickname;
+	validation::isNicknameValid(nickname);
 
 	std::cout << "Enter password for the player: ";
 	std::cin >> password;
@@ -367,15 +367,15 @@ User* PlayerFactory::createFromConsole() const
 	try
 	{
 		std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::binary);
-		readFromBinary(file, username);
+		readFromBinary(file, nickname);
 		file.close();
 	}
 	catch (const std::invalid_argument&)
 	{
-		return new Player(firstName, lastName, username, email, password);
+		return new Player(firstName, lastName, nickname, email, password);
 	}
 
-	throw std::invalid_argument("User with that username already exists!");
+	throw std::invalid_argument("User with that nickname already exists!");
 }
 
 void saveToFile(const Player& player)
@@ -397,9 +397,9 @@ void saveToFile(const Player& player)
 	playersFile.write((const char*)&size, sizeof(size));
 	playersFile.write(player.getLastName().c_str(), size + 1);
 
-	size = player.getUsername().length();
+	size = player.getNickname().length();
 	playersFile.write((const char*)&size, sizeof(size));
-	playersFile.write(player.getUsername().c_str(), size + 1);
+	playersFile.write(player.getNickname().c_str(), size + 1);
 
 	size = player.getEmail().length();
 	playersFile.write((const char*)&size, sizeof(size));
@@ -420,55 +420,20 @@ void saveToFile(const Player& player)
 	}
 }
 
+
 void removeFromFile(const Player& player)
 {
 	std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::binary);
 	std::ofstream newFile("newFile.bin", std::ios::binary);
-
-	int indexStart = 0;
-	int indexEnd = 0;
-
-	UserFactory* factory = PlayerFactory::getInstance();
 
 	if (!file.is_open() || !newFile.is_open())
 	{
 		throw File_Error("File couldn't open!");
 	}
 
-	while (!file.eof())
-	{
-		indexStart = file.tellg();
-		User* curr = factory->readFromBinary(file);
-		if (file.eof())
-		{
-			break;
-		}
-		if (player.getUsername() == curr->getUsername())
-		{
-			indexEnd = file.tellg();
-		}
-	}
+	int indexStart = -1;
+	int indexEnd = -1;
 
-	file.seekg(0, std::ios::beg);
-
-	//We are making a buffer to store the data from 0 index of the file to the start index of the player and then transfering the data to the new file
-	char* buffer = new char[indexStart + 1];
-	file.read(buffer, indexStart);
-	newFile.write((const char*)&buffer, indexStart);
-	delete[] buffer;
-
-	//The same we are doing for the rest of the data after the player's data
-	size_t fileSize = helper::getFileSize(file);
-	file.seekg(indexEnd);
-	buffer = new char[fileSize - indexEnd + 1];
-	file.read(buffer, fileSize - indexEnd);
-	newFile.write((const char*)&buffer, fileSize - indexEnd);
-	delete[] buffer;
-
-	file.close();
-	newFile.close();
-	if (rename("newFile.bin", constants::PLAYERS_FILE_PATH.c_str()) != 0)
-	{
-		throw File_Error("Error with renaming the files when trying to remove a player!");
-	}
+	helper::getStartIndexAndEndIndexOfEntityInFile(file, indexStart, indexEnd, player);
+	helper::deleteDataFromFile(file, indexStart, indexEnd);
 }

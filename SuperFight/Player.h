@@ -16,7 +16,7 @@ class Player : public User
 
 public:
 
-	Player(const MyString& firstName, const MyString& lastName, const MyString& username, const MyString& email, const MyString& password);
+	Player(const MyString& firstName, const MyString& lastName, const MyString& nickname, const MyString& email, const MyString& password);
 	Player(const User& user);
 	Player(User&& user);
 
@@ -60,7 +60,7 @@ public:
 	PlayerFactory& operator=(const PlayerFactory&) = delete;
 
 	User* readFromBinary(std::ifstream& file) const override;
-	User* readFromBinary(std::ifstream& file, const MyString& usernameToFind) const override;
+	User* readFromBinary(std::ifstream& file, const MyString& nicknameToFind) const override;
 	User* createFromConsole() const override;
 };
 
