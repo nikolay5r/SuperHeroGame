@@ -16,6 +16,7 @@ protected:
 	virtual void reg() = 0;
 	virtual void showMarket() const = 0;
 	virtual void showPlayers() const = 0;
+	virtual void deleteProfile() = 0;
 public:
 	System(const System&) = delete;
 	System& operator=(const System&) = delete;
@@ -35,6 +36,8 @@ class PlayerSystem : public System
 	void showPlayers() const override;
 	void buySuperHero() const;
 	void sellSuperHero() const;
+	void battle() const;
+	void deleteProfile() override;
 public:
 
 	static System* getInstance();
@@ -50,6 +53,7 @@ class AdminSystem : public System
 	void reg() override {};
 	void showMarket() const override {};
 	void showPlayers() const override {};
+	void deleteProfile() override {};
 public:
 
 	static System* getInstance();

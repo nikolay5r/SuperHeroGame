@@ -118,6 +118,19 @@ void PlayerSystem::sellSuperHero() const
 	sell(buff);
 }
 
+void PlayerSystem::deleteProfile()
+{
+	//try
+	removeFromFile(*currentUser);
+
+	UserFactory::freeInstance();
+	SuperHeroFactory::freeInstance();
+
+	delete currentUser;
+	currentUser = nullptr;
+	std::cout << "You deleted your account successfully!" << std::endl;
+}
+
 void PlayerSystem::buySuperHero() const
 {
 	SuperHero* superhero = nullptr;
@@ -212,7 +225,8 @@ void PlayerSystem::showPlayers() const
 		else
 		{
 			MyString buff;
-			std::cout << "If you want to see more players enter 'forward' or if you want to go back enter 'back'";
+			std::cout << "If you want to see more players enter 'forward' or if you want to go back enter 'back';" << std::endl
+				<< "If you want to fight with other players type 'battle': ";
 			std::cin >> buff;
 			if (buff == "forward")
 			{
@@ -222,9 +236,9 @@ void PlayerSystem::showPlayers() const
 			{
 				break;
 			}
-			else if (buff == "buy")
+			else if (buff == "battle")
 			{
-
+				battle();
 			}
 			else
 			{
@@ -253,7 +267,8 @@ void PlayerSystem::run()
 					<< "  0 - logout" << std::endl
 					<< "  1 - show all players" << std::endl
 					<< "  2 - show market" << std::endl
-					<< "  3 - exit" << std::endl;
+					<< "  3 - delete your profile" << std::endl
+					<< "  4 - exit" << std::endl;
 
 				std::cin >> n;
 			}
@@ -270,6 +285,9 @@ void PlayerSystem::run()
 				showMarket();
 				break;
 			case 3:
+				deleteProfile();
+				break;
+			case 4:
 				logout();
 				end = true;
 				break;
