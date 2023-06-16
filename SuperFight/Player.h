@@ -35,13 +35,13 @@ public:
 	void sellSuperHero(const MyString& nickname);
 	void sellSuperHero(size_t index);
 
-	void attack(Player& defender);
-	void attack(Player& defender, size_t defenderIndex);
-	void attack(Player& defender, const MyString& defenderNickname);
-	void attack(size_t attackerIndex, Player& defender);
-	void attack(const MyString& attackerNickname, Player& defender);
-	void attack(size_t attackerIndex, Player& defender, size_t defenderIndex);
-	void attack(const MyString& attackerNickname, Player& defender, const MyString& defenderNickname);
+	int attack(Player& defender);
+	int attack(Player& defender, size_t defenderIndex);
+	int attack(Player& defender, const MyString& defenderNickname);
+	int attack(size_t attackerIndex, Player& defender);
+	int attack(const MyString& attackerNickname, Player& defender);
+	int attack(size_t attackerIndex, Player& defender, size_t defenderIndex);
+	int attack(const MyString& attackerNickname, Player& defender, const MyString& defenderNickname);
 
 	void powerUpSuperHero(size_t index);
 	void powerUpSuperHero(const MyString& nickname);
@@ -53,6 +53,7 @@ public:
 	void changePositionOfSuperHero(const MyString& nickname);
 
 	void print() const override;
+	unsigned getCoins() const;
 	size_t getNumberOfSuperHeroes() const;
 	const MyVector<SuperHero>& getSuperHeroes() const;
 
@@ -69,6 +70,7 @@ public:
 	PlayerFactory& operator=(const PlayerFactory&) = delete;
 
 	User* readFromBinary(std::ifstream& file) const override;
+	User* readFromBinary(const MyString& nicknameToFind) const override;
 	User* readFromBinary(std::ifstream& file, const MyString& nicknameToFind) const override;
 	User* createFromConsole() const override;
 };

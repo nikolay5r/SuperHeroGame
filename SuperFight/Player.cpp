@@ -144,43 +144,43 @@ void Player::sellSuperHero(size_t index)
 	removeSuperHero(index);
 }
 
-void Player::attack(Player& defender)
+int Player::attack(Player& defender)
 {
 	srand(time(0));
 	size_t attackerIndex = rand() % superHeroes.size();
 	size_t defenderIndex = rand() % defender.superHeroes.size();
 
-	attack(attackerIndex, defender, defenderIndex);
+	return attack(attackerIndex, defender, defenderIndex);
 }
 
-void Player::attack(Player& defender, size_t defenderIndex)
+int Player::attack(Player& defender, size_t defenderIndex)
 {
 	srand(time(0));
 	size_t attackerIndex = rand() % superHeroes.size();
 
-	attack(attackerIndex, defender, defenderIndex);
+	return attack(attackerIndex, defender, defenderIndex);
 }
 
-void Player::attack(Player& defender, const MyString& defenderNickname)
+int Player::attack(Player& defender, const MyString& defenderNickname)
 {
 	size_t defenderIndex = defender.nicknameToIndex(defenderNickname);
-	attack(defender, defenderIndex);
+	return attack(defender, defenderIndex);
 }
 
-void Player::attack(size_t attackerIndex, Player& defender)
+int Player::attack(size_t attackerIndex, Player& defender)
 {
 	srand(time(0));
 	size_t defenderIndex = rand() % defender.superHeroes.size();
-	attack(attackerIndex, defender, defenderIndex);
+	return attack(attackerIndex, defender, defenderIndex);
 }
 
-void Player::attack(const MyString& attackerNickname, Player& defender)
+int Player::attack(const MyString& attackerNickname, Player& defender)
 {
 	size_t attackerIndex = nicknameToIndex(attackerNickname);
-	attack(attackerIndex, defender);
+	return attack(attackerIndex, defender);
 }
 
-void Player::attack(size_t attackerIndex, Player& defender, size_t defenderIndex)
+int Player::attack(size_t attackerIndex, Player& defender, size_t defenderIndex)
 {
 	attestIndex(attackerIndex);
 
@@ -189,6 +189,7 @@ void Player::attack(size_t attackerIndex, Player& defender, size_t defenderIndex
 	if (defender.superHeroes.isEmpty())
 	{
 		defender.coins = defender.coins < attackerPower ? 0 : defender.coins - attackerPower;
+		return 2;
 	}
 
 	defender.attestIndex(defenderIndex);
@@ -207,10 +208,13 @@ void Player::attack(size_t attackerIndex, Player& defender, size_t defenderIndex
 
 		superHeroes[attackerIndex].gainXP();
 		defender.removeSuperHero(defenderIndex);
+
+		return 1;
 	}
 	else if (superHeroes[attackerIndex].fight(defender.superHeroes[defenderIndex]) == 0)
 	{
 		coins = coins < constants::COINS_TO_LOSE_WHEN_TIE ? 0 : coins - constants::COINS_TO_LOSE_WHEN_TIE;
+		return 0;
 	}
 	else
 	{
@@ -220,16 +224,18 @@ void Player::attack(size_t attackerIndex, Player& defender, size_t defenderIndex
 
 		removeSuperHero(attackerIndex);
 		defender.superHeroes[defenderIndex].gainXP();
+
+		return -1;
 	}
 
 }
 
-void Player::attack(const MyString& attackerNickname, Player& defender, const MyString& defenderNickname)
+int Player::attack(const MyString& attackerNickname, Player& defender, const MyString& defenderNickname)
 {
 	size_t attackerIndex = nicknameToIndex(attackerNickname);
 	size_t defenderIndex = nicknameToIndex(defenderNickname);
 
-	attack(attackerIndex, defender, defenderIndex);
+	return attack(attackerIndex, defender, defenderIndex);
 }
 
 void Player::powerUpSuperHero(size_t index)
@@ -318,6 +324,11 @@ const MyVector<SuperHero>& Player::getSuperHeroes() const
 	return superHeroes;
 }
 
+unsigned Player::getCoins() const
+{
+	return coins;
+}
+
 User* PlayerFactory::readFromBinary(std::ifstream& file) const
 {
 	if (!file.is_open())
@@ -366,6 +377,21 @@ User* PlayerFactory::readFromBinary(std::ifstream& file) const
 	}
 
 	return player;
+}
+
+User* PlayerFactory::readFromBinary(const MyString& nicknameToFind) const
+{
+	std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::binary);
+
+	if (!file.is_open())
+	{
+		throw File_Error("File couldn't open!");
+	}
+
+	User* user = readFromBinary(file, nicknameToFind);
+
+	file.close();
+	return user;
 }
 
 User* PlayerFactory::readFromBinary(std::ifstream& file, const MyString& nicknameToFind) const

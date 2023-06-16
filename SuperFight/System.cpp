@@ -118,6 +118,78 @@ void PlayerSystem::sellSuperHero() const
 	sell(buff);
 }
 
+static void printResultOfBattle(int result, int playerCoins, int otherPlayerCoins, const Player& player, const Player& otherPlayer)
+{
+	switch (result)
+	{
+	case 1:
+		std::cout << "You won!" << std::endl
+			<< "You won " << player.getCoins() - playerCoins << " coins." << std::endl
+			<< "Enemy lost " << otherPlayerCoins - otherPlayer.getCoins() << " coins." << std::endl;
+		break;
+	case 0:
+		std::cout << "It was a tie!" << std::endl
+			<< "You lost " << playerCoins - player.getCoins() << " coins." << std::endl;
+		break;
+	case -1:
+		std::cout << "You lost!" << std::endl
+			<< "You lost " << playerCoins - player.getCoins() << " coins." << std::endl
+			<< "Enemy won " << otherPlayer.getCoins() - otherPlayerCoins << " coins." << std::endl;
+		break;
+	default:
+		std::cout << "I don't know what happened!" << std::endl;
+		break;
+	}
+}
+
+void PlayerSystem::battle() const
+{
+	MyString buff;
+	Player* player = static_cast<Player*>(currentUser);
+	if (player->getNumberOfSuperHeroes() == 0)
+	{
+		throw std::logic_error("You have no superheroes! You have to buy at least to start fighting!");
+	}
+
+	std::cout << "Enter player you want to attack: ";
+	std::cin >> buff;
+	UserFactory* factory = PlayerFactory::getInstance();
+	User* user = factory->readFromBinary(buff);
+	Player* otherPlayer = static_cast<Player*>(user);
+	unsigned playerCoinsAtStart = player->getCoins();
+	unsigned otherPlayerCoinsAtStart = otherPlayer->getCoins();
+	if (otherPlayer->getNumberOfSuperHeroes() == 0)
+	{
+		player->attack(*otherPlayer, 0);
+		std::cout << "Enemy didn't have any superheroes! You won!" << std::endl
+			<< "Enemy lost " << otherPlayerCoinsAtStart - otherPlayer->getCoins() << " conins." << std::endl;
+	}
+
+	MyString nickname1;
+	MyString nickname2;
+	std::cout << "Enter nickname of your superhero(if you want to attack with random superhero enter '-'): ";
+	std::cin >> nickname1;
+	std::cout << "Enter nickname of your superhero(if you want to attack with random superhero enter '-'): ";
+	std::cin >> nickname2;
+
+	if (nickname1 == "-" && nickname2 == "-")
+	{
+		printResultOfBattle(player->attack(*otherPlayer), playerCoinsAtStart, otherPlayerCoinsAtStart, *player, *otherPlayer);
+	}
+	else if (nickname1 == "-")
+	{
+		printResultOfBattle(player->attack(*otherPlayer, nickname2), playerCoinsAtStart, otherPlayerCoinsAtStart, *player, *otherPlayer);
+	}
+	else if (nickname2 == "-")
+	{
+		printResultOfBattle(player->attack(nickname1, *otherPlayer), playerCoinsAtStart, otherPlayerCoinsAtStart, *player, *otherPlayer);
+	}
+	else
+	{
+		printResultOfBattle(player->attack(nickname1, *otherPlayer, nickname2), playerCoinsAtStart, otherPlayerCoinsAtStart, *player, *otherPlayer);
+	}
+}
+
 void PlayerSystem::deleteProfile()
 {
 	//try
