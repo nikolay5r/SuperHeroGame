@@ -20,7 +20,7 @@ void Player::attestIndex(size_t index) const
 {
 	if (index >= superHeroes.size())
 	{
-		throw std::invalid_argument("There is no such superhero! Error occured when trying to attack!");
+		throw std::invalid_argument("There is no such superhero!");
 	}
 }
 
@@ -108,7 +108,6 @@ void Player::buySuperHero(SuperHero&& superHero)
 	unsigned price = superHero.getPrice();
 	if (coins < price)
 	{
-		//TODO
 		throw std::logic_error("Not enough coins! Cannot afford it!");
 	}
 	coins -= price;
@@ -148,7 +147,6 @@ void Player::sellSuperHero(const MyString& nickname)
 	size_t index = nicknameToIndex(nickname);
 	removeSuperHero(index);
 	coins += superHeroes[index].getPrice() / 2;
-	removeSuperHero(nickname);
 }
 
 void Player::sellSuperHero(size_t index)
@@ -157,7 +155,6 @@ void Player::sellSuperHero(size_t index)
 	{
 		throw std::invalid_argument("Invalid index of superhero when trying to delete!");
 	}
-	coins += superHeroes[index].getPrice() / 2;
 	removeSuperHero(index);
 	coins += superHeroes[index].getPrice() / 2;
 }
@@ -566,4 +563,52 @@ void removeFromFile(const Player& player)
 
 	helper::getStartIndexAndEndIndexOfEntityInFile(constants::PLAYERS_FILE_PATH, indexStart, indexEnd, player);
 	helper::deleteDataFromFile(constants::PLAYERS_FILE_PATH, indexStart, indexEnd);
+}
+
+unsigned printPlayersAndGetCountOfPrinted(unsigned count)
+{
+	std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::in | std::ios::binary);;
+
+	if (!file.is_open())
+	{
+		throw File_Error("File couldn't open!");
+	}
+
+	unsigned countOfPrintedPlayers = 0;
+	while (!file.eof())
+	{
+		UserFactory* factory = PlayerFactory::getInstance();
+		User* player = factory->readFromBinary(file);
+		player->printShortInfo();
+		countOfPrintedPlayers++;
+		delete player;
+	}
+
+	file.close();
+
+	return countOfPrintedPlayers;
+}
+
+unsigned printPlayersAndGetCountOfPrintedForAdmins(unsigned count)
+{
+	std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::in | std::ios::binary);;
+
+	if (!file.is_open())
+	{
+		throw File_Error("File couldn't open!");
+	}
+
+	unsigned countOfPrintedPlayers = 0;
+	while (!file.eof())
+	{
+		UserFactory* factory = PlayerFactory::getInstance();
+		User* player = factory->readFromBinary(file);
+		player->printFullInfo();
+		countOfPrintedPlayers++;
+		delete player;
+	}
+
+	file.close();
+
+	return countOfPrintedPlayers;
 }

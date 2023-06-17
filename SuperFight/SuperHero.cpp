@@ -403,3 +403,26 @@ void sell(const MyString& nickname)
 	saveToFile(constants::MARKET_SUPERHEROES_FILE_PATH, *superhero);
 	delete superhero;
 }
+
+unsigned printSuperheroesAndGetCountOfPrinted(const MyString& fileName, unsigned count)
+{
+	std::ifstream file(fileName.c_str(), std::ios::in | std::ios::binary);;
+
+	if (!file.is_open())
+	{
+		throw File_Error("File couldn't open!");
+	}
+
+	unsigned countOfPrintedSuperheroes = 0;
+	while (!file.eof())
+	{
+		SuperHeroFactory* factory = SuperHeroFactory::getInstance();
+		SuperHero* superhero = factory->readFromBinary(file);
+		superhero->printShortInfo();
+		countOfPrintedSuperheroes++;
+		delete superhero;
+	}
+
+	file.close();
+	return countOfPrintedSuperheroes;
+}

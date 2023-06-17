@@ -68,7 +68,7 @@ public:
 	SuperHeroFactory& operator=(const SuperHeroFactory&) = delete;
 
 	SuperHero* readFromBinary(std::ifstream&) const;
-	SuperHero* readFromBinary(const MyString&, const MyString& nickname) const;
+	SuperHero* readFromBinary(const MyString& fileName, const MyString& nickname) const;
 	SuperHero* readFromBinary(std::ifstream&, const MyString& nickname) const;
 	void createFromConsole() const;
 
@@ -81,3 +81,4 @@ void saveToFile(const MyString& fileName, const SuperHero& superhero);
 void removeFromFile(const MyString& fileName, const SuperHero& superhero);
 SuperHero* buy(const MyString& nickname);
 void sell(const MyString& nickname);
+unsigned printSuperheroesAndGetCountOfPrinted(const MyString& fileName, unsigned count);
