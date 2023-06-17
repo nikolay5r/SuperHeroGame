@@ -9,7 +9,8 @@ public:
 	Admin(const User& user);
 	Admin(User&& user);
 
-	void print() const override;
+	void printShortInfo() const override;
+	void printFullInfo() const override;
 
 	friend class AdminFactory;
 };

@@ -22,7 +22,8 @@ public:
 	const MyString& getFirstName() const noexcept;
 	const MyString& getLastName() const noexcept;
 
-	virtual void print() const = 0;
+	virtual void printShortInfo() const = 0;
+	virtual void printFullInfo() const = 0;
 	virtual ~Entity() = default;
 };
 

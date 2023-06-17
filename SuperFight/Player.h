@@ -12,7 +12,8 @@ class Player : public User
 
 	size_t nicknameToIndex(const MyString& nickname) const noexcept;
 
-	bool attestIndex(size_t index) const;
+	void checkIfSuperheroIsOwnedAlready(const MyString& nickname) const;
+	void attestIndex(size_t index) const;
 
 public:
 
@@ -52,7 +53,8 @@ public:
 	void changePositionOfSuperHero(size_t index);
 	void changePositionOfSuperHero(const MyString& nickname);
 
-	void print() const override;
+	void printShortInfo() const override;
+	void printFullInfo() const override;
 	unsigned getCoins() const;
 	size_t getNumberOfSuperHeroes() const;
 	const MyVector<SuperHero>& getSuperHeroes() const;

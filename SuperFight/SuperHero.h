@@ -51,7 +51,8 @@ public:
 	void powerUp();
 	void gainXP() noexcept;
 
-	void print() const;
+	void printShortInfo() const;
+	void printFullInfo() const;
 
 	friend class SuperHeroFactory;
 };

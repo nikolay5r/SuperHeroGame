@@ -141,7 +141,33 @@ bool SuperHero::getAttackInfo() const noexcept
 	return hasAttacked;
 }
 
-void SuperHero::print() const
+void SuperHero::printFullInfo() const
+{
+	std::cout << fullName << " | " << nickname << " | " << power << " | ";
+	switch (powerType)
+	{
+	case SuperHeroPowerType::Air:
+		std::cout << "Air" << " | ";
+		break;
+	case SuperHeroPowerType::Water:
+		std::cout << "Water" << " | ";
+		break;
+	case SuperHeroPowerType::Earth:
+		std::cout << "Earth" << " | ";
+		break;
+	case SuperHeroPowerType::Fire:
+		std::cout << "Fire" << " | ";
+		break;
+	default:
+		throw std::logic_error("Something went wrong with the power type!");
+		break;
+	}
+
+	std::cout << price << " coins | " << level << " level | " << powerLevel << " power level | " << xp
+		<< "/" << (level >= 10 ? xpNeededPerLevel[9] : xpNeededPerLevel[level - 1]) << " xp." << std::endl;
+}
+
+void SuperHero::printShortInfo() const
 {
 	std::cout << nickname << " | " << power << " | ";
 	switch (powerType)
@@ -170,6 +196,8 @@ uint8_t SuperHero::getXP() const noexcept
 {
 	return xp;
 }
+
+
 
 uint8_t SuperHero::getAllowedPowerUpgrades() const noexcept
 {

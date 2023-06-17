@@ -305,7 +305,24 @@ void Player::changePositionOfSuperHero(const MyString& nickname)
 	changePositionOfSuperHero(index);
 }
 
-void Player::print() const
+void Player::printFullInfo() const
+{
+	std::cout << fullName << " | " << nickname << " | " << email << " | " << coins << " coins" << std::endl;
+	if (superHeroes.size() == 0)
+	{
+		std::cout << "\tYou have no superheroes." << std::endl;
+	}
+	else
+	{
+		for (size_t i = 0; i < superHeroes.size(); i++)
+		{
+			std::cout << "\t" << i << ". ";
+			superHeroes[i].printFullInfo();
+		}
+	}
+}
+
+void Player::printShortInfo() const
 {
 	std::cout << nickname << " " << coins << " coins" << std::endl;
 	for (size_t i = 0; i < superHeroes.size(); i++)

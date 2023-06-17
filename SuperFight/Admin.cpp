@@ -14,7 +14,12 @@ Admin::Admin(const User& user) : User(user) {}
 
 Admin::Admin(User&& user) : User(std::move(user)) {}
 
-void Admin::print() const
+void Admin::printShortInfo() const
+{
+	std::cout << fullName << " | " << nickname << " | ";
+}
+
+void Admin::printFullInfo() const
 {
 	std::cout << nickname << " | " << fullName << " | " << email;
 }
