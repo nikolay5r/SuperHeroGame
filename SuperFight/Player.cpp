@@ -614,7 +614,7 @@ void removeFromFile(const Player& player)
 	helper::deleteDataFromFile(constants::PLAYERS_FILE_PATH, indexStart, indexEnd);
 }
 
-unsigned printPlayersAndGetCountOfPrinted(unsigned count)
+unsigned printPlayersAndGetCountOfPrinted()
 {
 	std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::in | std::ios::binary);;
 
@@ -638,7 +638,7 @@ unsigned printPlayersAndGetCountOfPrinted(unsigned count)
 	return countOfPrintedPlayers;
 }
 
-unsigned printPlayersAndGetCountOfPrintedForAdmins(unsigned count)
+unsigned printPlayersAndGetCountOfPrintedForAdmins()
 {
 	std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::in | std::ios::binary);;
 

@@ -35,4 +35,4 @@ public:
 
 void saveToFile(const Admin& admin);
 void removeFromFile(const Admin& admin);
-void printAdminsAndGetCountOfPrinted(unsigned count);
+unsigned printAdminsAndGetCountOfPrinted();

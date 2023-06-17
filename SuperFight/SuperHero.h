@@ -81,4 +81,4 @@ void saveToFile(const MyString& fileName, const SuperHero& superhero);
 void removeFromFile(const MyString& fileName, const SuperHero& superhero);
 SuperHero* buy(const MyString& nickname);
 void sell(const MyString& nickname);
-unsigned printSuperheroesAndGetCountOfPrinted(const MyString& fileName, unsigned count);
+unsigned printSuperheroesAndGetCountOfPrinted(const MyString& fileName);

@@ -81,5 +81,5 @@ public:
 
 void saveToFile(const Player& player);
 void removeFromFile(const Player& player);
-unsigned printPlayersAndGetCountOfPrinted(unsigned count);
-unsigned printPlayersAndGetCountOfPrintedForAdmins(unsigned count);
+unsigned printPlayersAndGetCountOfPrinted();
+unsigned printPlayersAndGetCountOfPrintedForAdmins();

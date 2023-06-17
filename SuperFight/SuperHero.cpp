@@ -455,7 +455,7 @@ void sell(const MyString& nickname)
 		throw;
 	}
 }
-unsigned printSuperheroesAndGetCountOfPrinted(const MyString& fileName, unsigned count)
+unsigned printSuperheroesAndGetCountOfPrinted(const MyString& fileName)
 {
 	std::ifstream file(fileName.c_str(), std::ios::in | std::ios::binary);;
 

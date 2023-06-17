@@ -21,7 +21,7 @@ void Admin::printShortInfo() const
 
 void Admin::printFullInfo() const
 {
-	std::cout << nickname << " | " << fullName << " | " << email;
+	std::cout << fullName << " | " << nickname << " | " << email;
 }
 
 User* AdminFactory::readFromBinary() const
@@ -209,4 +209,28 @@ void removeFromFile(const Admin& admin)
 
 	helper::getStartIndexAndEndIndexOfEntityInFile(constants::ADMINS_FILE_PATH, indexStart, indexEnd, admin);
 	helper::deleteDataFromFile(constants::ADMINS_FILE_PATH, indexStart, indexEnd);
+}
+
+unsigned printAdminsAndGetCountOfPrinted()
+{
+	std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::in | std::ios::binary);;
+
+	if (!file.is_open())
+	{
+		throw File_Error("File couldn't open!");
+	}
+
+	unsigned countOfPrintedAdmins = 0;
+	while (!file.eof())
+	{
+		UserFactory* factory = AdminFactory::getInstance();
+		User* admin = factory->readFromBinary(file);
+		admin->printShortInfo();
+		countOfPrintedAdmins++;
+		delete admin;
+	}
+
+	file.close();
+
+	return countOfPrintedAdmins;
 }
