@@ -63,36 +63,8 @@ void PlayerSystem::logout()
 void PlayerSystem::login()
 {
 	//try
-
-	//move to factory
-	std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::binary);
-
-	if (!file.is_open())
-	{
-		throw File_Error("File couldn't open!");
-	}
-
-	MyString temp;
-	std::cout << "Enter nickname: ";
-	std::cin >> temp;
-	validation::isNicknameValid(temp);
-
 	UserFactory* factory = PlayerFactory::getInstance();
-	User* user = factory->readFromBinary(file, temp);
-	std::cout << "Enter password: ";
-	std::cin >> temp;
-
-	if (user->getPassword() != temp)
-	{
-		delete user;
-		file.close();
-		//TODO: password error
-		return;
-	}
-
-	removeFromFile(*user);
-	currentUser = user;
-	file.close();
+	currentUser = factory->createFromConsoleOnLogin(constants::PLAYERS_FILE_PATH);
 }
 
 void PlayerSystem::reg()
@@ -145,6 +117,7 @@ static void printResultOfBattle(int result, int playerCoins, int otherPlayerCoin
 
 void PlayerSystem::battle() const
 {
+	//try
 	Player* player = static_cast<Player*>(currentUser);
 	if (player->getNumberOfSuperHeroes() == 0)
 	{

@@ -2,6 +2,9 @@
 #include "Player.h"
 #include "Admin.h"
 #include "Validation.h"
+#include "File_Error.h"
+#include <fstream>
+#include <iostream>
 
 void User::setEmail(const MyString& email)
 {
@@ -91,4 +94,38 @@ void removeFromFile(const User& user)
 	default:
 		break;
 	}
+}
+
+User* UserFactory::createFromConsoleOnLogin(const MyString& fileName) const
+{
+	User* user = nullptr;
+
+	//try
+	MyString temp;
+	std::cout << "Enter nickname: ";
+	std::cin >> temp;
+	validation::isNicknameValid(temp);
+
+	std::ifstream file(fileName.c_str(), std::ios::binary);
+
+	if (!file.is_open())
+	{
+		throw File_Error("File couldn't open!");
+	}
+
+	user = readFromBinary(file, temp);
+	std::cout << "Enter password: ";
+	std::cin >> temp;
+	validation::isPasswordValid(temp);
+
+	if (user->getPassword() != temp)
+	{
+		delete user;
+		file.close();
+		//TODO: password error
+		return;
+	}
+
+	removeFromFile(*user);
+	file.close();
 }

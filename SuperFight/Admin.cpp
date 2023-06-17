@@ -24,12 +24,82 @@ void Admin::printFullInfo() const
 	std::cout << nickname << " | " << fullName << " | " << email;
 }
 
+User* AdminFactory::readFromBinary(std::ifstream& file) const
+{
+	if (!file.is_open())
+	{
+		throw File_Error("File couldn't open!");
+	}
+
+	size_t n;
+	file.read((char*)&n, sizeof(n));
+	char* firstName = new char[n + 1];
+	file.read(firstName, n + 1);
+
+	file.read((char*)&n, sizeof(n));
+	char* lastName = new char[n + 1];
+	file.read(lastName, n + 1);
+
+	file.read((char*)&n, sizeof(n));
+	char* nickname = new char[n + 1];
+	file.read(nickname, n + 1);
+
+	file.read((char*)&n, sizeof(n));
+	char* email = new char[n + 1];
+	file.read(email, n + 1);
+
+	file.read((char*)&n, sizeof(n));
+	char* password = new char[n + 1];
+	file.read(password, n + 1);
+
+	Admin* admin = new Admin(firstName, lastName, nickname, email, password);
+
+	delete[] firstName;
+	delete[] lastName;
+	delete[] nickname;
+	delete[] email;
+	delete[] password;
+
+	return admin;
+}
+
+User* AdminFactory::readFromBinary(const MyString& nickname) const
+{
+	std::ifstream file(constants::ADMINS_FILE_PATH.c_str(), std::ios::binary);
+
+	if (!file.is_open())
+	{
+		throw File_Error("File couldn't open!");
+	}
+
+	User* user = readFromBinary(file, nickname);
+
+	file.close();
+	return user;
+}
+
 User* AdminFactory::readFromBinary(std::ifstream& file, const MyString& nickname) const
 {
 	if (!file.is_open())
 	{
 		throw File_Error("File couldn't open!");
 	}
+
+	while (!file.eof())
+	{
+		User* curr = readFromBinary(file);
+		if (curr->getNickname() == nickname)
+		{
+			return curr;
+		}
+		delete curr;
+		if (file.eof())
+		{
+			break;
+		}
+	}
+
+	throw std::invalid_argument("Nickname is not valid!");
 }
 
 User* AdminFactory::createFromConsole() const
@@ -85,12 +155,51 @@ UserFactory* AdminFactory::getInstance()
 	return UserFactory::instance;
 }
 
+
 void saveToFile(const Admin& admin)
 {
-	return;
+	std::ofstream file(constants::ADMINS_FILE_PATH.c_str(), std::ios::binary | std::ios::app);
+
+	if (!file.is_open())
+	{
+		throw File_Error("File couldn't open!");
+	}
+
+	int index = file.tellp();
+
+	size_t size = admin.getFirstName().length();
+	file.write((const char*)&size, sizeof(size));
+	file.write(admin.getFirstName().c_str(), size + 1);
+
+	size = admin.getLastName().length();
+	file.write((const char*)&size, sizeof(size));
+	file.write(admin.getLastName().c_str(), size + 1);
+
+	size = admin.getNickname().length();
+	file.write((const char*)&size, sizeof(size));
+	file.write(admin.getNickname().c_str(), size + 1);
+
+	size = admin.getEmail().length();
+	file.write((const char*)&size, sizeof(size));
+	file.write(admin.getEmail().c_str(), size + 1);
+
+	size = admin.getPassword().length();
+	file.write((const char*)&size, sizeof(size));
+	file.write(admin.getPassword().c_str(), size + 1);
+
+	file.close();
 }
 
 void removeFromFile(const Admin& admin)
+{
+	int indexStart = -1;
+	int indexEnd = -1;
+
+	helper::getStartIndexAndEndIndexOfEntityInFile(constants::ADMINS_FILE_PATH, indexStart, indexEnd, admin);
+	helper::deleteDataFromFile(constants::ADMINS_FILE_PATH, indexStart, indexEnd);
+}
+
+User* AdminFactory::createFromConsoleOnLogin() const
 {
 
 }

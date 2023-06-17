@@ -74,6 +74,7 @@ public:
 	User* readFromBinary(std::ifstream& file) const override;
 	User* readFromBinary(const MyString& nicknameToFind) const override;
 	User* readFromBinary(std::ifstream& file, const MyString& nicknameToFind) const override;
+
 	User* createFromConsole() const override;
 };
 

@@ -42,6 +42,7 @@ public:
 	virtual User* readFromBinary(const MyString& nickname) const = 0;
 	virtual User* readFromBinary(std::ifstream& file, const MyString& nickname) const = 0;
 	virtual User* createFromConsole() const = 0;
+	User* createFromConsoleOnLogin(const MyString& fileName) const;
 
 	static void freeInstance();
 	virtual ~UserFactory();

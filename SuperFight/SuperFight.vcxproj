@@ -131,6 +131,7 @@
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="File_Error.cpp" />
     <ClCompile Include="HelperFunctions.cpp" />
+    <ClCompile Include="Input_Error.cpp" />
     <ClCompile Include="MyString.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -146,6 +147,7 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="File_Error.h" />
     <ClInclude Include="HelperFunctions.h" />
+    <ClInclude Include="Input_Error.h" />
     <ClInclude Include="MyString.h" />
     <ClInclude Include="MyVector.hpp" />
     <ClInclude Include="Player.h" />
