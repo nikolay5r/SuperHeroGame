@@ -11,6 +11,8 @@
 #include "File_Error.h"
 #include "SuperHero.h"
 
+static MyString buff;
+
 System* System::instance = nullptr;
 
 void System::freeInstance()
@@ -111,7 +113,6 @@ void PlayerSystem::sellSuperHero() const
 	{
 		throw std::logic_error("You have no superheroes to sell!");
 	}
-	MyString buff;
 	std::cout << "Enter nickname of the superhero you want to sell: ";
 	std::cin >> buff;
 	player->sellSuperHero(buff);
@@ -144,7 +145,6 @@ static void printResultOfBattle(int result, int playerCoins, int otherPlayerCoin
 
 void PlayerSystem::battle() const
 {
-	MyString buff;
 	Player* player = static_cast<Player*>(currentUser);
 	if (player->getNumberOfSuperHeroes() == 0)
 	{
@@ -207,7 +207,6 @@ void PlayerSystem::buySuperHero() const
 {
 	SuperHero* superhero = nullptr;
 	//try
-	MyString buff;
 	std::cout << "Enter the nickname of the superhero: ";
 	std::cin >> buff;
 
@@ -233,7 +232,7 @@ void PlayerSystem::showMarket() const
 			}
 			SuperHeroFactory* factory = SuperHeroFactory::getInstance();
 			SuperHero* superhero = factory->readFromBinary(file);
-			superhero->print();
+			superhero->printShortInfo();
 			delete superhero;
 		}
 		if (file.eof())
@@ -242,7 +241,6 @@ void PlayerSystem::showMarket() const
 		}
 		else
 		{
-			MyString buff;
 			std::cout << "If you want to see more superheroes enter 'forward' if you want to go back enter 'back';" << std::endl
 				<< "If you want to buy a superhero enter 'buy' or if you want to sell enter 'sell': ";
 			std::cin >> buff;
@@ -277,8 +275,10 @@ void PlayerSystem::showPlayers() const
 	//try
 	std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::in | std::ios::binary);;
 
+
 	while (!file.eof())
 	{
+		unsigned count = 0;
 		for (size_t i = 0; i < constants::ENTITIES_TO_LOAD; i++)
 		{
 			if (file.eof())
@@ -287,18 +287,21 @@ void PlayerSystem::showPlayers() const
 			}
 			UserFactory* factory = PlayerFactory::getInstance();
 			User* player = factory->readFromBinary(file);
-			player->print();
+			player->printShortInfo();
+			count++;
 			delete player;
 		}
 		if (file.eof())
 		{
 			break;
 		}
-		else
+		else if (count != 0)
 		{
-			MyString buff;
-			std::cout << "If you want to see more players enter 'forward' or if you want to go back enter 'back';" << std::endl
-				<< "If you want to fight with other players type 'battle': ";
+			if (count == constants::ENTITIES_TO_LOAD)
+			{
+				std::cout << "If you want to see more players enter 'forward' or if you want to go back enter 'back';" << std::endl;
+			}
+			std::cout << "If you want to fight with other players type 'battle': ";
 			std::cin >> buff;
 			if (buff == "forward")
 			{
@@ -314,20 +317,55 @@ void PlayerSystem::showPlayers() const
 			}
 			else
 			{
+				//error
 				throw std::invalid_argument("Invalid keyword was entered!");
 			}
+		}
+		else
+		{
+			std::cout << "No players to print.";
 		}
 	}
 
 	file.close();
 }
 
+void PlayerSystem::upgradeSuperHero() const
+{
+	std::cout << "Enter nickname of superhero you want to upgrade: ";
+	std::cin >> buff;
+	static_cast<Player&>(*currentUser).powerUpSuperHero(buff);
+}
+
+void PlayerSystem::showProfile()
+{
+	currentUser->printFullInfo();
+
+	if (static_cast<Player*>(currentUser)->getNumberOfSuperHeroes() != 0)
+	{
+		std::cout << "If you want to upgrade a superhero type 'upgrade';" << std::endl;
+	}
+	std::cout << "If you wat to delete your profile type 'delete': ";
+	std::cin >> buff;
+
+	if (buff == "upgrade")
+	{
+		upgradeSuperHero();
+	}
+	else if (buff == "delete")
+	{
+		deleteProfile();
+	}
+	else
+	{
+		//error
+	}
+}
+
 void PlayerSystem::run()
 {
 	bool end = false;
 	int n = -1;
-	MyString buff = "";
-
 	//TODO: try{...} catch(...){}
 	while (end)
 	{
@@ -339,7 +377,7 @@ void PlayerSystem::run()
 					<< "  0 - logout" << std::endl
 					<< "  1 - show all players" << std::endl
 					<< "  2 - show market" << std::endl
-					<< "  3 - delete your profile" << std::endl
+					<< "  3 - show profile" << std::endl
 					<< "  4 - exit" << std::endl;
 
 				std::cin >> n;
@@ -357,7 +395,7 @@ void PlayerSystem::run()
 				showMarket();
 				break;
 			case 3:
-				deleteProfile();
+				showProfile();
 				break;
 			case 4:
 				logout();

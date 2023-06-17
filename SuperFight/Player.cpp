@@ -8,7 +8,15 @@
 #include "File_Error.h"
 #include "HelperFunctions.h"
 
-bool Player::attestIndex(size_t index) const
+void Player::checkIfSuperheroIsOwnedAlready(const MyString& nickname) const
+{
+	if (nicknameToIndex(nickname) != std::string::npos)
+	{
+		throw std::logic_error("SuperHero is already owned!");
+	}
+}
+
+void Player::attestIndex(size_t index) const
 {
 	if (index >= superHeroes.size())
 	{
@@ -40,6 +48,8 @@ Player::Player(User&& user) : User(std::move(user)) {}
 
 void Player::addSuperHero(const SuperHero& superHero)
 {
+	checkIfSuperheroIsOwnedAlready(superHero.getNickname());
+
 	if (superHeroes.size() == constants::MAX_NUMBER_OF_SUPERHEROES_PER_PLAYER)
 	{
 		throw std::logic_error("You reached the limit of superheroes and cannot add more! Have to sell someone first!");
@@ -50,6 +60,7 @@ void Player::addSuperHero(const SuperHero& superHero)
 
 void Player::addSuperHero(SuperHero&& superHero)
 {
+	checkIfSuperheroIsOwnedAlready(superHero.getNickname());
 	if (superHeroes.size() == constants::MAX_NUMBER_OF_SUPERHEROES_PER_PLAYER)
 	{
 		throw std::logic_error("You reached the limit of superheroes and cannot add more! Have to sell someone first!");
@@ -60,6 +71,7 @@ void Player::addSuperHero(SuperHero&& superHero)
 
 void Player::addSuperHero(const MyString& firstName, const MyString& lastName, const MyString& nickname, unsigned power, SuperHeroPowerType powerType)
 {
+	checkIfSuperheroIsOwnedAlready(nickname);
 	if (superHeroes.size() == constants::MAX_NUMBER_OF_SUPERHEROES_PER_PLAYER)
 	{
 		throw std::logic_error("You reached the limit of superheroes and cannot add more! Have to sell someone first!");
@@ -70,6 +82,7 @@ void Player::addSuperHero(const MyString& firstName, const MyString& lastName, c
 
 void Player::buySuperHero(const SuperHero* superHero)
 {
+	checkIfSuperheroIsOwnedAlready(superHero->getNickname());
 	if (coins < superHero->getPrice())
 	{
 		throw std::logic_error("Not enough coins! Cannot afford it!");
@@ -80,6 +93,7 @@ void Player::buySuperHero(const SuperHero* superHero)
 
 void Player::buySuperHero(const SuperHero& superHero)
 {
+	checkIfSuperheroIsOwnedAlready(superHero.getNickname());
 	if (coins < superHero.getPrice())
 	{
 		throw std::logic_error("Not enough coins! Cannot afford it!");
@@ -90,6 +104,7 @@ void Player::buySuperHero(const SuperHero& superHero)
 
 void Player::buySuperHero(SuperHero&& superHero)
 {
+	checkIfSuperheroIsOwnedAlready(superHero.getNickname());
 	unsigned price = superHero.getPrice();
 	if (coins < price)
 	{
@@ -102,10 +117,11 @@ void Player::buySuperHero(SuperHero&& superHero)
 
 void Player::buySuperHero(const MyString& firstName, const MyString& lastName, const MyString& nickname, unsigned power, SuperHeroPowerType powerType)
 {
+	checkIfSuperheroIsOwnedAlready(nickname);
 	addSuperHero(firstName, lastName, nickname, power, powerType);
 	if (coins < superHeroes[superHeroes.size() - 1].getPrice())
 	{
-		removeSuperHero(superHeroes.size() - 1);
+		removeSuperHero(nickname);
 		throw std::logic_error("Not enough coins! Cannot afford it!");
 	}
 	coins -= superHeroes[superHeroes.size() - 1].getPrice();
