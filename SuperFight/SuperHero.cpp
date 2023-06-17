@@ -263,16 +263,30 @@ SuperHero* SuperHeroFactory::readFromBinary(const MyString& fileName, const MySt
 {
 	std::ifstream file(fileName.c_str(), std::ios::binary);
 	SuperHero* superhero = nullptr;
-	//try
-
-	if (!file.is_open())
+	try
 	{
-		throw File_Error("File couldn't open!");
-	}
+		if (!file.is_open())
+		{
+			throw File_Error("File couldn't open!");
+		}
 
-	superhero = readFromBinary(file, nickname);
-	file.close();
-	return superhero;
+		superhero = readFromBinary(file, nickname);
+		file.close();
+		return superhero;
+	}
+	catch (const File_Error&)
+	{
+		std::cerr << "File error occured when trying to read superhero from binary file by nickname!" << std::endl;
+		delete superhero;
+		file.close();
+		throw;
+	}
+	catch (...)
+	{
+		delete superhero;
+		file.close();
+		throw;
+	}
 }
 
 SuperHero* SuperHeroFactory::readFromBinary(std::ifstream& file, const MyString& nickname) const
@@ -283,17 +297,29 @@ SuperHero* SuperHeroFactory::readFromBinary(std::ifstream& file, const MyString&
 	}
 
 	SuperHero* curr = nullptr;
-	//try
-	while (!file.eof())
+	try
 	{
-		curr = readFromBinary(file);
-		if (curr->getNickname() == nickname)
+		while (!file.eof())
 		{
-			return curr;
+			curr = readFromBinary(file);
+			if (curr->getNickname() == nickname)
+			{
+				return curr;
+			}
 		}
+		throw std::invalid_argument("Nickname is not valid!");
 	}
-
-	throw std::invalid_argument("Nickname is not valid!");
+	catch (const File_Error&)
+	{
+		std::cerr << "File error occured when trying to read superhero from opened binary file by nickname!" << std::endl;
+		delete curr;
+		throw;
+	}
+	catch (...)
+	{
+		delete curr;
+		throw;
+	}
 }
 
 void SuperHeroFactory::createFromConsole() const
@@ -362,13 +388,26 @@ void saveToFile(std::ofstream& file, const SuperHero& superhero)
 SuperHero* buy(const MyString& nickname)
 {
 	SuperHero* superhero = nullptr;
-	//try
-	SuperHeroFactory* factory = SuperHeroFactory::getInstance();
-	superhero = factory->readFromBinary(constants::MARKET_SUPERHEROES_FILE_PATH, nickname);
-	removeFromFile(constants::MARKET_SUPERHEROES_FILE_PATH, *superhero);
-	saveToFile(constants::SOLD_SUPERHEROES_FILE_PATH, *superhero);
+	try
+	{
+		SuperHeroFactory* factory = SuperHeroFactory::getInstance();
+		superhero = factory->readFromBinary(constants::MARKET_SUPERHEROES_FILE_PATH, nickname);
+		removeFromFile(constants::MARKET_SUPERHEROES_FILE_PATH, *superhero);
+		saveToFile(constants::SOLD_SUPERHEROES_FILE_PATH, *superhero);
 
-	return superhero;
+		return superhero;
+	}
+	catch (const File_Error&)
+	{
+		std::cerr << "File error occured when trying to execute buy algorithm!" << std::endl;
+		delete superhero;
+		throw;
+	}
+	catch (...)
+	{
+		delete superhero;
+		throw;
+	}
 }
 
 void removeFromFile(const MyString& fileName, const SuperHero& superhero)
@@ -396,14 +435,26 @@ void saveToFile(const MyString& fileName, const SuperHero& superhero)
 void sell(const MyString& nickname)
 {
 	SuperHero* superhero = nullptr;
-	//try
-	SuperHeroFactory* factory = SuperHeroFactory::getInstance();
-	superhero = factory->readFromBinary(constants::SOLD_SUPERHEROES_FILE_PATH, nickname);
-	removeFromFile(constants::SOLD_SUPERHEROES_FILE_PATH, *superhero);
-	saveToFile(constants::MARKET_SUPERHEROES_FILE_PATH, *superhero);
-	delete superhero;
+	try
+	{
+		SuperHeroFactory* factory = SuperHeroFactory::getInstance();
+		superhero = factory->readFromBinary(constants::SOLD_SUPERHEROES_FILE_PATH, nickname);
+		removeFromFile(constants::SOLD_SUPERHEROES_FILE_PATH, *superhero);
+		saveToFile(constants::MARKET_SUPERHEROES_FILE_PATH, *superhero);
+		delete superhero;
+	}
+	catch (const File_Error&)
+	{
+		std::cerr << "File error occured when trying to execute sell algorithm!" << std::endl;
+		delete superhero;
+		throw;
+	}
+	catch (...)
+	{
+		delete superhero;
+		throw;
+	}
 }
-
 unsigned printSuperheroesAndGetCountOfPrinted(const MyString& fileName, unsigned count)
 {
 	std::ifstream file(fileName.c_str(), std::ios::in | std::ios::binary);;
@@ -414,15 +465,29 @@ unsigned printSuperheroesAndGetCountOfPrinted(const MyString& fileName, unsigned
 	}
 
 	unsigned countOfPrintedSuperheroes = 0;
-	while (!file.eof())
+	try
 	{
-		SuperHeroFactory* factory = SuperHeroFactory::getInstance();
-		SuperHero* superhero = factory->readFromBinary(file);
-		superhero->printShortInfo();
-		countOfPrintedSuperheroes++;
-		delete superhero;
-	}
+		while (!file.eof())
+		{
+			SuperHeroFactory* factory = SuperHeroFactory::getInstance();
+			SuperHero* superhero = factory->readFromBinary(file);
+			superhero->printShortInfo();
+			countOfPrintedSuperheroes++;
+			delete superhero;
+		}
 
-	file.close();
-	return countOfPrintedSuperheroes;
+		file.close();
+		return countOfPrintedSuperheroes;
+	}
+	catch (const File_Error&)
+	{
+		std::cerr << "File error occured when trying to execute print superheroes algorithm!" << std::endl;
+		file.close();
+		throw;
+	}
+	catch (...)
+	{
+		file.close();
+		throw;
+	}
 }

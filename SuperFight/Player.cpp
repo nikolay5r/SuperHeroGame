@@ -364,60 +364,95 @@ User* PlayerFactory::readFromBinary() const
 {
 	std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::binary);
 
-	User* player = readFromBinary(file);
-	file.close();
-
-	return player;
-}
-
-User* PlayerFactory::readFromBinary(std::ifstream& file) const
-{
 	if (!file.is_open())
 	{
 		throw File_Error("File couldn't open!");
 	}
 
-	size_t n;
-	file.read((char*)&n, sizeof(n));
-	char* firstName = new char[n + 1];
-	file.read(firstName, n + 1);
-
-	file.read((char*)&n, sizeof(n));
-	char* lastName = new char[n + 1];
-	file.read(lastName, n + 1);
-
-	file.read((char*)&n, sizeof(n));
-	char* nickname = new char[n + 1];
-	file.read(nickname, n + 1);
-
-	file.read((char*)&n, sizeof(n));
-	char* email = new char[n + 1];
-	file.read(email, n + 1);
-
-	file.read((char*)&n, sizeof(n));
-	char* password = new char[n + 1];
-	file.read(password, n + 1);
-
-	Player* player = new Player(firstName, lastName, nickname, email, password);
-
-	delete[] firstName;
-	delete[] lastName;
-	delete[] nickname;
-	delete[] email;
-	delete[] password;
-
-	size_t count;
-	file.read((char*)&count, sizeof(count));
-	SuperHeroFactory* factory = SuperHeroFactory::getInstance();
-	SuperHero* superhero;
-	for (size_t i = 0; i < count; i++)
+	try
 	{
-		superhero = factory->readFromBinary(file);
-		player->addSuperHero(*superhero);
-		delete superhero;
+		User* player = readFromBinary(file);
+
+		file.close();
+		return player;
+	}
+	catch (const File_Error&)
+	{
+		std::cerr << "File error occurred when trying to read a player from binary file!" << std::endl;
+		file.close();
+		throw;
+	}
+	catch (...)
+	{
+		file.close();
+		throw;
 	}
 
-	return player;
+}
+
+User* PlayerFactory::readFromBinary(std::ifstream& file) const
+{
+	Player* player = nullptr;
+
+	if (!file.is_open())
+	{
+		throw File_Error("File couldn't open!");
+	}
+	try
+	{
+		size_t n;
+		file.read((char*)&n, sizeof(n));
+		char* firstName = new char[n + 1];
+		file.read(firstName, n + 1);
+
+		file.read((char*)&n, sizeof(n));
+		char* lastName = new char[n + 1];
+		file.read(lastName, n + 1);
+
+		file.read((char*)&n, sizeof(n));
+		char* nickname = new char[n + 1];
+		file.read(nickname, n + 1);
+
+		file.read((char*)&n, sizeof(n));
+		char* email = new char[n + 1];
+		file.read(email, n + 1);
+
+		file.read((char*)&n, sizeof(n));
+		char* password = new char[n + 1];
+		file.read(password, n + 1);
+
+		player = new Player(firstName, lastName, nickname, email, password);
+
+		delete[] firstName;
+		delete[] lastName;
+		delete[] nickname;
+		delete[] email;
+		delete[] password;
+
+		size_t count;
+		file.read((char*)&count, sizeof(count));
+		SuperHeroFactory* factory = SuperHeroFactory::getInstance();
+		SuperHero* superhero;
+		for (size_t i = 0; i < count; i++)
+		{
+			superhero = factory->readFromBinary(file);
+			player->addSuperHero(*superhero);
+			delete superhero;
+		}
+
+		return player;
+	}
+	catch (const File_Error&)
+	{
+		std::cerr << "File error occurred when trying to read a player from opened binary file!" << std::endl;
+		delete player;
+		throw;
+	}
+	catch (...)
+	{
+		delete player;
+		throw;
+	}
 }
 
 User* PlayerFactory::readFromBinary(const MyString& nicknameToFind) const
@@ -429,10 +464,24 @@ User* PlayerFactory::readFromBinary(const MyString& nicknameToFind) const
 		throw File_Error("File couldn't open!");
 	}
 
-	User* user = readFromBinary(file, nicknameToFind);
+	try
+	{
+		User* user = readFromBinary(file, nicknameToFind);
 
-	file.close();
-	return user;
+		file.close();
+		return user;
+	}
+	catch (const File_Error&)
+	{
+		std::cerr << "File error occurred when trying to read a player from binary file by nickname!" << std::endl;
+		file.close();
+		throw;
+	}
+	catch (...)
+	{
+		file.close();
+		throw;
+	}
 }
 
 User* PlayerFactory::readFromBinary(std::ifstream& file, const MyString& nicknameToFind) const

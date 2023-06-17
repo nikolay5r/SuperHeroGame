@@ -101,33 +101,45 @@ User* UserFactory::createFromConsoleOnLogin(const MyString& fileName) const
 {
 	User* user = nullptr;
 
-	//try
-	MyString temp;
-	std::cout << "Enter nickname: ";
-	std::cin >> temp;
-	validation::isNicknameValid(temp);
-
 	std::ifstream file(fileName.c_str(), std::ios::binary);
-
-	if (!file.is_open())
+	try
 	{
-		throw File_Error("File couldn't open!");
+		MyString temp;
+		std::cout << "Enter nickname: ";
+		std::cin >> temp;
+		validation::isNicknameValid(temp);
+
+		if (!file.is_open())
+		{
+			throw File_Error("File couldn't open!");
+		}
+
+		user = readFromBinary(file, temp);
+		std::cout << "Enter password: ";
+		std::cin >> temp;
+		validation::isPasswordValid(temp);
+
+		if (user->getPassword() != temp)
+		{
+			throw Input_Error("Password was incorrect");
+		}
+
+		removeFromFile(*user);
+		file.close();
+
+		return user;
 	}
-
-	user = readFromBinary(file, temp);
-	std::cout << "Enter password: ";
-	std::cin >> temp;
-	validation::isPasswordValid(temp);
-
-	if (user->getPassword() != temp)
+	catch (const File_Error&)
+	{
+		std::cerr << "File error occured when trying to create a user from console on login!" << std::endl;
+		delete user;
+		file.close();
+		throw;
+	}
+	catch (...)
 	{
 		delete user;
 		file.close();
-		throw Input_Error("Password was incorrect");
+		throw;
 	}
-
-	removeFromFile(*user);
-	file.close();
-
-	return user;
 }

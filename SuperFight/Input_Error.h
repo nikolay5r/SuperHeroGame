@@ -1,6 +1,6 @@
 #pragma once
 #include "MyString.h"
-class Input_Error
+class Input_Error : public std::exception
 {
 	MyString message = "";
 public:

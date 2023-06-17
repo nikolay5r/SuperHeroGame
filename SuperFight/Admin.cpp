@@ -90,6 +90,8 @@ User* AdminFactory::readFromBinary(const MyString& nickname) const
 
 User* AdminFactory::readFromBinary(std::ifstream& file, const MyString& nickname) const
 {
+	User* curr = nullptr;
+
 	if (!file.is_open())
 	{
 		throw File_Error("File couldn't open!");
@@ -97,7 +99,7 @@ User* AdminFactory::readFromBinary(std::ifstream& file, const MyString& nickname
 
 	while (!file.eof())
 	{
-		User* curr = readFromBinary(file);
+		curr = readFromBinary(file);
 		if (curr->getNickname() == nickname)
 		{
 			return curr;
