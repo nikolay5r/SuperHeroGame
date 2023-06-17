@@ -18,6 +18,7 @@ protected:
 	virtual void showPlayers() const = 0;
 	virtual void deleteProfile() = 0;
 	virtual void showProfile() = 0;
+	void freeSystem();
 public:
 	System(const System&) = delete;
 	System& operator=(const System&) = delete;
