@@ -70,7 +70,7 @@ public:
 	SuperHero* readFromBinary(std::ifstream&) const;
 	SuperHero* readFromBinary(const MyString& fileName, const MyString& nickname) const;
 	SuperHero* readFromBinary(std::ifstream&, const MyString& nickname) const;
-	void createFromConsole() const;
+	SuperHero* createFromConsole() const;
 
 	static void freeInstance();
 	virtual ~SuperHeroFactory();

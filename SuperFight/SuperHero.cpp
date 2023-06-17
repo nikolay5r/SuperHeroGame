@@ -104,8 +104,7 @@ void SuperHero::powerUp()
 {
 	if (powerLevel == allowedPowerUpgrades)
 	{
-		//TODO:
-		throw std::exception("You cannot upgrade your superhero right now!");
+		throw std::logic_error("Superhero reached its maximum of allowed power upgrades!");
 	}
 
 	powerLevel++;
@@ -322,9 +321,59 @@ SuperHero* SuperHeroFactory::readFromBinary(std::ifstream& file, const MyString&
 	}
 }
 
-void SuperHeroFactory::createFromConsole() const
+SuperHero* SuperHeroFactory::createFromConsole() const
 {
-	return;
+	MyString firstName;
+	MyString lastName;
+	MyString nickname;
+	unsigned power = 0;
+	unsigned typeAsUnsigned = 0;
+	SuperHeroPowerType type;
+
+	std::cout << "Enter first name of the superhero: ";
+	std::cin >> firstName;
+	validation::isNameValid(firstName);
+
+	std::cout << "Enter last name of the superhero: ";
+	std::cin >> lastName;
+	validation::isNameValid(lastName);
+
+	std::cout << "Enter nickname of the superhero: ";
+	std::cin >> nickname;
+	validation::isNicknameValid(nickname);
+
+	std::cout << "Enter power of the superhero: ";
+	std::cin >> power;
+	validation::isPowerValid(power);
+
+	std::cout << "Enter power type of the superhero:" << std::endl
+		<< "  - 0 for Air;" << std::endl
+		<< "  - 1 for Water;" << std::endl
+		<< "  - 2 for Earth;" << std::endl
+		<< "  - 3 for Fire;" << std::endl
+		<< "Power type: ";
+	std::cin >> typeAsUnsigned;
+
+	switch (typeAsUnsigned)
+	{
+	case 0:
+		type = SuperHeroPowerType::Air;
+		break;
+	case 1:
+		type = SuperHeroPowerType::Water;
+		break;
+	case 2:
+		type = SuperHeroPowerType::Earth;
+		break;
+	case 3:
+		type = SuperHeroPowerType::Fire;
+		break;
+	default:
+		throw std::invalid_argument("The power type you entered is not valid!");
+		break;
+	}
+
+	return new SuperHero(firstName, lastName, nickname, power, type);
 }
 
 void SuperHeroFactory::freeInstance()
@@ -345,8 +394,6 @@ void saveToFile(std::ofstream& file, const SuperHero& superhero)
 	{
 		throw File_Error("File couldn't open!");
 	}
-
-	int index = file.tellp();
 
 	size_t size = superhero.getFirstName().length();
 	file.write((const char*)&size, sizeof(size));
