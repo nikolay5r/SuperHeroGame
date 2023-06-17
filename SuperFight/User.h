@@ -38,6 +38,7 @@ public:
 	UserFactory(const UserFactory&) = delete;
 	UserFactory& operator=(const UserFactory&) = delete;
 
+	virtual User* readFromBinary() const = 0;
 	virtual User* readFromBinary(std::ifstream& file) const = 0;
 	virtual User* readFromBinary(const MyString& nickname) const = 0;
 	virtual User* readFromBinary(std::ifstream& file, const MyString& nickname) const = 0;

@@ -146,6 +146,7 @@ void Player::removeSuperHero(size_t index)
 void Player::sellSuperHero(const MyString& nickname)
 {
 	size_t index = nicknameToIndex(nickname);
+	removeSuperHero(index);
 	coins += superHeroes[index].getPrice() / 2;
 	removeSuperHero(nickname);
 }
@@ -158,6 +159,7 @@ void Player::sellSuperHero(size_t index)
 	}
 	coins += superHeroes[index].getPrice() / 2;
 	removeSuperHero(index);
+	coins += superHeroes[index].getPrice() / 2;
 }
 
 int Player::attack(Player& defender)
@@ -267,8 +269,7 @@ void Player::powerUpSuperHero(size_t index)
 	}
 	else
 	{
-		//TODO:
-		throw std::exception("You don't have enough coins to upgrade the power of this superhero!");
+		throw std::logic_error("You don't have enough coins to upgrade the power of this superhero!");
 	}
 }
 
@@ -360,6 +361,16 @@ const MyVector<SuperHero>& Player::getSuperHeroes() const
 unsigned Player::getCoins() const
 {
 	return coins;
+}
+
+User* PlayerFactory::readFromBinary() const
+{
+	std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::binary);
+
+	User* player = readFromBinary(file);
+	file.close();
+
+	return player;
 }
 
 User* PlayerFactory::readFromBinary(std::ifstream& file) const

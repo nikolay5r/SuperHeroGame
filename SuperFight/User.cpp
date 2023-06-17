@@ -3,6 +3,7 @@
 #include "Admin.h"
 #include "Validation.h"
 #include "File_Error.h"
+#include "Input_Error.h"
 #include <fstream>
 #include <iostream>
 
@@ -122,10 +123,11 @@ User* UserFactory::createFromConsoleOnLogin(const MyString& fileName) const
 	{
 		delete user;
 		file.close();
-		//TODO: password error
-		return;
+		throw Input_Error("Password was incorrect");
 	}
 
 	removeFromFile(*user);
 	file.close();
+
+	return user;
 }

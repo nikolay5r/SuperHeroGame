@@ -24,6 +24,16 @@ void Admin::printFullInfo() const
 	std::cout << nickname << " | " << fullName << " | " << email;
 }
 
+User* AdminFactory::readFromBinary() const
+{
+	std::ifstream file(constants::ADMINS_FILE_PATH.c_str(), std::ios::binary);
+
+	User* admin = readFromBinary(file);
+	file.close();
+
+	return admin;
+}
+
 User* AdminFactory::readFromBinary(std::ifstream& file) const
 {
 	if (!file.is_open())
@@ -197,9 +207,4 @@ void removeFromFile(const Admin& admin)
 
 	helper::getStartIndexAndEndIndexOfEntityInFile(constants::ADMINS_FILE_PATH, indexStart, indexEnd, admin);
 	helper::deleteDataFromFile(constants::ADMINS_FILE_PATH, indexStart, indexEnd);
-}
-
-User* AdminFactory::createFromConsoleOnLogin() const
-{
-
 }

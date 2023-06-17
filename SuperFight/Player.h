@@ -71,6 +71,7 @@ public:
 	PlayerFactory(const PlayerFactory&) = delete;
 	PlayerFactory& operator=(const PlayerFactory&) = delete;
 
+	User* readFromBinary() const override;
 	User* readFromBinary(std::ifstream& file) const override;
 	User* readFromBinary(const MyString& nicknameToFind) const override;
 	User* readFromBinary(std::ifstream& file, const MyString& nicknameToFind) const override;
@@ -80,3 +81,5 @@ public:
 
 void saveToFile(const Player& player);
 void removeFromFile(const Player& player);
+unsigned printPlayersAndGetCountOfPrinted(unsigned count);
+unsigned printPlayersAndGetCountOfPrintedForAdmins(unsigned count);

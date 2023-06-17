@@ -3,6 +3,7 @@
 #include "MyString.h"
 #include "Constants.h"
 #include "Regex_Error.h"
+#include "Input_Error.h"
 
 #include <string>
 #include <stdexcept>
@@ -23,6 +24,11 @@ void validation::isNameValid(const MyString& name)
 			throw Regex_Error("There is a capital letter in the middle of the Name!");
 		}
 	}
+
+	if (name == "back")
+	{
+		throw Input_Error("The name you entered is a keyword and cannot be used as such!");
+	}
 }
 
 void validation::isNicknameValid(const MyString& nickname) //at least 3 characters
@@ -40,6 +46,10 @@ void validation::isNicknameValid(const MyString& nickname) //at least 3 characte
 		{
 			throw Regex_Error("Invalid characters found in Nickname!");
 		}
+	}
+	if (nickname == "back")
+	{
+		throw Input_Error("The nickname you entered is a keyword and cannot be used as such!");
 	}
 }
 
@@ -81,7 +91,6 @@ void validation::isPasswordValid(const MyString& password) //at least one capita
 
 	if (passwordLength > constants::MAX_PASSWORD_LENGTH || passwordLength < constants::MIN_PASSWORD_LENGTH)
 	{
-		//TODO:
 		throw std::length_error("Password should be between 5 and 16 characters!");
 	}
 

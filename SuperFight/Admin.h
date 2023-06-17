@@ -25,6 +25,7 @@ public:
 	AdminFactory(const AdminFactory&) = delete;
 	AdminFactory& operator=(const AdminFactory&) = delete;
 
+	User* readFromBinary() const override;
 	User* readFromBinary(std::ifstream& file) const override;
 	User* readFromBinary(const MyString& nicknameToFind) const override;
 	User* readFromBinary(std::ifstream& file, const MyString& nicknameToFind) const override;
@@ -34,3 +35,4 @@ public:
 
 void saveToFile(const Admin& admin);
 void removeFromFile(const Admin& admin);
+void printAdminsAndGetCountOfPrinted(unsigned count);
