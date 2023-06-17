@@ -1,23 +1,49 @@
 #include <iostream>
 #include <fstream>
 #include "MyString.h"
-#include "User.h"
-#include "Player.h"
-#include "Regex_Error.h"
-int main()
+#include "System.h"
+#include "Input_Error.h"
+
+void startSystem(System* system)
 {
 	try
 	{
-		Player p1("Aaaaa", "Asdasdasd", "adsadas", "asd@abv.bg", "12NaN3");
-		Player p2("Aaa", "Asdasd", "adssaadasaaa", "asdasdd@abv.bg", "1223Naaaa");
-		std::cout << sizeof(p1) << " " << sizeof(p2) << std::endl;
+		MyString buff;
+		std::cout << "Welcome, challenger!" << std::endl
+			<< "Enter 'admin' if you want to sign in as an admin;" << std::endl
+			<< "Enter 'player' if you want to sign in as a player: ";
+		std::cin >> buff;
+
+		if (buff == "player")
+		{
+			system = PlayerSystem::getInstance();
+		}
+		else if (buff == "admin")
+		{
+			system = AdminSystem::getInstance();
+		}
+		else
+		{
+			throw Input_Error("Keyword is invalid!");
+		}
+
+		system->run();
 	}
-	catch (const Regex_Error& error)
+	catch (const Input_Error& error)
 	{
-		std::cout << error.what();
+		std::cerr << error.what() << std::endl;
+		startSystem(system);
 	}
-	catch (const std::exception& error)
+	catch (...)
 	{
-		std::cout << error.what();
+		std::cerr << "Something went wrong in the start function!" << std::endl;
 	}
+
+}
+
+int main()
+{
+	System* system = nullptr;
+	startSystem(system);
+	system->freeInstance();
 }
