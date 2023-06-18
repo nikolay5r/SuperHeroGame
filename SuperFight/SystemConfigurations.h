@@ -13,7 +13,7 @@ namespace configs
 	void decrementCountOfMarketSuperheroes();
 	void decrementCountOfSoldSuperheroes();
 	bool saveLoggedPlayerInThePeriod(const MyString& nickname);
-	bool checkIfPeriodIsOver();
+	void handlePeriod();
 	bool isMarketEmpty();
 	bool isSoldEmpty();
 	unsigned getCountOfAdmins();

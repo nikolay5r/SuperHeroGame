@@ -32,7 +32,6 @@ public:
 class UserFactory
 {
 protected:
-	static UserFactory* instance;
 	UserFactory() = default;
 public:
 	UserFactory(const UserFactory&) = delete;
@@ -45,7 +44,6 @@ public:
 	virtual User* createFromConsole() const = 0;
 	User* createFromConsoleOnLogin(const MyString& fileName) const;
 
-	static void freeInstance();
 	virtual ~UserFactory() = default;
 };
 

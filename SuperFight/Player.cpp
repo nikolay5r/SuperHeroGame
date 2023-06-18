@@ -41,7 +41,7 @@ size_t Player::nicknameToIndex(const MyString& nickname) const noexcept
 }
 
 Player::Player(const MyString& firstName, const MyString& lastName, const MyString& nickname, const MyString& email, const MyString& password)
-	: User(firstName, lastName, nickname, email, password, UserRole::Player) {}
+	: User(firstName, lastName, nickname, email, password, UserRole::Player), superHeroes(constants::MAX_NUMBER_OF_SUPERHEROES_PER_PLAYER) {}
 
 Player::Player(const User& user) : User(user) {}
 
@@ -254,7 +254,7 @@ int Player::attack(size_t attackerIndex, Player& defender, size_t defenderIndex)
 int Player::attack(const MyString& attackerNickname, Player& defender, const MyString& defenderNickname)
 {
 	size_t attackerIndex = nicknameToIndex(attackerNickname);
-	size_t defenderIndex = nicknameToIndex(defenderNickname);
+	size_t defenderIndex = defender.nicknameToIndex(defenderNickname);
 
 	return attack(attackerIndex, defender, defenderIndex);
 }
@@ -328,7 +328,7 @@ void Player::printFullInfo() const
 	std::cout << "  " << fullName << " | " << nickname << " | " << email << " | " << coins << " coins" << std::endl;
 	if (superHeroes.size() == 0)
 	{
-		std::cout << "\tYou have no superheroes." << std::endl;
+		std::cout << "\tNo superheroes." << std::endl;
 	}
 	else
 	{
@@ -517,23 +517,27 @@ User* PlayerFactory::readFromBinary(std::ifstream& file, const MyString& nicknam
 			return curr;
 		}
 		delete curr;
-		if (file.eof())
-		{
-			break;
-		}
 	}
 
 	throw std::invalid_argument("Nickname is not valid!");
 }
 
+UserFactory* PlayerFactory::instance = nullptr;
+
+void PlayerFactory::freeInstance()
+{
+	delete PlayerFactory::instance;
+	PlayerFactory::instance = nullptr;
+}
+
 UserFactory* PlayerFactory::getInstance()
 {
-	if (UserFactory::instance == nullptr)
+	if (PlayerFactory::instance == nullptr)
 	{
-		UserFactory::instance = new PlayerFactory();
+		PlayerFactory::instance = new PlayerFactory();
 	}
 
-	return UserFactory::instance;
+	return PlayerFactory::instance;
 }
 
 User* PlayerFactory::createFromConsole() const
@@ -655,16 +659,16 @@ void removePlayerFromFile(const Player& player)
 
 void printPlayers()
 {
-	std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::in | std::ios::binary);;
+	std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::binary);;
 
 	if (!file.is_open())
 	{
 		throw File_Error("File couldn't open!");
 	}
 
-	unsigned countOfPrintedPlayers = 0;
 	for (int i = 1; !helper::isEOF(file); i++)
 	{
+		std::cout << i << ". ";
 		UserFactory* factory = PlayerFactory::getInstance();
 		User* player = factory->readFromBinary(file);
 		player->printShortInfo();
@@ -677,21 +681,21 @@ void printPlayers()
 
 void printPlayersForAdmins()
 {
-	std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::in | std::ios::binary);;
+	std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::binary);;
 
 	if (!file.is_open())
 	{
 		throw File_Error("File couldn't open!");
 	}
 
-	unsigned countOfPrintedPlayers = 0;
-	while (!helper::isEOF(file))
+	for (int i = 1; !helper::isEOF(file); i++)
 	{
+		std::cout << i << ".  ";
 		UserFactory* factory = PlayerFactory::getInstance();
 		User* player = factory->readFromBinary(file);
 		player->printFullInfo();
-		countOfPrintedPlayers++;
 		delete player;
+		std::cout << std::endl;
 	}
 
 	file.close();

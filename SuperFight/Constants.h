@@ -8,8 +8,6 @@ namespace constants
 
 	const size_t MAX_PASSWORD_LENGTH = 16;
 	const size_t MAX_USERNAME_LENGTH = 16;
-	const size_t MIN_PASSWORD_LENGTH = 5;
-	const size_t MIN_NICKNAME_LENGTH = 3;
 	const unsigned MAX_POWER_ON_FIRST_LEVEL = 50;
 	const unsigned MIN_POWER = 5;
 	const unsigned MAX_LEVEL = 50;

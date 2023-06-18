@@ -17,13 +17,15 @@ Admin::Admin(User&& user) : User(std::move(user)) {}
 
 void Admin::printShortInfo() const
 {
-	std::cout << fullName << " | " << nickname << " | ";
+	std::cout << fullName << " | " << nickname << " | " << std::endl;
 }
 
 void Admin::printFullInfo() const
 {
-	std::cout << fullName << " | " << nickname << " | " << email;
+	std::cout << fullName << " | " << nickname << " | " << email << std::endl;
 }
+
+UserFactory* AdminFactory::instance = nullptr;
 
 User* AdminFactory::readFromBinary() const
 {
@@ -33,6 +35,12 @@ User* AdminFactory::readFromBinary() const
 	file.close();
 
 	return admin;
+}
+
+void AdminFactory::freeInstance()
+{
+	delete AdminFactory::instance;
+	AdminFactory::instance = nullptr;
 }
 
 User* AdminFactory::readFromBinary(std::ifstream& file) const
@@ -98,7 +106,7 @@ User* AdminFactory::readFromBinary(std::ifstream& file, const MyString& nickname
 		throw File_Error("File couldn't open!");
 	}
 
-	while (helper::isEOF(file))
+	while (!helper::isEOF(file))
 	{
 		curr = readFromBinary(file);
 		if (curr->getNickname() == nickname)
@@ -160,12 +168,12 @@ User* AdminFactory::createFromConsole() const
 
 UserFactory* AdminFactory::getInstance()
 {
-	if (UserFactory::instance == nullptr)
+	if (AdminFactory::instance == nullptr)
 	{
-		UserFactory::instance = new AdminFactory();
+		AdminFactory::instance = new AdminFactory();
 	}
 
-	return UserFactory::instance;
+	return AdminFactory::instance;
 }
 
 

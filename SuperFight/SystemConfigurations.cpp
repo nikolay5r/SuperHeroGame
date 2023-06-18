@@ -9,26 +9,25 @@
 
 void configs::initConfigs()
 {
-	std::ofstream file(constants::CONFIGS_FILE_PATH.c_str(), std::ios::binary | std::ios::ate);
-
-	if (!file.is_open())
+	if (helper::getFileSize(constants::CONFIGS_FILE_PATH) == 0)
 	{
-		throw File_Error("File couldn't open!");
-	}
+		std::ofstream file(constants::CONFIGS_FILE_PATH.c_str(), std::ios::binary);
+		if (!file.is_open())
+		{
+			throw File_Error("File couldn't open!");
+		}
 
-	if (helper::getFileSize(file) == 0)
-	{
 		//1 is representing 0 because when trying to enter 0 as counts on init file is full of terminating zeroes and nothing could be read
-		unsigned a = 1;
+		unsigned count = 1;
 
-		file.write((char*)&a, sizeof(a));
-		file.write((char*)&a, sizeof(a));
-		file.write((char*)&a, sizeof(a));
-		file.write((char*)&a, sizeof(a));
-		file.write((char*)&a, sizeof(a));
+		file.write((char*)&count, sizeof(count));
+		file.write((char*)&count, sizeof(count));
+		file.write((char*)&count, sizeof(count));
+		file.write((char*)&count, sizeof(count));
+		file.write((char*)&count, sizeof(count));
+
+		file.close();
 	}
-
-	file.close();
 }
 
 static unsigned getCount(size_t position)
@@ -63,6 +62,8 @@ static void changeCount(size_t position, int numberToChange)
 	file.seekp(position * sizeof(unsigned));
 	count += numberToChange;
 	file.write((const char*)&count, sizeof(unsigned));
+
+	file.close();
 }
 
 void configs::incrementCountOfAdmins()
@@ -149,17 +150,16 @@ bool configs::saveLoggedPlayerInThePeriod(const MyString& nickname)
 	return true;
 }
 
-bool configs::checkIfPeriodIsOver()
+void configs::handlePeriod()
 {
 	unsigned countOfPlayers = getCountOfPlayers();
 	unsigned countOfPlayersInThePeriod = getCountOfLogged();
 
 	if (countOfPlayers == countOfPlayersInThePeriod)
 	{
-		helper::deleteDataFromFile(constants::CONFIGS_FILE_PATH, 4 * sizeof(unsigned), helper::getFileSize(constants::CONFIGS_FILE_PATH));
-		return true;
+		changeCount(4, (-1) * countOfPlayersInThePeriod);
+		helper::deleteDataFromFile(constants::CONFIGS_FILE_PATH, 5 * sizeof(unsigned), helper::getFileSize(constants::CONFIGS_FILE_PATH));
 	}
-	return false;
 }
 
 bool configs::isMarketEmpty()

@@ -18,7 +18,8 @@ static int isPowerGreater(unsigned attackerPower, unsigned defenderPower)
 
 void SuperHero::setPrice() noexcept
 {
-	price = constants::INITIAL_PRICE_OF_SUPERHERO * level * (powerLevel + 1) * 0.55;
+	srand(time(0));
+	price = constants::INITIAL_PRICE_OF_SUPERHERO * level * (powerLevel + 1) * 0.55 + rand() % 10;
 }
 
 void SuperHero::setPower(unsigned long long power)
@@ -316,6 +317,8 @@ SuperHero* SuperHeroFactory::readFromBinary(std::ifstream& file, const MyString&
 			{
 				return curr;
 			}
+			delete curr;
+			curr = nullptr;
 		}
 		throw std::invalid_argument("Nickname is not valid!");
 	}
@@ -470,6 +473,7 @@ void removeSuperheroFromFile(const MyString& fileName, const MyString& nickname)
 		SuperHeroFactory* factory = SuperHeroFactory::getInstance();
 		superhero = factory->readFromBinary(fileName, nickname);
 		removeSuperheroFromFile(fileName, *superhero);
+		delete superhero;
 	}
 	catch (const File_Error&)
 	{
