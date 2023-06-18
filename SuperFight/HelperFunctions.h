@@ -10,4 +10,6 @@ namespace helper {
 	size_t getFileSize(std::ifstream& file);
 	void deleteDataFromFile(const MyString& fileName, int indexStart, int indexEnd);
 	void getStartIndexAndEndIndexOfEntityInFile(const MyString& fileName, int& indexStart, int& indexEnd, const Entity& entity);
+	bool isEOF(std::ifstream& file);
+	bool isEOF(std::ofstream& file);
 }

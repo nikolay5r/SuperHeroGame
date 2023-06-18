@@ -19,7 +19,7 @@ static void getStartIndexAndEndIndexOfPlayerInFile(std::ifstream& file, int& ind
 
 	UserFactory* factory = PlayerFactory::getInstance();
 
-	while (!file.eof())
+	while (!helper::isEOF(file))
 	{
 		indexStart = file.tellg();
 		User* curr = factory->readFromBinary(file);
@@ -55,7 +55,7 @@ static void getStartIndexAndEndIndexOfAdminInFile(std::ifstream& file, int& inde
 
 	UserFactory* factory = AdminFactory::getInstance();
 
-	while (!file.eof())
+	while (!helper::isEOF(file))
 	{
 		indexStart = file.tellg();
 		User* curr = factory->readFromBinary(file);
@@ -91,7 +91,7 @@ static void getStartIndexAndEndIndexOfSuperHeroInFile(std::ifstream& file, int& 
 
 	SuperHeroFactory* factory = SuperHeroFactory::getInstance();
 
-	while (!file.eof())
+	while (!helper::isEOF(file))
 	{
 		indexStart = file.tellg();
 		SuperHero* curr = factory->readFromBinary(file);
@@ -167,6 +167,9 @@ void helper::deleteDataFromFile(const MyString& fileName, int indexStart, int in
 
 	file.close();
 	newFile.close();
+
+	remove(fileName.c_str());
+
 	if (rename("newFile.bin", fileName.c_str()) != 0)
 	{
 		throw File_Error("Error with renaming the files when trying to remove an entity!");
@@ -202,4 +205,22 @@ void helper::getStartIndexAndEndIndexOfEntityInFile(const MyString& fileName, in
 	}
 
 	file.close();
+}
+
+bool helper::isEOF(std::ofstream& file)
+{
+	size_t index = file.tellp();
+	file.seekp(0, std::ios::end);
+	bool eof = (index >= file.tellp());
+	file.seekp(index);
+	return eof;
+}
+
+bool helper::isEOF(std::ifstream& file)
+{
+	size_t index = file.tellg();
+	file.seekg(0, std::ios::end);
+	bool eof = (index >= file.tellg());
+	file.seekg(index);
+	return eof;
 }
