@@ -57,6 +57,8 @@ public:
 	void printFullInfo() const override;
 	unsigned getCoins() const;
 	size_t getNumberOfSuperHeroes() const;
+	const SuperHero& getSuperhero(unsigned index) const;
+	const SuperHero& getSuperhero(const MyString& nickname) const;
 	const MyVector<SuperHero>& getSuperHeroes() const;
 
 	friend class PlayerFactory;

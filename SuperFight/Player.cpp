@@ -360,6 +360,18 @@ unsigned Player::getCoins() const
 	return coins;
 }
 
+const SuperHero& Player::getSuperhero(unsigned index) const
+{
+	attestIndex(index);
+	return superHeroes[index];
+}
+
+const SuperHero& Player::getSuperhero(const MyString& nickname) const
+{
+	unsigned index = nicknameToIndex(nickname);
+	return getSuperhero(index);
+}
+
 User* PlayerFactory::readFromBinary() const
 {
 	std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::binary);
