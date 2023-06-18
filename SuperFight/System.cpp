@@ -207,8 +207,11 @@ void PlayerSystem::sellSuperHero() const
 		{
 			return;
 		}
+
 		sell(player->getSuperhero(buff));
 		player->sellSuperHero(buff);
+		removeFromFile(*player);
+		saveToFile(*player);
 
 		std::cout << "Superhero was sold!" << std::endl;
 	}
@@ -227,7 +230,6 @@ void PlayerSystem::sellSuperHero() const
 	{
 		std::cerr << error.what() << std::endl;
 		std::cout << std::endl;
-		sellSuperHero();
 	}
 	catch (const std::exception& error)
 	{
@@ -408,6 +410,9 @@ void PlayerSystem::buySuperHero() const
 		player->buySuperHero(*superhero);
 		delete superhero;
 
+		removeFromFile(*player);
+		saveToFile(*player);
+
 		std::cout << "Superhero was bought!" << std::endl;
 	}
 	catch (const File_Error&)
@@ -452,7 +457,10 @@ void PlayerSystem::showMarket() const
 		if (count != 0)
 		{
 			MyString buff;
-			std::cout << "If you want to go back type 'back';" << std::endl << "If you want to buy a superhero enter 'buy' or if you want to sell enter 'sell': ";
+			std::cout << "If you want to go back enter 'back';" << std::endl
+				<< "If you want to buy a superhero enter 'buy';" << std::endl
+				<< "If you want to sell enter 'sell':" << std::endl
+				<< "Command: ";
 			std::cin >> buff;
 
 			if (buff == "back")
@@ -516,7 +524,9 @@ void PlayerSystem::showPlayers() const
 		if (count != 0)
 		{
 			MyString buff;
-			std::cout << "If you want to go back type 'back';" << std::endl << "If you want to fight with other players type 'battle': ";
+			std::cout << "If you want to go back type 'back';" << std::endl
+				<< "If you want to fight with other players type 'battle': " << std::endl
+				<< "Command: ";
 			std::cin >> buff;
 
 			if (buff == "back")
@@ -609,6 +619,11 @@ void PlayerSystem::upgradeSuperHero() const
 
 void PlayerSystem::changePos()
 {
+	if (static_cast<Player*>(currentUser)->getNumberOfSuperHeroes() == 0)
+	{
+		throw std::logic_error("You have no superheroes to change position to.");
+	}
+
 	MyString buff;
 	std::cout << "Enter 'back' if you want to go back;" << std::endl << "Enter the nickname of the superhero: ";
 	std::cin >> buff;
@@ -626,11 +641,12 @@ void PlayerSystem::showProfile()
 	{
 		currentUser->printFullInfo();
 
-		std::cout << "If you want to go back enter 'back';" << std::endl
+		std::cout << std::endl << "If you want to go back enter 'back';" << std::endl
 			<< "If you want to sell a superhero enter 'sell';" << std::endl
 			<< "If you want to change the attacking position of a superhero enter 'change';" << std::endl
 			<< "If you want to upgrade a superhero enter 'upgrade';" << std::endl
-			<< "If you want to delete your profile enter 'delete': ";
+			<< "If you want to delete your profile enter 'delete': " << std::endl
+			<< "Command: ";
 		MyString buff;
 		std::cin >> buff;
 
@@ -672,6 +688,12 @@ void PlayerSystem::showProfile()
 		std::cout << std::endl;
 		showProfile();
 	}
+	catch (const std::logic_error& error)
+	{
+		std::cerr << error.what() << std::endl;
+		std::cout << std::endl;
+		showProfile();
+	}
 	catch (const std::exception& error)
 	{
 		std::cerr << "An exception was thrown when trying to show profile!" << std::endl;
@@ -694,6 +716,7 @@ void PlayerSystem::run()
 		{
 			if (currentUser)
 			{
+				std::cout << std::endl;
 				std::cout << "Enter a command:" << std::endl
 					<< "  0 - logout" << std::endl
 					<< "  1 - show all players" << std::endl
@@ -731,7 +754,9 @@ void PlayerSystem::run()
 			}
 			else
 			{
-				std::cout << "Enter 'exit' if you want to exit the program;" << std::endl << "Enter 'login' if you already have an account and 'register' if you don't: ";
+				std::cout << "Enter 'exit' if you want to exit the program;" << std::endl
+					<< "Enter 'login' if you already have an account and 'register' if you don't: " << std::endl
+					<< "Command: ";
 				MyString buff;
 				std::cin >> buff;
 

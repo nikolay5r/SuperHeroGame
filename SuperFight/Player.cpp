@@ -319,7 +319,7 @@ void Player::changePositionOfSuperHero(const MyString& nickname)
 
 void Player::printFullInfo() const
 {
-	std::cout << fullName << " | " << nickname << " | " << email << " | " << coins << " coins" << std::endl;
+	std::cout << "  " << fullName << " | " << nickname << " | " << email << " | " << coins << " coins" << std::endl;
 	if (superHeroes.size() == 0)
 	{
 		std::cout << "\tYou have no superheroes." << std::endl;
@@ -336,7 +336,7 @@ void Player::printFullInfo() const
 
 void Player::printShortInfo() const
 {
-	std::cout << nickname << " " << coins << " coins" << std::endl;
+	std::cout << "  " << nickname << " " << coins << " coins" << std::endl;
 	for (size_t i = 0; i < superHeroes.size(); i++)
 	{
 		std::cout << "\t" << i + 1 << ". " << superHeroes[i].getNickname() << std::endl;
@@ -635,13 +635,14 @@ unsigned printPlayersAndGetCountOfPrinted()
 	}
 
 	unsigned countOfPrintedPlayers = 0;
-	while (!helper::isEOF(file))
+	for (int i = 1; !helper::isEOF(file); i++)
 	{
 		UserFactory* factory = PlayerFactory::getInstance();
 		User* player = factory->readFromBinary(file);
 		player->printShortInfo();
 		countOfPrintedPlayers++;
 		delete player;
+		std::cout << std::endl;
 	}
 
 	file.close();

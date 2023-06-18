@@ -11,7 +11,8 @@ void startSystem(System* system)
 		MyString buff;
 		std::cout << "Welcome, challenger!" << std::endl
 			<< "Enter 'admin' if you want to sign in as an admin;" << std::endl
-			<< "Enter 'player' if you want to sign in as a player: ";
+			<< "Enter 'player' if you want to sign in as a player: " << std::endl
+			<< "Command: ";
 		std::cin >> buff;
 
 		if (buff == "player")
