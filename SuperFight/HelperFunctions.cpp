@@ -131,6 +131,31 @@ bool helper::isDigit(char a)
 	return a >= '0' && a <= '9';
 }
 
+size_t helper::getFileSize(const MyString& fileName)
+{
+	std::ifstream file(fileName.c_str(), std::ios::binary);
+	if (!file.is_open())
+	{
+		return 0;
+	}
+
+	file.seekg(0, std::ios::end);
+	size_t size = file.tellg();
+
+	file.close();
+	return size;
+}
+
+size_t helper::getFileSize(std::ofstream& file)
+{
+	size_t curr = file.tellp();
+	file.seekp(0, std::ios::end);
+	size_t size = file.tellp();
+	file.seekp(curr);
+
+	return size;
+}
+
 size_t helper::getFileSize(std::ifstream& file)
 {
 	size_t curr = file.tellg();
@@ -225,17 +250,11 @@ bool helper::isEOF(std::ifstream& file)
 	return eof;
 }
 
-bool helper::isMarketEmpty()
+bool helper::isEOF(std::fstream& file)
 {
-	std::ifstream file(constants::MARKET_SUPERHEROES_FILE_PATH.c_str(), std::ios::binary);
-	if (!file.is_open())
-	{
-		throw File_Error("File coudln't open!");
-	}
-
-	size_t size = getFileSize(file);
-
-	file.close();
-
-	return size == 0;
+	size_t index = file.tellg();
+	file.seekg(0, std::ios::end);
+	bool eof = (index >= file.tellg());
+	file.seekg(index);
+	return eof;
 }
