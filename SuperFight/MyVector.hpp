@@ -213,7 +213,7 @@ void MyVector<T>::clear()
 template <typename T>
 T& MyVector<T>::pop_at(size_t index)
 {
-	if (index < count)
+	if (index > count)
 	{
 		throw std::out_of_range("Index out of range!");
 	}
