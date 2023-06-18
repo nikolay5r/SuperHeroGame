@@ -135,3 +135,24 @@ User* UserFactory::createFromConsoleOnLogin(const MyString& fileName) const
 		throw;
 	}
 }
+
+void saveChangesToFile(const User& user)
+{
+	switch (user.getRole())
+	{
+	case UserRole::Admin:
+	{
+		const Admin& admin = static_cast<const Admin&>(user);
+		saveChangesToFile(admin);
+		break;
+	}
+	case UserRole::Player:
+	{
+		const Player& player = static_cast<const Player&>(user);
+		saveChangesToFile(player);
+		break;
+	}
+	default:
+		break;
+	}
+}

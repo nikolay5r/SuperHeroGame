@@ -87,3 +87,4 @@ void saveToFile(const Player& player);
 void removeFromFile(const Player& player);
 void printPlayers();
 void printPlayersForAdmins();
+void saveChangesToFile(const Player& player);

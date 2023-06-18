@@ -674,3 +674,9 @@ void printPlayersForAdmins()
 
 	file.close();
 }
+
+void saveChangesToFile(const Player& player)
+{
+	removeFromFile(player);
+	saveToFile(player);
+}

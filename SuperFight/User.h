@@ -51,3 +51,4 @@ public:
 
 void saveToFile(const User& user);
 void removeFromFile(const User& user);
+void saveChangesToFile(const User& user);
