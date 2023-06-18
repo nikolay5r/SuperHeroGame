@@ -22,7 +22,7 @@ protected:
 public:
 	System(const System&) = delete;
 	System& operator=(const System&) = delete;
-	virtual bool run() = 0;
+	virtual void run() = 0;
 
 	static void freeInstance();
 	virtual ~System();

@@ -4,6 +4,8 @@
 #include "Input_Error.h"
 #include "SystemConfigurations.h"
 #include "Regex_Error.h"
+#include "Player.h"
+#include "SuperHero.h"
 #include <iostream>
 
 System* PlayerSystem::getInstance()
@@ -20,7 +22,7 @@ void PlayerSystem::logout()
 {
 	try
 	{
-		saveChangesToFile(static_cast<const Player&>(*currentUser));
+		savePlayerChangesToFile(static_cast<const Player&>(*currentUser));
 
 		UserFactory::freeInstance();
 		SuperHeroFactory::freeInstance();
@@ -116,8 +118,8 @@ void PlayerSystem::reg()
 		srand(time(0));
 		Player* player = static_cast<Player*>(user);
 		player->addSuperHero(user->getFirstName(), user->getLastName(), user->getNickname(), rand() % 30 + 5, SuperHeroPowerType::Earth);
-		saveToFile(*player);
-		saveToFile(constants::SOLD_SUPERHEROES_FILE_PATH, player->getSuperHeroes()[0]);
+		savePlayerToFile(*player);
+		saveSuperheroToFile(constants::SOLD_SUPERHEROES_FILE_PATH, player->getSuperHeroes()[0]);
 		configs::incrementCountOfPlayers();
 		configs::incrementCountOfSoldSuperheroes();
 		std::cout << "Registration was successful!" << std::endl;
@@ -182,7 +184,7 @@ void PlayerSystem::sellSuperHero() const
 
 		sell(player->getSuperhero(buff));
 		player->sellSuperHero(buff);
-		saveChangesToFile(*player);
+		savePlayerChangesToFile(*player);
 		configs::incrementCountOfMarketSuperheroes();
 		configs::decrementCountOfSoldSuperheroes();
 
@@ -384,7 +386,7 @@ void PlayerSystem::buySuperHero() const
 		player->buySuperHero(*superhero);
 		delete superhero;
 
-		saveChangesToFile(*player);
+		savePlayerChangesToFile(*player);
 
 		configs::decrementCountOfMarketSuperheroes();
 		configs::incrementCountOfSoldSuperheroes();
@@ -429,7 +431,7 @@ void PlayerSystem::showMarket() const
 {
 	try
 	{
-		if (configs::getCountOfMarket() != 0)
+		if (!configs::isMarketEmpty())
 		{
 			printSuperheroes(constants::MARKET_SUPERHEROES_FILE_PATH);
 			MyString buff;
@@ -686,7 +688,7 @@ void PlayerSystem::showProfile()
 	}
 }
 
-bool PlayerSystem::run()
+void PlayerSystem::run()
 {
 	bool end = false;
 	int n = -1;
@@ -712,7 +714,7 @@ bool PlayerSystem::run()
 				{
 				case 0:
 					logout();
-					return end;
+					break;
 				case 1:
 					std::cout << std::endl;
 					showPlayers();
@@ -766,7 +768,7 @@ bool PlayerSystem::run()
 	catch (const File_Error& error)
 	{
 		freeSystem();
-		std::cerr << "FATAL ERROR:\n\tFILE_ERROR: " << error.what() << " The program will terminate!" << std::endl;
+		std::cerr << "FATAL ERROR:\n\tFILE_ERROR: " << error.what() << " Logging out!" << std::endl;
 		exit(1);
 	}
 	catch (const Input_Error& error)
@@ -782,16 +784,15 @@ bool PlayerSystem::run()
 	catch (const std::exception& error)
 	{
 		freeSystem();
-		std::cerr << "FATAL ERROR:\n\tUNKNOWN EXCEPTION: " << error.what() << " The program will terminate!" << std::endl;
+		std::cerr << "FATAL ERROR:\n\tUNKNOWN EXCEPTION: " << error.what() << " Logging out!" << std::endl;
 		exit(1);
 	}
 	catch (...)
 	{
 		freeSystem();
-		std::cerr << "FATAL ERROR:\n\tUNKNOWN EXCEPTION: " << "Something wrong happened!" << " The program will terminate!" << std::endl;
+		std::cerr << "FATAL ERROR:\n\tUNKNOWN EXCEPTION: " << "Something wrong happened!" << " Logging out!" << std::endl;
 		exit(1);
 	}
 
 	std::cout << "Program is shutting down!" << std::endl;
-	return end;
 }

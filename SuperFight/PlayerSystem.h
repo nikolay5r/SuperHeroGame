@@ -19,7 +19,7 @@ class PlayerSystem : public System
 public:
 
 	static System* getInstance();
-	bool run() override;
+	void run() override;
 
 };
 

@@ -10,11 +10,20 @@ class AdminSystem : public System
 	void showMarket() const override;
 	void showSoldMarket() const;
 	void showPlayers() const override;
+	void showAdmins() const;
 	void deleteProfile() override;
 	void showProfile() override;
+	void deleteSuperheroFromMarket() const;
+	void deleteSuperheroFromSold() const;
+	void deletePlayer() const;
+	void addPlayer() const;
+	void addAdmin() const;
+	void addSuperhero() const;
+	void addSuperheroFromSold() const;
+	void ifEmptyMarketHandle() const;
 public:
 
 	static System* getInstance();
-	bool run() override;
+	void run() override;
 };
 

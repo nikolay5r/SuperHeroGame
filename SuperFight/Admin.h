@@ -33,6 +33,6 @@ public:
 	User* createFromConsole() const override;
 };
 
-void saveToFile(const Admin& admin);
-void removeFromFile(const Admin& admin);
+void saveAdminToFile(const Admin& admin);
+void removeAdminFromFile(const Admin& admin);
 void printAdmins();

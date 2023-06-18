@@ -169,7 +169,7 @@ UserFactory* AdminFactory::getInstance()
 }
 
 
-void saveToFile(const Admin& admin)
+void saveAdminToFile(const Admin& admin)
 {
 	std::ofstream file(constants::ADMINS_FILE_PATH.c_str(), std::ios::binary | std::ios::app);
 
@@ -203,7 +203,7 @@ void saveToFile(const Admin& admin)
 	file.close();
 }
 
-void removeFromFile(const Admin& admin)
+void removeAdminFromFile(const Admin& admin)
 {
 	int indexStart = -1;
 	int indexEnd = -1;
