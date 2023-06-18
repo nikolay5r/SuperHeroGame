@@ -1,7 +1,7 @@
 #pragma once
 #include <stdexcept>
 #include "MyString.h"
-class Regex_Error : public std::exception
+class Regex_Error
 {
 	MyString message = "";
 public:
