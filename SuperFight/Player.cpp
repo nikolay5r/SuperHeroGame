@@ -578,7 +578,7 @@ User* PlayerFactory::createFromConsole() const
 	throw std::invalid_argument("User with that nickname already exists!");
 }
 
-void saveToFile(const Player& player)
+void savePlayerToFile(const Player& player)
 {
 	std::ofstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::binary | std::ios::app);
 
@@ -616,13 +616,35 @@ void saveToFile(const Player& player)
 
 	for (size_t i = 0; i < size; i++)
 	{
-		saveToFile(file, superheroes[i]);
+		saveSuperheroToFile(file, superheroes[i]);
 	}
 
 	file.close();
 }
 
-void removeFromFile(const Player& player)
+void removePlayerFromFile(const MyString& nickname)
+{
+	User* player = nullptr;
+	try
+	{
+		UserFactory* factory = PlayerFactory::getInstance();
+		player = factory->readFromBinary(nickname);
+		removePlayerFromFile(*player);
+	}
+	catch (const File_Error&)
+	{
+		std::cerr << "File error occured when trying to remove a superhero from file by nickname!" << std::endl;
+		delete player;
+		throw;
+	}
+	catch (...)
+	{
+		delete player;
+		throw;
+	}
+}
+
+void removePlayerFromFile(const Player& player)
 {
 	int indexStart = -1;
 	int indexEnd = -1;
@@ -675,8 +697,8 @@ void printPlayersForAdmins()
 	file.close();
 }
 
-void saveChangesToFile(const Player& player)
+void savePlayerChangesToFile(const Player& player)
 {
-	removeFromFile(player);
-	saveToFile(player);
+	removePlayerFromFile(player);
+	savePlayerToFile(player);
 }

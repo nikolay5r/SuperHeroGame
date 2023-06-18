@@ -83,8 +83,9 @@ public:
 	User* createFromConsole() const override;
 };
 
-void saveToFile(const Player& player);
-void removeFromFile(const Player& player);
+void savePlayerToFile(const Player& player);
+void removePlayerFromFile(const MyString& nickname);
+void removePlayerFromFile(const Player& player);
 void printPlayers();
 void printPlayersForAdmins();
-void saveChangesToFile(const Player& player);
+void savePlayerChangesToFile(const Player& player);

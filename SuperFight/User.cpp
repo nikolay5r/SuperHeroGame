@@ -56,13 +56,13 @@ void saveToFile(const User& user)
 	case UserRole::Admin:
 	{
 		const Admin& admin = static_cast<const Admin&>(user);
-		saveToFile(admin);
+		saveAdminToFile(admin);
 		break;
 	}
 	case UserRole::Player:
 	{
 		const Player& player = static_cast<const Player&>(user);
-		saveToFile(player);
+		savePlayerToFile(player);
 		break;
 	}
 	default:
@@ -83,7 +83,7 @@ void removeFromFile(const User& user)
 	case UserRole::Player:
 	{
 		const Player& player = static_cast<const Player&>(user);
-		removeFromFile(player);
+		removePlayerFromFile(player);
 		break;
 	}
 	default:
@@ -149,7 +149,7 @@ void saveChangesToFile(const User& user)
 	case UserRole::Player:
 	{
 		const Player& player = static_cast<const Player&>(user);
-		saveChangesToFile(player);
+		savePlayerChangesToFile(player);
 		break;
 	}
 	default:

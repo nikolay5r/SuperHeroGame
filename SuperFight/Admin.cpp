@@ -145,7 +145,7 @@ User* AdminFactory::createFromConsole() const
 
 	try
 	{
-		std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::binary);
+		std::ifstream file(constants::ADMINS_FILE_PATH.c_str(), std::ios::binary);
 		readFromBinary(file, nickname);
 		file.close();
 	}
@@ -215,7 +215,7 @@ void removeAdminFromFile(const Admin& admin)
 
 void printAdmins()
 {
-	std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::in | std::ios::binary);;
+	std::ifstream file(constants::ADMINS_FILE_PATH.c_str(), std::ios::in | std::ios::binary);;
 
 	if (!file.is_open())
 	{

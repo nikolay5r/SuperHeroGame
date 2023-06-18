@@ -393,7 +393,7 @@ void SuperHeroFactory::freeInstance()
 	SuperHeroFactory::instance = nullptr;
 }
 
-void saveToFile(std::ofstream& file, const SuperHero& superhero)
+void saveSuperheroToFile(std::ofstream& file, const SuperHero& superhero)
 {
 	if (!file.is_open())
 	{
@@ -444,8 +444,8 @@ SuperHero* buy(const MyString& nickname)
 	{
 		SuperHeroFactory* factory = SuperHeroFactory::getInstance();
 		superhero = factory->readFromBinary(constants::MARKET_SUPERHEROES_FILE_PATH, nickname);
-		removeFromFile(constants::MARKET_SUPERHEROES_FILE_PATH, *superhero);
-		saveToFile(constants::SOLD_SUPERHEROES_FILE_PATH, *superhero);
+		removeSuperheroFromFile(constants::MARKET_SUPERHEROES_FILE_PATH, *superhero);
+		saveSuperheroToFile(constants::SOLD_SUPERHEROES_FILE_PATH, *superhero);
 
 		return superhero;
 	}
@@ -462,7 +462,29 @@ SuperHero* buy(const MyString& nickname)
 	}
 }
 
-void removeFromFile(const MyString& fileName, const SuperHero& superhero)
+void removeSuperheroFromFile(const MyString& fileName, const MyString& nickname)
+{
+	SuperHero* superhero = nullptr;
+	try
+	{
+		SuperHeroFactory* factory = SuperHeroFactory::getInstance();
+		superhero = factory->readFromBinary(fileName, nickname);
+		removeSuperheroFromFile(fileName, *superhero);
+	}
+	catch (const File_Error&)
+	{
+		std::cerr << "File error occured when trying to remove a superhero from file by nickname!" << std::endl;
+		delete superhero;
+		throw;
+	}
+	catch (...)
+	{
+		delete superhero;
+		throw;
+	}
+}
+
+void removeSuperheroFromFile(const MyString& fileName, const SuperHero& superhero)
 {
 	int indexStart = -1;
 	int indexEnd = -1;
@@ -470,7 +492,7 @@ void removeFromFile(const MyString& fileName, const SuperHero& superhero)
 	helper::deleteDataFromFile(fileName, indexStart, indexEnd);
 }
 
-void saveToFile(const MyString& fileName, const SuperHero& superhero)
+void saveSuperheroToFile(const MyString& fileName, const SuperHero& superhero)
 {
 	std::ofstream file(fileName.c_str(), std::ios::binary | std::ios::app);
 
@@ -479,7 +501,7 @@ void saveToFile(const MyString& fileName, const SuperHero& superhero)
 		throw File_Error("File couldn't open!");
 	}
 
-	saveToFile(file, superhero);
+	saveSuperheroToFile(file, superhero);
 
 	file.close();
 }
@@ -488,8 +510,8 @@ void sell(const SuperHero& superheroToSell)
 {
 	try
 	{
-		saveToFile(constants::MARKET_SUPERHEROES_FILE_PATH, superheroToSell);
-		removeFromFile(constants::SOLD_SUPERHEROES_FILE_PATH, superheroToSell);
+		saveSuperheroToFile(constants::MARKET_SUPERHEROES_FILE_PATH, superheroToSell);
+		removeSuperheroFromFile(constants::SOLD_SUPERHEROES_FILE_PATH, superheroToSell);
 	}
 	catch (const File_Error&)
 	{
