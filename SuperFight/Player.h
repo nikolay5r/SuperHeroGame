@@ -68,6 +68,7 @@ public:
 
 class PlayerFactory : public UserFactory
 {
+	static UserFactory* instance;
 	PlayerFactory() = default;
 public:
 	static UserFactory* getInstance();
@@ -81,6 +82,9 @@ public:
 	User* readFromBinary(std::ifstream& file, const MyString& nicknameToFind) const override;
 
 	User* createFromConsole() const override;
+
+	static void freeInstance();
+	~PlayerFactory() = default;
 };
 
 void savePlayerToFile(const Player& player);

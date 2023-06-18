@@ -20,7 +20,7 @@ class AdminSystem : public System
 	void addAdmin() const;
 	void addSuperhero() const;
 	void addSuperheroFromSold() const;
-	void ifEmptyMarketHandle() const;
+	void handleEmptyMarket() const;
 public:
 
 	static System* getInstance();

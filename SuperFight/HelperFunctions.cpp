@@ -95,11 +95,6 @@ static void getStartIndexAndEndIndexOfSuperHeroInFile(std::ifstream& file, int& 
 	{
 		indexStart = file.tellg();
 		SuperHero* curr = factory->readFromBinary(file);
-		if (file.eof())
-		{
-			delete curr;
-			break;
-		}
 		if (superhero.getNickname() == curr->getNickname())
 		{
 			delete curr;
@@ -179,7 +174,7 @@ void helper::deleteDataFromFile(const MyString& fileName, int indexStart, int in
 	//We are making a buffer to store the data from 0 index of the file to the start index of the player and then transfering the data to the new file
 	char* buffer = new char[indexStart + 1];
 	file.read(buffer, indexStart);
-	newFile.write((const char*)&buffer, indexStart);
+	newFile.write(buffer, indexStart);
 	delete[] buffer;
 
 	//The same we are doing for the rest of the data after the player's data
@@ -187,7 +182,7 @@ void helper::deleteDataFromFile(const MyString& fileName, int indexStart, int in
 	file.seekg(indexEnd);
 	buffer = new char[fileSize - indexEnd + 1];
 	file.read(buffer, fileSize - indexEnd);
-	newFile.write((const char*)&buffer, fileSize - indexEnd);
+	newFile.write(buffer, fileSize - indexEnd);
 	delete[] buffer;
 
 	file.close();

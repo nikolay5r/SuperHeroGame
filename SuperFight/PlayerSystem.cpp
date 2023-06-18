@@ -24,7 +24,8 @@ void PlayerSystem::logout()
 	{
 		savePlayerChangesToFile(static_cast<const Player&>(*currentUser));
 
-		UserFactory::freeInstance();
+		AdminFactory::freeInstance();
+		PlayerFactory::freeInstance();
 		SuperHeroFactory::freeInstance();
 
 		delete currentUser;
@@ -61,10 +62,11 @@ void PlayerSystem::login()
 		UserFactory* factory = PlayerFactory::getInstance();
 		currentUser = factory->createFromConsoleOnLogin(constants::PLAYERS_FILE_PATH);
 		std::cout << "Log in was successful!" << std::endl;
-		if (configs::checkIfPeriodIsOver())
+		if (configs::saveLoggedPlayerInThePeriod(currentUser->getNickname()))
 		{
 			static_cast<Player*>(currentUser)->addCoinsOnLogIn();
 			std::cout << "You recieved coins on log in! +" << constants::COINS_TO_EARN_PERIODICALLY << " coins" << std::endl;
+			configs::handlePeriod();
 		}
 	}
 	catch (const File_Error&)
@@ -218,23 +220,18 @@ void PlayerSystem::sellSuperHero() const
 	}
 }
 
-static void printResultOfBattle(int result, int playerCoins, int otherPlayerCoins, const Player& player, const Player& otherPlayer)
+static void printResultOfBattle(int result)
 {
 	switch (result)
 	{
 	case 1:
-		std::cout << "You won!" << std::endl
-			<< "You won " << player.getCoins() - playerCoins << " coins." << std::endl
-			<< "Enemy lost " << otherPlayerCoins - otherPlayer.getCoins() << " coins." << std::endl;
+		std::cout << "You won!" << std::endl;
 		break;
 	case 0:
-		std::cout << "It was a tie!" << std::endl
-			<< "You lost " << playerCoins - player.getCoins() << " coins." << std::endl;
+		std::cout << "It was a tie!" << std::endl;
 		break;
 	case -1:
-		std::cout << "You lost!" << std::endl
-			<< "You lost " << playerCoins - player.getCoins() << " coins." << std::endl
-			<< "Enemy won " << otherPlayer.getCoins() - otherPlayerCoins << " coins." << std::endl;
+		std::cout << "You lost!" << std::endl;
 		break;
 	default:
 		std::cout << "I don't know what happened!" << std::endl;
@@ -280,26 +277,29 @@ void PlayerSystem::battle() const
 		MyString nickname2;
 		std::cout << "Enter nickname of your superhero(if you want to attack with random superhero enter '-'): ";
 		std::cin >> nickname1;
-		std::cout << "Enter nickname of your superhero(if you want to attack with random superhero enter '-'): ";
+		std::cout << "Enter nickname of enemy superhero(if you want to attack with random superhero enter '-'): ";
 		std::cin >> nickname2;
 
 
 		if (nickname1 == "-" && nickname2 == "-")
 		{
-			printResultOfBattle(player->attack(*otherPlayer), playerCoinsAtStart, otherPlayerCoinsAtStart, *player, *otherPlayer);
+			printResultOfBattle(player->attack(*otherPlayer));
 		}
 		else if (nickname1 == "-")
 		{
-			printResultOfBattle(player->attack(*otherPlayer, nickname2), playerCoinsAtStart, otherPlayerCoinsAtStart, *player, *otherPlayer);
+			printResultOfBattle(player->attack(*otherPlayer, nickname2));
 		}
 		else if (nickname2 == "-")
 		{
-			printResultOfBattle(player->attack(nickname1, *otherPlayer), playerCoinsAtStart, otherPlayerCoinsAtStart, *player, *otherPlayer);
+			printResultOfBattle(player->attack(nickname1, *otherPlayer));
 		}
 		else
 		{
-			printResultOfBattle(player->attack(nickname1, *otherPlayer, nickname2), playerCoinsAtStart, otherPlayerCoinsAtStart, *player, *otherPlayer);
+			printResultOfBattle(player->attack(nickname1, *otherPlayer, nickname2));
 		}
+
+		saveChangesToFile(*player);
+		saveChangesToFile(*otherPlayer);
 	}
 	catch (const File_Error&)
 	{
@@ -341,7 +341,8 @@ void PlayerSystem::deleteProfile()
 		removeFromFile(*currentUser);
 		configs::decrementCountOfPlayers();
 
-		UserFactory::freeInstance();
+		AdminFactory::freeInstance();
+		PlayerFactory::freeInstance();
 		SuperHeroFactory::freeInstance();
 
 		delete currentUser;
@@ -729,7 +730,7 @@ void PlayerSystem::run()
 					break;
 				case 4:
 					logout();
-					end = true;
+					exit(0);
 					break;
 				default:
 					throw Input_Error("Keyword is not valid!");
@@ -737,7 +738,7 @@ void PlayerSystem::run()
 			}
 			else
 			{
-				std::cout << "Enter 'exit' if you want to exit the program;" << std::endl
+				std::cout << "Enter 'back' if you want to go back;" << std::endl
 					<< "Enter 'login' if you already have an account and 'register' if you don't: " << std::endl
 					<< "Command: ";
 				MyString buff;
@@ -753,7 +754,7 @@ void PlayerSystem::run()
 					std::cout << std::endl;
 					reg();
 				}
-				else if (buff == "exit")
+				else if (buff == "back")
 				{
 					end = true;
 				}

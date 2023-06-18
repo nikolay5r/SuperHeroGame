@@ -9,10 +9,13 @@
 #include "SuperHero.h"
 #include <iostream>
 
-void AdminSystem::ifEmptyMarketHandle() const
+void AdminSystem::handleEmptyMarket() const
 {
 	if (configs::isMarketEmpty())
 	{
+		std::cout << "Market is empty!" << std::endl
+			<< "You have to add 3 superheroes." << std::endl;
+
 		for (size_t i = 0; i < 3; i++)
 		{
 			std::cout << std::endl;
@@ -41,7 +44,7 @@ void AdminSystem::reg()
 		saveAdminToFile(*user);
 		configs::incrementCountOfAdmins();
 		std::cout << "Registration was successful!" << std::endl;
-		ifEmptyMarketHandle();
+		handleEmptyMarket();
 	}
 	catch (const File_Error&)
 	{
@@ -87,7 +90,8 @@ void AdminSystem::logout()
 {
 	try
 	{
-		UserFactory::freeInstance();
+		AdminFactory::freeInstance();
+		PlayerFactory::freeInstance();
 		SuperHeroFactory::freeInstance();
 
 		delete currentUser;
@@ -114,7 +118,8 @@ void AdminSystem::deleteProfile()
 		removeAdminFromFile(*currentUser);
 		configs::decrementCountOfAdmins();
 
-		UserFactory::freeInstance();
+		AdminFactory::freeInstance();
+		PlayerFactory::freeInstance();
 		SuperHeroFactory::freeInstance();
 
 		delete currentUser;
@@ -143,7 +148,7 @@ void AdminSystem::showSoldMarket() const
 {
 	try
 	{
-		if (configs::isSoldEmpty())
+		if (!configs::isSoldEmpty())
 		{
 			printSuperheroes(constants::SOLD_SUPERHEROES_FILE_PATH);
 			MyString buff;
@@ -210,7 +215,7 @@ void AdminSystem::showMarket() const
 {
 	try
 	{
-		if (configs::isMarketEmpty())
+		if (!configs::isMarketEmpty())
 		{
 			printSuperheroes(constants::MARKET_SUPERHEROES_FILE_PATH);
 			MyString buff;
@@ -244,6 +249,26 @@ void AdminSystem::showMarket() const
 		else
 		{
 			std::cout << "No superheroes to show!" << std::endl;
+
+			MyString buff;
+			std::cout << "If you want to go back enter 'back';" << std::endl
+				<< "If you want to add a superhero enter 'add';" << std::endl
+				<< "Command: ";
+			std::cin >> buff;
+
+			if (buff == "back")
+			{
+				return;
+			}
+			else if (buff == "add")
+			{
+				std::cout << std::endl;
+				addSuperhero();
+			}
+			else
+			{
+				throw Input_Error("Invalid keyword was entered!");
+			}
 		}
 	}
 	catch (const File_Error&)
@@ -283,7 +308,7 @@ void AdminSystem::showPlayers() const
 			MyString buff;
 			std::cout << "If you want to go back enter 'back';" << std::endl
 				<< "If you want to add new player enter 'add';" << std::endl
-				<< "If you want to delete player's profile enter 'delete'" << std::endl
+				<< "If you want to delete player's profile enter 'delete';" << std::endl
 				<< "Command: ";
 			std::cin >> buff;
 
@@ -305,13 +330,31 @@ void AdminSystem::showPlayers() const
 			{
 				throw Input_Error("Invalid keyword was entered!");
 			}
-
-			showPlayers();
 		}
 		else
 		{
-			std::cout << "No players to show!" << std::endl;
+			MyString buff;
+			std::cout << "No players to show!" << std::endl
+				<< "If you want to go back enter 'back';" << std::endl
+				<< "If you want to add new player enter 'add';" << std::endl
+				<< "Command: ";
+			std::cin >> buff;
+
+			if (buff == "back")
+			{
+				return;
+			}
+			else if (buff == "add")
+			{
+				std::cout << std::endl;
+				addPlayer();
+			}
+			else
+			{
+				throw Input_Error("Invalid keyword was entered!");
+			}
 		}
+		showPlayers();
 	}
 	catch (const File_Error&)
 	{
@@ -398,9 +441,9 @@ void AdminSystem::login()
 	try
 	{
 		UserFactory* factory = AdminFactory::getInstance();
-		currentUser = factory->createFromConsoleOnLogin(constants::PLAYERS_FILE_PATH);
+		currentUser = factory->createFromConsoleOnLogin(constants::ADMINS_FILE_PATH);
 		std::cout << "Log in was successful!" << std::endl;
-		ifEmptyMarketHandle();
+		handleEmptyMarket();
 	}
 	catch (const File_Error&)
 	{
@@ -454,19 +497,17 @@ void AdminSystem::run()
 		{
 			if (currentUser)
 			{
-				if (n == -1)
-				{
-					std::cout << "Enter a command:" << std::endl
-						<< "  0 - logout" << std::endl
-						<< "  1 - show all players" << std::endl
-						<< "  2 - show market" << std::endl
-						<< "  3 - show sold market" << std::endl
-						<< "  4 - show profile" << std::endl
-						<< "  5 - show admins" << std::endl
-						<< "  6 - exit" << std::endl;
+				std::cout << "Enter a command:" << std::endl
+					<< "  0 - logout" << std::endl
+					<< "  1 - show all players" << std::endl
+					<< "  2 - show market" << std::endl
+					<< "  3 - show sold market" << std::endl
+					<< "  4 - show profile" << std::endl
+					<< "  5 - show admins" << std::endl
+					<< "  6 - exit" << std::endl << std::endl
+					<< "Command: ";
 
-					std::cin >> n;
-				}
+				std::cin >> n;
 
 				switch (n)
 				{
@@ -505,7 +546,9 @@ void AdminSystem::run()
 			}
 			else
 			{
-				std::cout << "Enter 'exit' if you want to exit the program;" << std::endl << "Enter 'login' if you already have an account and 'register' if you don't: ";
+				std::cout << "Enter 'back' if you want to go back;"
+					<< std::endl << "Enter 'login' if you already have an account and 'register' if you don't: " << std::endl
+					<< "Command: ";
 				MyString buff;
 				std::cin >> buff;
 
@@ -517,9 +560,10 @@ void AdminSystem::run()
 				{
 					reg();
 				}
-				else if (buff == "exit")
+				else if (buff == "back")
 				{
 					end = true;
+					break;
 				}
 				else
 				{
@@ -559,7 +603,6 @@ void AdminSystem::run()
 		exit(1);
 	}
 
-	std::cout << "Program is shutting down!" << std::endl;
 }
 
 void AdminSystem::showAdmins() const
@@ -569,29 +612,29 @@ void AdminSystem::showAdmins() const
 		if (configs::getCountOfAdmins() != 0)
 		{
 			printAdmins();
-			MyString buff;
-			std::cout << "If you want to go back enter 'back';" << std::endl
-				<< "If you want to add an admin enter 'add';" << std::endl
-				<< "Command: ";
-			std::cin >> buff;
-
-			if (buff == "back")
-			{
-				return;
-			}
-			else if (buff == "add")
-			{
-				std::cout << std::endl;
-				addAdmin();
-			}
-			else
-			{
-				throw Input_Error("Invalid keyword was entered!");
-			}
 		}
 		else
 		{
 			std::cout << "No admins to show!" << std::endl;
+		}
+		MyString buff;
+		std::cout << "If you want to go back enter 'back';" << std::endl
+			<< "If you want to add an admin enter 'add';" << std::endl
+			<< "Command: ";
+		std::cin >> buff;
+
+		if (buff == "back")
+		{
+			return;
+		}
+		else if (buff == "add")
+		{
+			std::cout << std::endl;
+			addAdmin();
+		}
+		else
+		{
+			throw Input_Error("Invalid keyword was entered!");
 		}
 	}
 	catch (const File_Error&)
@@ -721,9 +764,11 @@ void AdminSystem::addAdmin() const
 	{
 		UserFactory* factory = AdminFactory::getInstance();
 		user = factory->createFromConsole();
-		savePlayerToFile(*user);
+		saveAdminToFile(*user);
 		configs::incrementCountOfAdmins();
 		delete user;
+
+		std::cout << "Admin added!" << std::endl;
 	}
 	catch (const File_Error&)
 	{
@@ -779,13 +824,14 @@ void AdminSystem::addPlayer() const
 		user = factory->createFromConsole();
 		Player* player = static_cast<Player*>(user);
 		srand(time(0));
-		player->addSuperHero(player->getFirstName(), player->getLastName(), player->getNickname(), rand() % 30 + 5, SuperHeroPowerType::Earth);
-		const SuperHero& superhero = player->getSuperhero(0);
+		player->addSuperHero(user->getFirstName(), user->getLastName(), user->getNickname(), rand() % 30 + 5, SuperHeroPowerType::Earth);
 		savePlayerToFile(*player);
-		saveSuperheroToFile(constants::SOLD_SUPERHEROES_FILE_PATH, superhero);
+		saveSuperheroToFile(constants::SOLD_SUPERHEROES_FILE_PATH, player->getSuperHeroes()[0]);
 		configs::incrementCountOfPlayers();
 
 		delete user;
+
+		std::cout << "Player added!" << std::endl;
 	}
 	catch (const File_Error&)
 	{

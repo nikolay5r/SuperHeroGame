@@ -41,14 +41,6 @@ const MyString& User::getEmail() const noexcept
 	return email;
 }
 
-UserFactory* UserFactory::instance = nullptr;
-
-void UserFactory::freeInstance()
-{
-	delete UserFactory::instance;
-	UserFactory::instance = nullptr;
-}
-
 void saveToFile(const User& user)
 {
 	switch (user.getRole())

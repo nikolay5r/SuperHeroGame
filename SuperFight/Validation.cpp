@@ -89,9 +89,9 @@ void validation::isPasswordValid(const MyString& password) //at least one capita
 
 	size_t passwordLength = password.length();
 
-	if (passwordLength > constants::MAX_PASSWORD_LENGTH || passwordLength < constants::MIN_PASSWORD_LENGTH)
+	if (passwordLength > constants::MAX_PASSWORD_LENGTH)
 	{
-		throw std::length_error("Password should be between 5 and 16 characters!");
+		throw std::length_error("Password should be no longer than 16 characters!");
 	}
 
 	for (size_t i = 0; i < passwordLength; i++)

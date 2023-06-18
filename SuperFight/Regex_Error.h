@@ -1,5 +1,4 @@
 #pragma once
-#include <stdexcept>
 #include "MyString.h"
 class Regex_Error
 {

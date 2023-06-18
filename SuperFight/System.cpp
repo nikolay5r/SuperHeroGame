@@ -20,7 +20,8 @@ void System::freeSystem()
 	delete System::instance;
 	System::instance = nullptr;
 
-	UserFactory::freeInstance();
+	AdminFactory::freeInstance();
+	PlayerFactory::freeInstance();
 	SuperHeroFactory::freeInstance();
 }
 
