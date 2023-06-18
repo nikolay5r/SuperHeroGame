@@ -2,34 +2,45 @@
 #include <fstream>
 #include "MyString.h"
 #include "System.h"
+#include "PlayerSystem.h"
+#include "AdminSystem.h"
 #include "Input_Error.h"
 #include "SystemConfigurations.h"
 
+void showStartMenu(System* system)
+{
+	MyString buff;
+	std::cout << "Enter 'admin' if you want to sign in as an admin;" << std::endl
+		<< "Enter 'player' if you want to sign in as a player: " << std::endl
+		<< "Command: ";
+	std::cin >> buff;
+
+	if (buff == "player")
+	{
+		system = PlayerSystem::getInstance();
+	}
+	else if (buff == "admin")
+	{
+		system = AdminSystem::getInstance();
+	}
+	else
+	{
+		throw Input_Error("Keyword is invalid!");
+	}
+}
+
 void startSystem(System* system)
 {
+	std::cout << "Welcome, challenger!" << std::endl << std::endl;
 	try
 	{
-		MyString buff;
-		std::cout << "Welcome, challenger!" << std::endl
-			<< "Enter 'admin' if you want to sign in as an admin;" << std::endl
-			<< "Enter 'player' if you want to sign in as a player: " << std::endl
-			<< "Command: ";
-		std::cin >> buff;
+		showStartMenu(system);
 
-		if (buff == "player")
+		while (!system->run())
 		{
-			system = PlayerSystem::getInstance();
+			system->freeInstance();
+			showStartMenu(system);
 		}
-		else if (buff == "admin")
-		{
-			system = AdminSystem::getInstance();
-		}
-		else
-		{
-			throw Input_Error("Keyword is invalid!");
-		}
-
-		system->run();
 	}
 	catch (const Input_Error& error)
 	{
