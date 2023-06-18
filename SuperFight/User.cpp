@@ -49,12 +49,6 @@ void UserFactory::freeInstance()
 	UserFactory::instance = nullptr;
 }
 
-UserFactory::~UserFactory()
-{
-	delete UserFactory::instance;
-	UserFactory::instance = nullptr;
-}
-
 void saveToFile(const User& user)
 {
 	switch (user.getRole())
@@ -102,17 +96,16 @@ User* UserFactory::createFromConsoleOnLogin(const MyString& fileName) const
 	User* user = nullptr;
 
 	std::ifstream file(fileName.c_str(), std::ios::binary);
+	if (!file.is_open())
+	{
+		throw File_Error("File couldn't open!");
+	}
 	try
 	{
 		MyString temp;
 		std::cout << "Enter nickname: ";
 		std::cin >> temp;
 		validation::isNicknameValid(temp);
-
-		if (!file.is_open())
-		{
-			throw File_Error("File couldn't open!");
-		}
 
 		user = readFromBinary(file, temp);
 		std::cout << "Enter password: ";
@@ -124,7 +117,6 @@ User* UserFactory::createFromConsoleOnLogin(const MyString& fileName) const
 			throw Input_Error("Password was incorrect");
 		}
 
-		removeFromFile(*user);
 		file.close();
 
 		return user;

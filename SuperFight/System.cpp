@@ -12,8 +12,6 @@
 #include "SuperHero.h"
 #include "Input_Error.h"
 
-static MyString buff;
-
 System* System::instance = nullptr;
 
 void System::freeSystem()
@@ -23,9 +21,6 @@ void System::freeSystem()
 
 	UserFactory::freeInstance();
 	SuperHeroFactory::freeInstance();
-
-	delete currentUser;
-	currentUser = nullptr;
 }
 
 void System::freeInstance()
@@ -38,8 +33,6 @@ System::~System()
 {
 	delete currentUser;
 	currentUser = nullptr;
-	delete System::instance;
-	System::instance = nullptr;
 }
 
 System* PlayerSystem::getInstance()
@@ -112,21 +105,25 @@ void PlayerSystem::login()
 	catch (const Input_Error& error)
 	{
 		std::cerr << error.what() << std::endl;
-		reg();
+		std::cout << std::endl;
+		login();
 	}
-	catch (const std::invalid_argument&)
+	catch (const std::invalid_argument& error)
 	{
-		std::cerr << "Invalid argument error occured when trying to login as a player!" << std::endl;
-		throw;
+		std::cerr << error.what() << std::endl;
+		std::cout << std::endl;
+		login();
 	}
 	catch (const Regex_Error& error)
 	{
 		std::cerr << error.what() << std::endl;
+		std::cout << std::endl;
 		login();
 	}
 	catch (const std::length_error& error)
 	{
 		std::cerr << error.what() << std::endl;
+		std::cout << std::endl;
 		login();
 	}
 	catch (const std::exception& error)
@@ -149,7 +146,10 @@ void PlayerSystem::reg()
 		User* user = factory->createFromConsole();
 		currentUser = user;
 		srand(time(0));
-		static_cast<Player*>(user)->addSuperHero(user->getFirstName(), user->getLastName(), user->getNickname(), rand() % 30 + 5, SuperHeroPowerType::Earth);
+		Player* player = static_cast<Player*>(user);
+		player->addSuperHero(user->getFirstName(), user->getLastName(), user->getNickname(), rand() % 30 + 5, SuperHeroPowerType::Earth);
+		saveToFile(*player);
+		saveToFile(constants::SOLD_SUPERHEROES_FILE_PATH, player->getSuperHeroes()[0]);
 	}
 	catch (const File_Error&)
 	{
@@ -159,6 +159,7 @@ void PlayerSystem::reg()
 	catch (const Input_Error& error)
 	{
 		std::cerr << error.what() << std::endl;
+		std::cout << std::endl;
 		reg();
 	}
 	catch (const std::invalid_argument&)
@@ -169,11 +170,13 @@ void PlayerSystem::reg()
 	catch (const Regex_Error& error)
 	{
 		std::cerr << error.what() << std::endl;
+		std::cout << std::endl;
 		reg();
 	}
 	catch (const std::length_error& error)
 	{
 		std::cerr << error.what() << std::endl;
+		std::cout << std::endl;
 		reg();
 	}
 	catch (const std::exception& error)
@@ -197,14 +200,17 @@ void PlayerSystem::sellSuperHero() const
 		{
 			throw std::logic_error("You have no superheroes to sell!");
 		}
+		MyString buff;
 		std::cout << "Enter 'back' if you want to go back;" << std::endl << "Enter nickname of the superhero you want to sell: ";
 		std::cin >> buff;
 		if (buff == "back")
 		{
 			return;
 		}
+		sell(player->getSuperhero(buff));
 		player->sellSuperHero(buff);
-		sell(buff);
+
+		std::cout << "Superhero was sold!" << std::endl;
 	}
 	catch (const File_Error& error)
 	{
@@ -214,11 +220,13 @@ void PlayerSystem::sellSuperHero() const
 	catch (const std::invalid_argument& error)
 	{
 		std::cerr << error.what() << std::endl;
+		std::cout << std::endl;
 		sellSuperHero();
 	}
 	catch (const std::logic_error& error)
 	{
 		std::cerr << error.what() << std::endl;
+		std::cout << std::endl;
 		sellSuperHero();
 	}
 	catch (const std::exception& error)
@@ -269,10 +277,15 @@ void PlayerSystem::battle() const
 		}
 
 		std::cout << "Enter 'back' if you want to go back;" << std::endl << "Enter player you want to attack: ";
+		MyString buff;
 		std::cin >> buff;
 		if (buff == "back")
 		{
 			return;
+		}
+		else if (buff == player->getNickname())
+		{
+			throw std::logic_error("You cannot fight yourself!");
 		}
 		UserFactory* factory = PlayerFactory::getInstance();
 		user = factory->readFromBinary(buff);
@@ -292,6 +305,7 @@ void PlayerSystem::battle() const
 		std::cin >> nickname1;
 		std::cout << "Enter nickname of your superhero(if you want to attack with random superhero enter '-'): ";
 		std::cin >> nickname2;
+
 
 		if (nickname1 == "-" && nickname2 == "-")
 		{
@@ -320,6 +334,7 @@ void PlayerSystem::battle() const
 	{
 		delete user;
 		std::cerr << error.what() << std::endl;
+		std::cout << std::endl;
 		battle();
 	}
 	catch (const std::logic_error& error)
@@ -354,6 +369,7 @@ void PlayerSystem::deleteProfile()
 		delete currentUser;
 		currentUser = nullptr;
 		std::cout << "You deleted your account successfully!" << std::endl;
+		std::cout << std::endl;
 	}
 	catch (const File_Error&)
 	{
@@ -378,9 +394,11 @@ void PlayerSystem::buySuperHero() const
 	try
 	{
 		std::cout << "Enter 'back' if you want to go back;" << std::endl << "Enter the nickname of the superhero: ";
+		MyString buff;
 		std::cin >> buff;
 		if (buff == "back")
 		{
+			std::cout << std::endl;
 			return;
 		}
 
@@ -389,6 +407,8 @@ void PlayerSystem::buySuperHero() const
 		Player* player = static_cast<Player*>(currentUser);
 		player->buySuperHero(*superhero);
 		delete superhero;
+
+		std::cout << "Superhero was bought!" << std::endl;
 	}
 	catch (const File_Error&)
 	{
@@ -400,12 +420,14 @@ void PlayerSystem::buySuperHero() const
 	{
 		delete superhero;
 		std::cerr << error.what() << std::endl;
+		std::cout << std::endl;
 		buySuperHero();
 	}
 	catch (const std::logic_error& error)
 	{
 		delete superhero;
 		std::cerr << error.what() << std::endl;
+		std::cout << std::endl;
 		buySuperHero();
 	}
 	catch (const std::exception& error)
@@ -426,9 +448,10 @@ void PlayerSystem::showMarket() const
 {
 	try
 	{
-		unsigned count = printSuperheroesAndGetCountOfPrinted(constants::MARKET_SUPERHEROES_FILE_PATH, constants::ENTITIES_TO_LOAD);
+		unsigned count = printSuperheroesAndGetCountOfPrinted(constants::MARKET_SUPERHEROES_FILE_PATH);
 		if (count != 0)
 		{
+			MyString buff;
 			std::cout << "If you want to go back type 'back';" << std::endl << "If you want to buy a superhero enter 'buy' or if you want to sell enter 'sell': ";
 			std::cin >> buff;
 
@@ -438,20 +461,24 @@ void PlayerSystem::showMarket() const
 			}
 			else if (buff == "buy")
 			{
+				std::cout << std::endl;
 				buySuperHero();
 			}
 			else if (buff == "sell")
 			{
+				std::cout << std::endl;
 				sellSuperHero();
 			}
 			else
 			{
 				throw Input_Error("Invalid keyword was entered!");
 			}
+
+			showMarket();
 		}
 		else
 		{
-			std::cout << "No players to show!" << std::endl;
+			std::cout << "No superheroes to show!" << std::endl;
 		}
 	}
 	catch (const File_Error&)
@@ -485,9 +512,10 @@ void PlayerSystem::showPlayers() const
 {
 	try
 	{
-		unsigned count = printPlayersAndGetCountOfPrinted(constants::ENTITIES_TO_LOAD);
+		unsigned count = printPlayersAndGetCountOfPrinted();
 		if (count != 0)
 		{
+			MyString buff;
 			std::cout << "If you want to go back type 'back';" << std::endl << "If you want to fight with other players type 'battle': ";
 			std::cin >> buff;
 
@@ -503,6 +531,8 @@ void PlayerSystem::showPlayers() const
 			{
 				throw Input_Error("Invalid keyword was entered!");
 			}
+
+			showPlayers();
 		}
 		else
 		{
@@ -545,6 +575,7 @@ void PlayerSystem::upgradeSuperHero() const
 			std::cout << "No superheroes to upgrade." << std::endl;
 			return;
 		}
+		MyString buff;
 		std::cout << "Enter 'back' if you want to go back;" << std::endl << "Enter nickname of superhero you want to upgrade: ";
 		std::cin >> buff;
 		if (buff == "back")
@@ -552,6 +583,7 @@ void PlayerSystem::upgradeSuperHero() const
 			return;
 		}
 		static_cast<Player&>(*currentUser).powerUpSuperHero(buff);
+		std::cout << "Superhero was upgraded!" << std::endl;
 	}
 	catch (const std::invalid_argument& error)
 	{
@@ -575,32 +607,69 @@ void PlayerSystem::upgradeSuperHero() const
 	}
 }
 
+void PlayerSystem::changePos()
+{
+	MyString buff;
+	std::cout << "Enter 'back' if you want to go back;" << std::endl << "Enter the nickname of the superhero: ";
+	std::cin >> buff;
+	if (buff == "back")
+	{
+		return;
+	}
+	static_cast<Player*>(currentUser)->changePositionOfSuperHero(buff);
+	std::cout << "Position changed!" << std::endl;
+}
+
 void PlayerSystem::showProfile()
 {
 	try
 	{
 		currentUser->printFullInfo();
 
-		std::cout << "If you want to upgrade a superhero type 'upgrade';" << std::endl
-			<< "If you wat to delete your profile type 'delete': ";
+		std::cout << "If you want to go back enter 'back';" << std::endl
+			<< "If you want to sell a superhero enter 'sell';" << std::endl
+			<< "If you want to change the attacking position of a superhero enter 'change';" << std::endl
+			<< "If you want to upgrade a superhero enter 'upgrade';" << std::endl
+			<< "If you want to delete your profile enter 'delete': ";
+		MyString buff;
 		std::cin >> buff;
 
-		if (buff == "upgrade")
+		if (buff == "back")
 		{
+			return;
+		}
+		else if (buff == "change")
+		{
+			std::cout << std::endl;
+			changePos();
+		}
+		else if (buff == "upgrade")
+		{
+			std::cout << std::endl;
 			upgradeSuperHero();
+		}
+		else if (buff == "sell")
+		{
+			std::cout << std::endl;
+			sellSuperHero();
 		}
 		else if (buff == "delete")
 		{
+			std::cout << std::endl;
 			deleteProfile();
 		}
 		else
 		{
 			throw Input_Error("Keyword is not valid!");
 		}
+
+		std::cout << std::endl;
+		showProfile();
 	}
 	catch (const Input_Error& error)
 	{
 		std::cerr << error.what() << std::endl;
+		std::cout << std::endl;
 		showProfile();
 	}
 	catch (const std::exception& error)
@@ -621,6 +690,111 @@ void PlayerSystem::run()
 	int n = -1;
 	try
 	{
+		while (!end)
+		{
+			if (currentUser)
+			{
+				std::cout << "Enter a command:" << std::endl
+					<< "  0 - logout" << std::endl
+					<< "  1 - show all players" << std::endl
+					<< "  2 - show market" << std::endl
+					<< "  3 - show profile" << std::endl
+					<< "  4 - exit" << std::endl
+					<< "Command: ";
+
+				std::cin >> n;
+
+				switch (n)
+				{
+				case 0:
+					logout();
+					break;
+				case 1:
+					std::cout << std::endl;
+					showPlayers();
+					break;
+				case 2:
+					std::cout << std::endl;
+					showMarket();
+					break;
+				case 3:
+					std::cout << std::endl;
+					showProfile();
+					break;
+				case 4:
+					logout();
+					end = true;
+					break;
+				default:
+					throw Input_Error("Keyword is not valid!");
+				}
+			}
+			else
+			{
+				std::cout << "Enter 'exit' if you want to exit the program;" << std::endl << "Enter 'login' if you already have an account and 'register' if you don't: ";
+				MyString buff;
+				std::cin >> buff;
+
+				if (buff == "login")
+				{
+					std::cout << std::endl;
+					login();
+				}
+				else if (buff == "register")
+				{
+					std::cout << std::endl;
+					reg();
+				}
+				else if (buff == "exit")
+				{
+					end = true;
+				}
+				else
+				{
+					throw Input_Error("Keyword is not valid!");
+				}
+			}
+
+		}
+	}
+	catch (const File_Error& error)
+	{
+		freeSystem();
+		std::cerr << "FATAL ERROR:\n\tFILE_ERROR: " << error.what() << " The program will terminate!" << std::endl;
+		exit(1);
+	}
+	catch (const Input_Error& error)
+	{
+		std::cerr << error.what() << std::endl;
+		run();
+	}
+	catch (const std::invalid_argument& error)
+	{
+		std::cerr << error.what() << std::endl;
+		run();
+	}
+	catch (const std::exception& error)
+	{
+		freeSystem();
+		std::cerr << "FATAL ERROR:\n\tUNKNOWN EXCEPTION: " << error.what() << " The program will terminate!" << std::endl;
+		exit(1);
+	}
+	catch (...)
+	{
+		freeSystem();
+		std::cerr << "FATAL ERROR:\n\tUNKNOWN EXCEPTION: " << "Something wrong happened!" << " The program will terminate!" << std::endl;
+		exit(1);
+	}
+
+	std::cout << "Program is shutting down!" << std::endl;
+}
+
+void AdminSystem::run()
+{
+	bool end = false;
+	int n = -1;
+	try
+	{
 		while (end)
 		{
 			if (currentUser)
@@ -631,8 +805,9 @@ void PlayerSystem::run()
 						<< "  0 - logout" << std::endl
 						<< "  1 - show all players" << std::endl
 						<< "  2 - show market" << std::endl
-						<< "  3 - show profile" << std::endl
-						<< "  4 - exit" << std::endl;
+						<< "  3 - show sold market" << std::endl
+						<< "  4 - show profile" << std::endl
+						<< "  5 - exit" << std::endl;
 
 					std::cin >> n;
 				}
@@ -649,9 +824,12 @@ void PlayerSystem::run()
 					showMarket();
 					break;
 				case 3:
-					showProfile();
+					showSoldMarket();
 					break;
 				case 4:
+					showProfile();
+					break;
+				case 5:
 					logout();
 					end = true;
 					break;
@@ -661,11 +839,9 @@ void PlayerSystem::run()
 			}
 			else
 			{
-				if (buff == "")
-				{
-					std::cout << "Enter 'login' if you already have an account and 'register' if you don't: ";
-					std::cin >> buff;
-				}
+				std::cout << "Enter 'exit' if you want to exit the program;" << std::endl << "Enter 'login' if you already have an account and 'register' if you don't: ";
+				MyString buff;
+				std::cin >> buff;
 
 				if (buff == "login")
 				{
@@ -674,6 +850,10 @@ void PlayerSystem::run()
 				else if (buff == "register")
 				{
 					reg();
+				}
+				else if (buff == "exit")
+				{
+					end = true;
 				}
 				else
 				{
@@ -712,4 +892,6 @@ void PlayerSystem::run()
 		std::cerr << "FATAL ERROR:\n\tUNKNOWN EXCEPTION: " << "Something wrong happened!" << " The program will terminate!" << std::endl;
 		exit(1);
 	}
+
+	std::cout << "Program is shutting down!" << std::endl;
 }

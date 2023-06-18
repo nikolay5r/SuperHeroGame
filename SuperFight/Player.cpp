@@ -288,8 +288,7 @@ void Player::levelUpSuperHero(size_t index)
 	}
 	else
 	{
-		//TODO:
-		throw std::exception("You don't have enough coins to level up this superhero!");
+		throw std::logic_error("You don't have enough coins to level up this superhero!");
 	}
 }
 
@@ -308,8 +307,7 @@ void Player::changePositionOfSuperHero(size_t index)
 	}
 	else
 	{
-		//TODO:
-		throw std::exception("This superhero has just attacked! You cannot change its position right now!");
+		throw std::logic_error("This superhero has just attacked! You cannot change its position right now!");
 	}
 }
 
@@ -330,7 +328,7 @@ void Player::printFullInfo() const
 	{
 		for (size_t i = 0; i < superHeroes.size(); i++)
 		{
-			std::cout << "\t" << i << ". ";
+			std::cout << "\t" << i + 1 << ". ";
 			superHeroes[i].printFullInfo();
 		}
 	}
@@ -341,7 +339,7 @@ void Player::printShortInfo() const
 	std::cout << nickname << " " << coins << " coins" << std::endl;
 	for (size_t i = 0; i < superHeroes.size(); i++)
 	{
-		std::cout << "\t" << i << ". " << superHeroes[i].getNickname() << std::endl;
+		std::cout << "\t" << i + 1 << ". " << superHeroes[i].getNickname() << std::endl;
 	}
 }
 
@@ -405,6 +403,7 @@ User* PlayerFactory::readFromBinary() const
 User* PlayerFactory::readFromBinary(std::ifstream& file) const
 {
 	Player* player = nullptr;
+	SuperHero* superhero = nullptr;
 
 	if (!file.is_open())
 	{
@@ -444,7 +443,6 @@ User* PlayerFactory::readFromBinary(std::ifstream& file) const
 		size_t count;
 		file.read((char*)&count, sizeof(count));
 		SuperHeroFactory* factory = SuperHeroFactory::getInstance();
-		SuperHero* superhero;
 		for (size_t i = 0; i < count; i++)
 		{
 			superhero = factory->readFromBinary(file);
@@ -457,11 +455,13 @@ User* PlayerFactory::readFromBinary(std::ifstream& file) const
 	catch (const File_Error&)
 	{
 		std::cerr << "File error occurred when trying to read a player from opened binary file!" << std::endl;
+		delete superhero;
 		delete player;
 		throw;
 	}
 	catch (...)
 	{
+		delete superhero;
 		delete player;
 		throw;
 	}
@@ -503,7 +503,7 @@ User* PlayerFactory::readFromBinary(std::ifstream& file, const MyString& nicknam
 		throw File_Error("File couldn't open!");
 	}
 
-	while (!file.eof())
+	while (!helper::isEOF(file))
 	{
 		User* curr = readFromBinary(file);
 		if (curr->getNickname() == nicknameToFind)
@@ -616,7 +616,6 @@ void saveToFile(const Player& player)
 	file.close();
 }
 
-
 void removeFromFile(const Player& player)
 {
 	int indexStart = -1;
@@ -636,7 +635,7 @@ unsigned printPlayersAndGetCountOfPrinted()
 	}
 
 	unsigned countOfPrintedPlayers = 0;
-	while (!file.eof())
+	while (!helper::isEOF(file))
 	{
 		UserFactory* factory = PlayerFactory::getInstance();
 		User* player = factory->readFromBinary(file);
@@ -660,7 +659,7 @@ unsigned printPlayersAndGetCountOfPrintedForAdmins()
 	}
 
 	unsigned countOfPrintedPlayers = 0;
-	while (!file.eof())
+	while (!helper::isEOF(file))
 	{
 		UserFactory* factory = PlayerFactory::getInstance();
 		User* player = factory->readFromBinary(file);

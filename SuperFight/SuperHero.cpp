@@ -113,7 +113,7 @@ void SuperHero::powerUp()
 
 void SuperHero::changePosition() noexcept
 {
-	position == SuperHeroPosition::Attack ? SuperHeroPosition::Defense : SuperHeroPosition::Attack;
+	position = position == SuperHeroPosition::Attack ? SuperHeroPosition::Defense : SuperHeroPosition::Attack;
 }
 
 void SuperHero::gainXP() noexcept
@@ -142,7 +142,7 @@ bool SuperHero::getAttackInfo() const noexcept
 
 void SuperHero::printFullInfo() const
 {
-	std::cout << fullName << " | " << nickname << " | " << power << " | ";
+	std::cout << fullName << " | " << nickname << " | " << power << " power" << " | ";
 	switch (powerType)
 	{
 	case SuperHeroPowerType::Air:
@@ -162,7 +162,20 @@ void SuperHero::printFullInfo() const
 		break;
 	}
 
-	std::cout << price << " coins | " << level << " level | " << powerLevel << " power level | " << xp
+	switch (position)
+	{
+	case SuperHeroPosition::Attack:
+		std::cout << "Attack" << " | ";
+		break;
+	case SuperHeroPosition::Defense:
+		std::cout << "Defense" << " | ";
+		break;
+	default:
+		throw std::logic_error("Something went wrong with the position type!");
+		break;
+	}
+
+	std::cout << price << " coins | " << (unsigned)level << " level | " << (unsigned)powerLevel << " power level | " << (unsigned)xp
 		<< "/" << (level >= 10 ? xpNeededPerLevel[9] : xpNeededPerLevel[level - 1]) << " xp." << std::endl;
 }
 
@@ -188,7 +201,7 @@ void SuperHero::printShortInfo() const
 		break;
 	}
 
-	std::cout << price << " coins | " << level << " level | " << powerLevel << " power level" << std::endl;
+	std::cout << (unsigned)price << " coins | " << (unsigned)level << " level | " << (unsigned)powerLevel << " power level" << std::endl;
 }
 
 uint8_t SuperHero::getXP() const noexcept
@@ -298,7 +311,7 @@ SuperHero* SuperHeroFactory::readFromBinary(std::ifstream& file, const MyString&
 	SuperHero* curr = nullptr;
 	try
 	{
-		while (!file.eof())
+		while (!helper::isEOF(file))
 		{
 			curr = readFromBinary(file);
 			if (curr->getNickname() == nickname)
@@ -382,12 +395,6 @@ void SuperHeroFactory::freeInstance()
 	SuperHeroFactory::instance = nullptr;
 }
 
-SuperHeroFactory::~SuperHeroFactory()
-{
-	delete SuperHeroFactory::instance;
-	SuperHeroFactory::instance = nullptr;
-}
-
 void saveToFile(std::ofstream& file, const SuperHero& superhero)
 {
 	if (!file.is_open())
@@ -395,15 +402,15 @@ void saveToFile(std::ofstream& file, const SuperHero& superhero)
 		throw File_Error("File couldn't open!");
 	}
 
-	size_t size = superhero.getFirstName().length();
+	size_t size = strlen(superhero.getFirstName().c_str());
 	file.write((const char*)&size, sizeof(size));
 	file.write(superhero.getFirstName().c_str(), size + 1);
 
-	size = superhero.getLastName().length();
+	size = strlen(superhero.getLastName().c_str());
 	file.write((const char*)&size, sizeof(size));
 	file.write(superhero.getLastName().c_str(), size + 1);
 
-	size = superhero.getNickname().length();
+	size = strlen(superhero.getNickname().c_str());
 	file.write((const char*)&size, sizeof(size));
 	file.write(superhero.getNickname().c_str(), size + 1);
 
@@ -479,26 +486,20 @@ void saveToFile(const MyString& fileName, const SuperHero& superhero)
 	file.close();
 }
 
-void sell(const MyString& nickname)
+void sell(const SuperHero& superheroToSell)
 {
-	SuperHero* superhero = nullptr;
 	try
 	{
-		SuperHeroFactory* factory = SuperHeroFactory::getInstance();
-		superhero = factory->readFromBinary(constants::SOLD_SUPERHEROES_FILE_PATH, nickname);
-		removeFromFile(constants::SOLD_SUPERHEROES_FILE_PATH, *superhero);
-		saveToFile(constants::MARKET_SUPERHEROES_FILE_PATH, *superhero);
-		delete superhero;
+		saveToFile(constants::MARKET_SUPERHEROES_FILE_PATH, superheroToSell);
+		removeFromFile(constants::SOLD_SUPERHEROES_FILE_PATH, superheroToSell);
 	}
 	catch (const File_Error&)
 	{
 		std::cerr << "File error occured when trying to execute sell algorithm!" << std::endl;
-		delete superhero;
 		throw;
 	}
 	catch (...)
 	{
-		delete superhero;
 		throw;
 	}
 }
@@ -514,7 +515,7 @@ unsigned printSuperheroesAndGetCountOfPrinted(const MyString& fileName)
 	unsigned countOfPrintedSuperheroes = 0;
 	try
 	{
-		while (!file.eof())
+		while (!helper::isEOF(file))
 		{
 			SuperHeroFactory* factory = SuperHeroFactory::getInstance();
 			SuperHero* superhero = factory->readFromBinary(file);

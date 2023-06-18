@@ -73,12 +73,12 @@ public:
 	SuperHero* createFromConsole() const;
 
 	static void freeInstance();
-	virtual ~SuperHeroFactory();
+	virtual ~SuperHeroFactory() = default;
 };
 
 void saveToFile(std::ofstream& file, const SuperHero& superhero);
 void saveToFile(const MyString& fileName, const SuperHero& superhero);
 void removeFromFile(const MyString& fileName, const SuperHero& superhero);
 SuperHero* buy(const MyString& nickname);
-void sell(const MyString& nickname);
+void sell(const SuperHero& superheroToSell);
 unsigned printSuperheroesAndGetCountOfPrinted(const MyString& fileName);

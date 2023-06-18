@@ -42,6 +42,7 @@ class PlayerSystem : public System
 	void deleteProfile() override;
 	void upgradeSuperHero() const;
 	void showProfile() override;
+	void changePos();
 public:
 
 	static System* getInstance();
@@ -56,11 +57,12 @@ class AdminSystem : public System
 	void login() override {};
 	void reg() override {};
 	void showMarket() const override {};
+	void showSoldMarket() const {};
 	void showPlayers() const override {};
 	void deleteProfile() override {};
 	void showProfile() override {};
 public:
 
 	static System* getInstance();
-	void run() override {};
+	void run() override;
 };

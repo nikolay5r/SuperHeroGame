@@ -97,7 +97,7 @@ User* AdminFactory::readFromBinary(std::ifstream& file, const MyString& nickname
 		throw File_Error("File couldn't open!");
 	}
 
-	while (!file.eof())
+	while (helper::isEOF(file))
 	{
 		curr = readFromBinary(file);
 		if (curr->getNickname() == nickname)
@@ -221,7 +221,7 @@ unsigned printAdminsAndGetCountOfPrinted()
 	}
 
 	unsigned countOfPrintedAdmins = 0;
-	while (!file.eof())
+	while (helper::isEOF(file))
 	{
 		UserFactory* factory = AdminFactory::getInstance();
 		User* admin = factory->readFromBinary(file);

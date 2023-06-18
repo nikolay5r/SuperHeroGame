@@ -46,7 +46,7 @@ public:
 	User* createFromConsoleOnLogin(const MyString& fileName) const;
 
 	static void freeInstance();
-	virtual ~UserFactory();
+	virtual ~UserFactory() = default;
 };
 
 void saveToFile(const User& user);
