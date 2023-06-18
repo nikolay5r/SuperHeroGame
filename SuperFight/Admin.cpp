@@ -213,7 +213,7 @@ void removeFromFile(const Admin& admin)
 	configs::decrementCountOfAdmins();
 }
 
-unsigned printAdminsAndGetCountOfPrinted()
+void printAdmins()
 {
 	std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::in | std::ios::binary);;
 
@@ -223,16 +223,14 @@ unsigned printAdminsAndGetCountOfPrinted()
 	}
 
 	unsigned countOfPrintedAdmins = 0;
-	while (helper::isEOF(file))
+	for (int i = 1; !helper::isEOF(file); i++)
 	{
+		std::cout << i << ". ";
 		UserFactory* factory = AdminFactory::getInstance();
 		User* admin = factory->readFromBinary(file);
 		admin->printShortInfo();
-		countOfPrintedAdmins++;
 		delete admin;
 	}
-
+	std::cout << std::endl;
 	file.close();
-
-	return countOfPrintedAdmins;
 }
