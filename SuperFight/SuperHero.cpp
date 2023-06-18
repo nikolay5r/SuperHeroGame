@@ -201,15 +201,13 @@ void SuperHero::printShortInfo() const
 		break;
 	}
 
-	std::cout << (unsigned)price << " coins | " << ()level << " level | " << (unsigned)powerLevel << " power level" << std::endl;
+	std::cout << price << " coins | " << (unsigned)level << " level | " << (unsigned)powerLevel << " power level" << std::endl;
 }
 
 uint8_t SuperHero::getXP() const noexcept
 {
 	return xp;
 }
-
-
 
 uint8_t SuperHero::getAllowedPowerUpgrades() const noexcept
 {
@@ -503,7 +501,7 @@ void sell(const SuperHero& superheroToSell)
 		throw;
 	}
 }
-unsigned printSuperheroesAndGetCountOfPrinted(const MyString& fileName)
+void printSuperheroes(const MyString& fileName)
 {
 	std::ifstream file(fileName.c_str(), std::ios::in | std::ios::binary);;
 
@@ -515,17 +513,17 @@ unsigned printSuperheroesAndGetCountOfPrinted(const MyString& fileName)
 	unsigned countOfPrintedSuperheroes = 0;
 	try
 	{
-		while (!helper::isEOF(file))
+		for (int i = 1; !helper::isEOF(file); i++)
 		{
+			std::cout << i << ". ";
 			SuperHeroFactory* factory = SuperHeroFactory::getInstance();
 			SuperHero* superhero = factory->readFromBinary(file);
 			superhero->printShortInfo();
 			countOfPrintedSuperheroes++;
 			delete superhero;
 		}
-
+		std::cout << std::endl;
 		file.close();
-		return countOfPrintedSuperheroes;
 	}
 	catch (const File_Error&)
 	{

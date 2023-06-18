@@ -3,6 +3,7 @@
 #include "MyString.h"
 #include "System.h"
 #include "Input_Error.h"
+#include "SystemConfigurations.h"
 
 void startSystem(System* system)
 {

@@ -11,6 +11,7 @@
 #include "File_Error.h"
 #include "SuperHero.h"
 #include "Input_Error.h"
+#include "SystemConfigurations.h"
 
 System* System::instance = nullptr;
 
@@ -96,6 +97,11 @@ void PlayerSystem::login()
 	{
 		UserFactory* factory = PlayerFactory::getInstance();
 		currentUser = factory->createFromConsoleOnLogin(constants::PLAYERS_FILE_PATH);
+		if (configs::checkIfPeriodIsOver())
+		{
+			static_cast<Player*>(currentUser)->addCoinsOnLogIn();
+			std::cout << "You recieved coins on log in! +" << constants::COINS_TO_EARN_PERIODICALLY << " coins" << std::endl;
+		}
 	}
 	catch (const File_Error&)
 	{
@@ -150,6 +156,9 @@ void PlayerSystem::reg()
 		player->addSuperHero(user->getFirstName(), user->getLastName(), user->getNickname(), rand() % 30 + 5, SuperHeroPowerType::Earth);
 		saveToFile(*player);
 		saveToFile(constants::SOLD_SUPERHEROES_FILE_PATH, player->getSuperHeroes()[0]);
+		configs::incrementCountOfPlayers();
+		configs::incrementCountOfSoldSuperheroes();
+		std::cout << "You will recieve coins as a price periodically on log in!" << std::endl;
 	}
 	catch (const File_Error&)
 	{
@@ -212,6 +221,8 @@ void PlayerSystem::sellSuperHero() const
 		player->sellSuperHero(buff);
 		removeFromFile(*player);
 		saveToFile(*player);
+		configs::incrementCountOfMarketSuperheroes();
+		configs::decrementCountOfSoldSuperheroes();
 
 		std::cout << "Superhero was sold!" << std::endl;
 	}
@@ -364,6 +375,7 @@ void PlayerSystem::deleteProfile()
 	try
 	{
 		removeFromFile(*currentUser);
+		configs::decrementCountOfPlayers();
 
 		UserFactory::freeInstance();
 		SuperHeroFactory::freeInstance();
@@ -413,6 +425,9 @@ void PlayerSystem::buySuperHero() const
 		removeFromFile(*player);
 		saveToFile(*player);
 
+		configs::decrementCountOfMarketSuperheroes();
+		configs::incrementCountOfSoldSuperheroes();
+
 		std::cout << "Superhero was bought!" << std::endl;
 	}
 	catch (const File_Error&)
@@ -453,9 +468,9 @@ void PlayerSystem::showMarket() const
 {
 	try
 	{
-		unsigned count = printSuperheroesAndGetCountOfPrinted(constants::MARKET_SUPERHEROES_FILE_PATH);
-		if (count != 0)
+		if (configs::getCountOfMarket() != 0)
 		{
+			printSuperheroes(constants::MARKET_SUPERHEROES_FILE_PATH);
 			MyString buff;
 			std::cout << "If you want to go back enter 'back';" << std::endl
 				<< "If you want to buy a superhero enter 'buy';" << std::endl
@@ -520,9 +535,9 @@ void PlayerSystem::showPlayers() const
 {
 	try
 	{
-		unsigned count = printPlayersAndGetCountOfPrinted();
-		if (count != 0)
+		if (configs::getCountOfPlayers() != 0)
 		{
+			printPlayers();
 			MyString buff;
 			std::cout << "If you want to go back type 'back';" << std::endl
 				<< "If you want to fight with other players type 'battle': " << std::endl
@@ -594,16 +609,20 @@ void PlayerSystem::upgradeSuperHero() const
 		}
 		static_cast<Player&>(*currentUser).powerUpSuperHero(buff);
 		std::cout << "Superhero was upgraded!" << std::endl;
+		removeFromFile(*currentUser);
+		saveToFile(*currentUser);
 	}
 	catch (const std::invalid_argument& error)
 	{
 		std::cerr << error.what() << std::endl;
 		upgradeSuperHero();
+		std::cout << std::endl;
 	}
 	catch (const std::logic_error& error)
 	{
 		std::cerr << error.what() << std::endl;
 		upgradeSuperHero();
+		std::cout << std::endl;
 	}
 	catch (const std::exception& error)
 	{
@@ -633,6 +652,8 @@ void PlayerSystem::changePos()
 	}
 	static_cast<Player*>(currentUser)->changePositionOfSuperHero(buff);
 	std::cout << "Position changed!" << std::endl;
+	removeFromFile(*currentUser);
+	saveToFile(*currentUser);
 }
 
 void PlayerSystem::showProfile()
@@ -712,6 +733,7 @@ void PlayerSystem::run()
 	int n = -1;
 	try
 	{
+		configs::initConfigs();
 		while (!end)
 		{
 			if (currentUser)
@@ -818,6 +840,7 @@ void AdminSystem::run()
 {
 	bool end = false;
 	int n = -1;
+	configs::initConfigs();
 	try
 	{
 		while (end)

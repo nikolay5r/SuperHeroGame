@@ -7,6 +7,7 @@
 #include <fstream>
 #include "File_Error.h"
 #include "HelperFunctions.h"
+#include "SystemConfigurations.h"
 
 void Player::checkIfSuperheroIsOwnedAlready(const MyString& nickname) const
 {
@@ -157,6 +158,11 @@ void Player::sellSuperHero(size_t index)
 	}
 	removeSuperHero(index);
 	coins += superHeroes[index].getPrice() / 2;
+}
+
+void Player::addCoinsOnLogIn()
+{
+	coins += constants::COINS_TO_EARN_PERIODICALLY;
 }
 
 int Player::attack(Player& defender)
@@ -625,7 +631,7 @@ void removeFromFile(const Player& player)
 	helper::deleteDataFromFile(constants::PLAYERS_FILE_PATH, indexStart, indexEnd);
 }
 
-unsigned printPlayersAndGetCountOfPrinted()
+void printPlayers()
 {
 	std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::in | std::ios::binary);;
 
@@ -640,17 +646,14 @@ unsigned printPlayersAndGetCountOfPrinted()
 		UserFactory* factory = PlayerFactory::getInstance();
 		User* player = factory->readFromBinary(file);
 		player->printShortInfo();
-		countOfPrintedPlayers++;
 		delete player;
 		std::cout << std::endl;
 	}
 
 	file.close();
-
-	return countOfPrintedPlayers;
 }
 
-unsigned printPlayersAndGetCountOfPrintedForAdmins()
+void printPlayersForAdmins()
 {
 	std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::in | std::ios::binary);;
 
@@ -670,6 +673,4 @@ unsigned printPlayersAndGetCountOfPrintedForAdmins()
 	}
 
 	file.close();
-
-	return countOfPrintedPlayers;
 }

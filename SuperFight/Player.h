@@ -25,6 +25,8 @@ public:
 	void addSuperHero(SuperHero&& superHero);
 	void addSuperHero(const MyString& firstName, const MyString& lastName, const MyString& nickname, unsigned power, SuperHeroPowerType powerType);
 
+	void addCoinsOnLogIn();
+
 	void buySuperHero(const SuperHero* superHero);
 	void buySuperHero(const SuperHero& superHero);
 	void buySuperHero(SuperHero&& superHero);
@@ -83,5 +85,5 @@ public:
 
 void saveToFile(const Player& player);
 void removeFromFile(const Player& player);
-unsigned printPlayersAndGetCountOfPrinted();
-unsigned printPlayersAndGetCountOfPrintedForAdmins();
+void printPlayers();
+void printPlayersForAdmins();

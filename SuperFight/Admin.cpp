@@ -6,6 +6,7 @@
 #include "File_Error.h"
 #include "HelperFunctions.h"
 #include "Constants.h"
+#include "SystemConfigurations.h"
 
 Admin::Admin(const MyString& firstName, const MyString& lastName, const MyString& nickname, const MyString& email, const MyString& password)
 	: User(firstName, lastName, nickname, email, password, UserRole::Admin) {}
@@ -209,6 +210,7 @@ void removeFromFile(const Admin& admin)
 
 	helper::getStartIndexAndEndIndexOfEntityInFile(constants::ADMINS_FILE_PATH, indexStart, indexEnd, admin);
 	helper::deleteDataFromFile(constants::ADMINS_FILE_PATH, indexStart, indexEnd);
+	configs::decrementCountOfAdmins();
 }
 
 unsigned printAdminsAndGetCountOfPrinted()

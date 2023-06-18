@@ -29,5 +29,5 @@ namespace constants
 	const MyString ADMINS_FILE_PATH = "admins.bin";
 	const MyString MARKET_SUPERHEROES_FILE_PATH = "marketSuperheroes.bin";
 	const MyString SOLD_SUPERHEROES_FILE_PATH = "soldSuperheroes.bin";
-	const MyString SOLD_SUPERHEROES_FILE_PATH = "logSystem.bin";
+	const MyString CONFIGS_FILE_PATH = "configs.bin";
 }
