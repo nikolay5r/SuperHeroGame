@@ -12,4 +12,5 @@ namespace helper {
 	void getStartIndexAndEndIndexOfEntityInFile(const MyString& fileName, int& indexStart, int& indexEnd, const Entity& entity);
 	bool isEOF(std::ifstream& file);
 	bool isEOF(std::ofstream& file);
+	bool isMarketEmpty();
 }

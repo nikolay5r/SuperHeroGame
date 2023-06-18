@@ -201,7 +201,7 @@ void SuperHero::printShortInfo() const
 		break;
 	}
 
-	std::cout << (unsigned)price << " coins | " << (unsigned)level << " level | " << (unsigned)powerLevel << " power level" << std::endl;
+	std::cout << (unsigned)price << " coins | " << ()level << " level | " << (unsigned)powerLevel << " power level" << std::endl;
 }
 
 uint8_t SuperHero::getXP() const noexcept

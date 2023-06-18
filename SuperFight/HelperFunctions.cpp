@@ -224,3 +224,18 @@ bool helper::isEOF(std::ifstream& file)
 	file.seekg(index);
 	return eof;
 }
+
+bool helper::isMarketEmpty()
+{
+	std::ifstream file(constants::MARKET_SUPERHEROES_FILE_PATH.c_str(), std::ios::binary);
+	if (!file.is_open())
+	{
+		throw File_Error("File coudln't open!");
+	}
+
+	size_t size = getFileSize(file);
+
+	file.close();
+
+	return size == 0;
+}

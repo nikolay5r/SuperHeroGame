@@ -14,10 +14,10 @@ namespace constants
 	const unsigned MIN_POWER = 5;
 	const unsigned MAX_LEVEL = 50;
 	const unsigned POWER_TO_ADD = 5;
-	const unsigned COINS_TO_START = 100;
+	const unsigned COINS_TO_START = 50;
 	const unsigned COINS_TO_LOSE_WHEN_TIE = 15;
 	const unsigned COINS_TO_WIN_AS_DEFENDER = 20;
-	const unsigned COINS_TO_EARN_WHEN_LOGGING_IN = 100;
+	const unsigned COINS_TO_EARN_PERIODICALLY = 15;
 	const unsigned INITIAL_PRICE_OF_POWER_UP = 5;
 	const unsigned INITIAL_PRICE_OF_LEVEL_UP = 7;
 	const unsigned INITIAL_PRICE_OF_SUPERHERO = 30;
@@ -29,4 +29,5 @@ namespace constants
 	const MyString ADMINS_FILE_PATH = "admins.bin";
 	const MyString MARKET_SUPERHEROES_FILE_PATH = "marketSuperheroes.bin";
 	const MyString SOLD_SUPERHEROES_FILE_PATH = "soldSuperheroes.bin";
+	const MyString SOLD_SUPERHEROES_FILE_PATH = "logSystem.bin";
 }
