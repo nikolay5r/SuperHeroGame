@@ -1,0 +1,466 @@
+#include "AdminSystem.h"
+#include "System.h"
+#include "File_Error.h"
+#include "Input_Error.h"
+#include "SystemConfigurations.h"
+#include "Regex_Error.h"
+#include <iostream>
+
+System* AdminSystem::getInstance()
+{
+	if (!System::instance)
+	{
+		System::instance = new AdminSystem();
+	}
+
+	return System::instance;
+}
+
+void AdminSystem::reg()
+{
+	try
+	{
+		UserFactory* factory = AdminFactory::getInstance();
+		User* user = factory->createFromConsole();
+		currentUser = user;
+		saveToFile(*user);
+		configs::incrementCountOfAdmins();
+		std::cout << "Registration was successful!" << std::endl;
+	}
+	catch (const File_Error&)
+	{
+		std::cerr << "File error occured when trying to register as a player!" << std::endl;
+		throw;
+	}
+	catch (const Input_Error& error)
+	{
+		std::cerr << error.what() << std::endl;
+		std::cout << std::endl;
+		reg();
+	}
+	catch (const std::invalid_argument&)
+	{
+		std::cerr << "Invalid argument error occured when trying to register as a player!" << std::endl;
+		throw;
+	}
+	catch (const Regex_Error& error)
+	{
+		std::cerr << error.what() << std::endl;
+		std::cout << std::endl;
+		reg();
+	}
+	catch (const std::length_error& error)
+	{
+		std::cerr << error.what() << std::endl;
+		std::cout << std::endl;
+		reg();
+	}
+	catch (const std::exception& error)
+	{
+		std::cerr << "An exception was thrown when trying to register as a player!" << std::endl;
+		throw;
+	}
+	catch (...)
+	{
+		std::cerr << "Something went wrong when trying to register as a player!" << std::endl;
+		throw;
+	}
+}
+
+void AdminSystem::logout()
+{
+	try
+	{
+		UserFactory::freeInstance();
+		SuperHeroFactory::freeInstance();
+
+		delete currentUser;
+		currentUser = nullptr;
+	}
+	catch (const std::exception& error)
+	{
+		std::cerr << "An exception was thrown when trying to logout as a player!" << std::endl;
+		throw;
+	}
+	catch (...)
+	{
+		std::cerr << "Something went wrong when trying to logout as a player!" << std::endl;
+		throw;
+	}
+
+	std::cout << "You logged out." << std::endl;
+}
+
+void AdminSystem::deleteProfile()
+{
+	try
+	{
+		removeFromFile(*currentUser);
+		configs::decrementCountOfAdmins();
+
+		UserFactory::freeInstance();
+		SuperHeroFactory::freeInstance();
+
+		delete currentUser;
+		currentUser = nullptr;
+		std::cout << "You deleted your account successfully!" << std::endl;
+		std::cout << std::endl;
+	}
+	catch (const File_Error&)
+	{
+		std::cerr << "File error occured when trying to delete a profile!" << std::endl;
+		throw;
+	}
+	catch (const std::exception& error)
+	{
+		std::cerr << "An exception was thrown when trying to delete a profile!" << std::endl;
+		throw;
+	}
+	catch (...)
+	{
+		std::cerr << "Something went wrong when trying to delete a profile!" << std::endl;
+		throw;
+	}
+}
+
+void AdminSystem::showMarket() const
+{
+	try
+	{
+		if (configs::getCountOfMarket() != 0)
+		{
+			printSuperheroes(constants::MARKET_SUPERHEROES_FILE_PATH);
+			MyString buff;
+			std::cout << "If you want to go back enter 'back';" << std::endl
+				<< "If you want to add a superhero enter 'add';" << std::endl
+				<< "If you want to delete enter 'delete':" << std::endl
+				<< "Command: ";
+			std::cin >> buff;
+
+			if (buff == "back")
+			{
+				return;
+			}
+			else if (buff == "add")
+			{
+				std::cout << std::endl;
+			}
+			else if (buff == "delete")
+			{
+				std::cout << std::endl;
+			}
+			else
+			{
+				throw Input_Error("Invalid keyword was entered!");
+			}
+
+			showMarket();
+		}
+		else
+		{
+			std::cout << "No superheroes to show!" << std::endl;
+		}
+	}
+	catch (const File_Error&)
+	{
+		std::cerr << "File error occured when trying to show market!" << std::endl;
+		throw;
+	}
+	catch (const Input_Error& error)
+	{
+		std::cerr << error.what() << std::endl;
+		showMarket();
+	}
+	catch (const std::invalid_argument& error)
+	{
+		std::cerr << error.what() << std::endl;
+		showMarket();
+	}
+	catch (const std::exception& error)
+	{
+		std::cerr << "An exception was thrown when trying to show market!" << std::endl;
+		throw;
+	}
+	catch (...)
+	{
+		std::cerr << "Something went wrong when trying to show market!" << std::endl;
+		throw;
+	}
+}
+
+void AdminSystem::showPlayers() const
+{
+	try
+	{
+		if (configs::getCountOfPlayers() != 0)
+		{
+			printPlayersForAdmins();
+			MyString buff;
+			std::cout << "If you want to go back enter 'back';" << std::endl
+				<< "If you want to add new player enter 'add';" << std::endl
+				<< "If you want to delete player's profile enter 'delete'" << std::endl
+				<< "Command: ";
+			std::cin >> buff;
+
+			if (buff == "back")
+			{
+				return;
+			}
+			else if (buff == "delete")
+			{
+
+			}
+			else if (buff == "add")
+			{
+
+			}
+			else
+			{
+				throw Input_Error("Invalid keyword was entered!");
+			}
+
+			showPlayers();
+		}
+		else
+		{
+			std::cout << "No players to show!" << std::endl;
+		}
+	}
+	catch (const File_Error&)
+	{
+		std::cerr << "File error occured when trying to show players!" << std::endl;
+		throw;
+	}
+	catch (const Input_Error& error)
+	{
+		std::cerr << error.what() << std::endl;
+		showPlayers();
+	}
+	catch (const std::invalid_argument& error)
+	{
+		std::cerr << error.what() << std::endl;
+		showPlayers();
+	}
+	catch (const std::exception& error)
+	{
+		std::cerr << "An exception was thrown when trying to show players!" << std::endl;
+		throw;
+	}
+	catch (...)
+	{
+		std::cerr << "Something went wrong when trying to show players!" << std::endl;
+		throw;
+	}
+}
+
+void AdminSystem::showProfile()
+{
+	try
+	{
+		currentUser->printFullInfo();
+
+		std::cout << std::endl << "If you want to go back enter 'back';" << std::endl
+			<< "If you want to delete your profile enter 'delete': " << std::endl
+			<< "Command: ";
+		MyString buff;
+		std::cin >> buff;
+
+		if (buff == "back")
+		{
+			return;
+		}
+		else if (buff == "delete")
+		{
+			std::cout << std::endl;
+			deleteProfile();
+		}
+		else
+		{
+			throw Input_Error("Keyword is not valid!");
+		}
+
+		std::cout << std::endl;
+		showProfile();
+	}
+	catch (const Input_Error& error)
+	{
+		std::cerr << error.what() << std::endl;
+		std::cout << std::endl;
+		showProfile();
+	}
+	catch (const std::logic_error& error)
+	{
+		std::cerr << error.what() << std::endl;
+		std::cout << std::endl;
+		showProfile();
+	}
+	catch (const std::exception& error)
+	{
+		std::cerr << "An exception was thrown when trying to show profile!" << std::endl;
+		throw;
+	}
+	catch (...)
+	{
+		std::cerr << "Something happened when trying to show profile!" << std::endl;
+		throw;
+	}
+}
+
+void AdminSystem::login()
+{
+	try
+	{
+		UserFactory* factory = AdminFactory::getInstance();
+		currentUser = factory->createFromConsoleOnLogin(constants::PLAYERS_FILE_PATH);
+		std::cout << "Log in was successful!" << std::endl;
+	}
+	catch (const File_Error&)
+	{
+		std::cerr << "File error occured when trying to login as a player!" << std::endl;
+		throw;
+	}
+	catch (const Input_Error& error)
+	{
+		std::cerr << error.what() << std::endl;
+		std::cout << std::endl;
+		login();
+	}
+	catch (const std::invalid_argument& error)
+	{
+		std::cerr << error.what() << std::endl;
+		std::cout << std::endl;
+		login();
+	}
+	catch (const Regex_Error& error)
+	{
+		std::cerr << error.what() << std::endl;
+		std::cout << std::endl;
+		login();
+	}
+	catch (const std::length_error& error)
+	{
+		std::cerr << error.what() << std::endl;
+		std::cout << std::endl;
+		login();
+	}
+	catch (const std::exception& error)
+	{
+		std::cerr << "An exception was thrown when trying to login as a player!" << std::endl;
+		throw;
+	}
+	catch (...)
+	{
+		std::cerr << "Something went wrong when trying to login as a player!" << std::endl;
+		throw;
+	}
+}
+
+bool AdminSystem::run()
+{
+	bool end = false;
+	int n = -1;
+	configs::initConfigs();
+	try
+	{
+		while (end)
+		{
+			if (currentUser)
+			{
+				if (n == -1)
+				{
+					std::cout << "Enter a command:" << std::endl
+						<< "  0 - logout" << std::endl
+						<< "  1 - show all players" << std::endl
+						<< "  2 - show market" << std::endl
+						<< "  3 - show sold market" << std::endl
+						<< "  4 - show profile" << std::endl
+						<< "  5 - exit" << std::endl;
+
+					std::cin >> n;
+				}
+
+				switch (n)
+				{
+				case 0:
+					logout();
+					break;
+				case 1:
+					showPlayers();
+					break;
+				case 2:
+					showMarket();
+					break;
+				case 3:
+					showSoldMarket();
+					break;
+				case 4:
+					showProfile();
+					break;
+				case 5:
+					logout();
+					end = true;
+					break;
+				default:
+					throw Input_Error("Keyword is not valid!");
+				}
+			}
+			else
+			{
+				std::cout << "Enter 'exit' if you want to exit the program;" << std::endl << "Enter 'login' if you already have an account and 'register' if you don't: ";
+				MyString buff;
+				std::cin >> buff;
+
+				if (buff == "login")
+				{
+					login();
+				}
+				else if (buff == "register")
+				{
+					reg();
+				}
+				else if (buff == "exit")
+				{
+					end = true;
+				}
+				else
+				{
+					throw Input_Error("Keyword is not valid!");
+				}
+
+			}
+
+		}
+	}
+	catch (const File_Error& error)
+	{
+		freeSystem();
+		std::cerr << "FATAL ERROR:\n\tFILE_ERROR: " << error.what() << " The program will terminate!" << std::endl;
+		exit(1);
+	}
+	catch (const Input_Error& error)
+	{
+		std::cerr << error.what() << std::endl;
+		run();
+	}
+	catch (const std::invalid_argument& error)
+	{
+		std::cerr << error.what() << std::endl;
+		run();
+	}
+	catch (const std::exception& error)
+	{
+		freeSystem();
+		std::cerr << "FATAL ERROR:\n\tUNKNOWN EXCEPTION: " << error.what() << " The program will terminate!" << std::endl;
+		exit(1);
+	}
+	catch (...)
+	{
+		freeSystem();
+		std::cerr << "FATAL ERROR:\n\tUNKNOWN EXCEPTION: " << "Something wrong happened!" << " The program will terminate!" << std::endl;
+		exit(1);
+	}
+
+	std::cout << "Program is shutting down!" << std::endl;
+
+	return end;
+}

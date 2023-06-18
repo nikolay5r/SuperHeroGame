@@ -22,47 +22,8 @@ protected:
 public:
 	System(const System&) = delete;
 	System& operator=(const System&) = delete;
-	virtual void run() = 0;
+	virtual bool run() = 0;
 
 	static void freeInstance();
 	virtual ~System();
-};
-
-class PlayerSystem : public System
-{
-	PlayerSystem() = default;
-	void logout() override;
-	void login() override;
-	void reg() override;
-	void showMarket() const override;
-	void showPlayers() const override;
-	void buySuperHero() const;
-	void sellSuperHero() const;
-	void battle() const;
-	void deleteProfile() override;
-	void upgradeSuperHero() const;
-	void showProfile() override;
-	void changePos();
-public:
-
-	static System* getInstance();
-	void run() override;
-
-};
-
-class AdminSystem : public System
-{
-	AdminSystem() = default;
-	void logout() override {};
-	void login() override {};
-	void reg() override {};
-	void showMarket() const override {};
-	void showSoldMarket() const {};
-	void showPlayers() const override {};
-	void deleteProfile() override {};
-	void showProfile() override {};
-public:
-
-	static System* getInstance();
-	void run() override;
 };
