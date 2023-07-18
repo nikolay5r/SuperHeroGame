@@ -19,7 +19,7 @@ void validation::isNameValid(const MyString& name)
 
 	for (size_t i = 1; i < lastNameLength; i++)
 	{
-		if (helper::isUpper(name[i]))
+		if (!helper::isLower(name[i]))
 		{
 			throw Regex_Error("There is a capital letter in the middle of the Name!");
 		}
@@ -44,7 +44,7 @@ void validation::isNicknameValid(const MyString& nickname) //at least 3 characte
 	{
 		if (nickname[i] < 'a' || nickname[i] > 'z')
 		{
-			throw Regex_Error("Invalid characters found in Nickname!");
+			throw Regex_Error("Nickname should include only lower latin letters!");
 		}
 	}
 	if (nickname == "back")
