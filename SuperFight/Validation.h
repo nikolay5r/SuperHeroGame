@@ -4,10 +4,10 @@
 
 namespace validation
 {
-	void isNameValid(const MyString& name);
-	void isNicknameValid(const MyString& nickname);
-	void isEmailValid(const MyString& email);
-	void isPasswordValid(const MyString& password);
-	void isNicknameValid(const MyString& nickname);
-	void isPowerValid(unsigned long long power);
+	void nameValidation(const MyString& name);
+	void emailValidation(const MyString& email);
+	void passwordValidation(const MyString& password);
+	void nicknameValidation(const MyString& nickname);
+	void powerValidation(unsigned long long power);
+	void powerTypeValidation(unsigned long long powerType);
 }

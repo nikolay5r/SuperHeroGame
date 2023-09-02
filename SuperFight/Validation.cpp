@@ -8,11 +8,11 @@
 #include <string>
 #include <stdexcept>
 
-void validation::isNameValid(const MyString& name)
+void validation::nameValidation(const MyString& name)
 {
 	if (helper::isLower(name[0]))
 	{
-		throw Regex_Error("Name doesn't begin with capital letter");
+		throw Regex_Error("Name have to begin with a capital letter!");
 	}
 
 	size_t lastNameLength = name.length();
@@ -21,17 +21,12 @@ void validation::isNameValid(const MyString& name)
 	{
 		if (!helper::isLower(name[i]))
 		{
-			throw Regex_Error("There is a capital letter in the middle of the Name!");
+			throw Regex_Error("All letters must be in lower case except the first one! Sorry for the inconvinience!");
 		}
-	}
-
-	if (name == "back")
-	{
-		throw Input_Error("The name you entered is a keyword and cannot be used as such!");
 	}
 }
 
-void validation::isNicknameValid(const MyString& nickname) //at least 3 characters
+void validation::nicknameValidation(const MyString& nickname) //at least 3 characters
 {
 	size_t nicknameLength = nickname.length();
 
@@ -42,7 +37,7 @@ void validation::isNicknameValid(const MyString& nickname) //at least 3 characte
 
 	for (size_t i = 0; i < nicknameLength; i++)
 	{
-		if (nickname[i] < 'a' || nickname[i] > 'z')
+		if (!helper::isLower(nickname[i]))
 		{
 			throw Regex_Error("Nickname should include only lower latin letters!");
 		}
@@ -53,7 +48,7 @@ void validation::isNicknameValid(const MyString& nickname) //at least 3 characte
 	}
 }
 
-void validation::isEmailValid(const MyString& email) //email@abv.bg
+void validation::emailValidation(const MyString& email) //email@abv.bg
 {
 	size_t emailLength = email.length();
 
@@ -81,7 +76,7 @@ void validation::isEmailValid(const MyString& email) //email@abv.bg
 	}
 }
 
-void validation::isPasswordValid(const MyString& password) //at least one capital, one lower and one number, at least 5 characters and maximum of 16
+void validation::passwordValidation(const MyString& password) //at least one capital, one lower and one number, at least 5 characters and maximum of 16
 {
 	int countNumbers = 0;
 	int countCapitalLetters = 0;
@@ -120,10 +115,18 @@ void validation::isPasswordValid(const MyString& password) //at least one capita
 	}
 }
 
-void validation::isPowerValid(unsigned long long power)
+void validation::powerTypeValidation(unsigned long long powerType)
 {
-	if (power < constants::MIN_POWER)
+	if (powerType > 3)
 	{
-		throw std::invalid_argument("Invalid power! The power is too little!");
+		throw std::invalid_argument("Invalid power type! The power type is non existing!");
+	}
+}
+
+void validation::powerValidation(unsigned long long power)
+{
+	if (power < constants::MIN_INITIAL_POWER || power > constants::MAX_INITIAL_POWER)
+	{
+		throw std::invalid_argument("Invalid power! The power you want to assign is either too large or too small!");
 	}
 }
