@@ -11,18 +11,18 @@ Entity::Entity(const MyString& firstName, const MyString& lastName, const MyStri
 
 void Entity::setFirstName(const MyString& firstName)
 {
-	validation::isNameValid(firstName);
+	validation::nameValidation(firstName);
 	this->firstName = firstName;
 }
 
 void Entity::setLastName(const MyString& lastName)
 {
-	validation::isNameValid(lastName);
+	validation::nameValidation(lastName);
 	this->lastName = lastName;
 }
 void Entity::setNickname(const MyString& nickname)
 {
-	validation::isNicknameValid(nickname);
+	validation::nicknameValidation(nickname);
 	this->nickname = nickname;
 }
 
