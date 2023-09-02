@@ -9,7 +9,8 @@ namespace constants
 	const size_t MAX_PASSWORD_LENGTH = 16;
 	const size_t MAX_USERNAME_LENGTH = 16;
 	const unsigned MAX_POWER_ON_FIRST_LEVEL = 50;
-	const unsigned MIN_POWER = 5;
+	const unsigned MIN_INITIAL_POWER = 5;
+	const unsigned MAX_INITIAL_POWER = 50;
 	const unsigned MAX_LEVEL = 50;
 	const unsigned POWER_TO_ADD = 5;
 	const unsigned COINS_TO_START = 50;
@@ -25,7 +26,7 @@ namespace constants
 
 	const MyString PLAYERS_FILE_PATH = "players.bin";
 	const MyString ADMINS_FILE_PATH = "admins.bin";
-	const MyString MARKET_SUPERHEROES_FILE_PATH = "marketSuperheroes.bin";
-	const MyString SOLD_SUPERHEROES_FILE_PATH = "soldSuperheroes.bin";
+	const MyString SUPERHEROES_FILE_PATH = "superheroes.bin";
+	const MyString DEAD_SUPERHEROES_FILE_PATH = "deadSuperheroes.bin";
 	const MyString CONFIGS_FILE_PATH = "configs.bin";
 }
