@@ -9,7 +9,7 @@
 
 void User::setEmail(const MyString& email)
 {
-	validation::isEmailValid(email);
+	validation::emailValidation(email);
 	this->email = email;
 }
 
@@ -39,112 +39,4 @@ const MyString& User::getPassword() const noexcept
 const MyString& User::getEmail() const noexcept
 {
 	return email;
-}
-
-void saveToFile(const User& user)
-{
-	switch (user.getRole())
-	{
-	case UserRole::Admin:
-	{
-		const Admin& admin = static_cast<const Admin&>(user);
-		saveAdminToFile(admin);
-		break;
-	}
-	case UserRole::Player:
-	{
-		const Player& player = static_cast<const Player&>(user);
-		savePlayerToFile(player);
-		break;
-	}
-	default:
-		break;
-	}
-}
-
-void removeFromFile(const User& user)
-{
-	switch (user.getRole())
-	{
-	case UserRole::Admin:
-	{
-		const Admin& admin = static_cast<const Admin&>(user);
-		removeFromFile(admin);
-		break;
-	}
-	case UserRole::Player:
-	{
-		const Player& player = static_cast<const Player&>(user);
-		removePlayerFromFile(player);
-		break;
-	}
-	default:
-		break;
-	}
-}
-
-User* UserFactory::createFromConsoleOnLogin(const MyString& fileName) const
-{
-	User* user = nullptr;
-
-	std::ifstream file(fileName.c_str(), std::ios::binary);
-	if (!file.is_open())
-	{
-		throw File_Error("File couldn't open!");
-	}
-	try
-	{
-		MyString temp;
-		std::cout << "Enter nickname: ";
-		std::cin >> temp;
-		validation::isNicknameValid(temp);
-
-		user = readFromBinary(file, temp);
-		std::cout << "Enter password: ";
-		std::cin >> temp;
-		validation::isPasswordValid(temp);
-
-		if (user->getPassword() != temp)
-		{
-			throw Input_Error("Password was incorrect");
-		}
-
-		file.close();
-
-		return user;
-	}
-	catch (const File_Error&)
-	{
-		std::cerr << "File error occured when trying to create a user from console on login!" << std::endl;
-		delete user;
-		file.close();
-		throw;
-	}
-	catch (...)
-	{
-		delete user;
-		file.close();
-		throw;
-	}
-}
-
-void saveChangesToFile(const User& user)
-{
-	switch (user.getRole())
-	{
-	case UserRole::Admin:
-	{
-		const Admin& admin = static_cast<const Admin&>(user);
-		saveChangesToFile(admin);
-		break;
-	}
-	case UserRole::Player:
-	{
-		const Player& player = static_cast<const Player&>(user);
-		savePlayerChangesToFile(player);
-		break;
-	}
-	default:
-		break;
-	}
 }

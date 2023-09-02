@@ -3,6 +3,7 @@
 #include "MyString.h"
 #include "User.h"
 #include "Entity.h"
+#include "MyVector.hpp"
 
 enum class UserRole
 {
@@ -28,25 +29,3 @@ public:
 
 	virtual ~User() = default;
 };
-
-class UserFactory
-{
-protected:
-	UserFactory() = default;
-public:
-	UserFactory(const UserFactory&) = delete;
-	UserFactory& operator=(const UserFactory&) = delete;
-
-	virtual User* readFromBinary() const = 0;
-	virtual User* readFromBinary(std::ifstream& file) const = 0;
-	virtual User* readFromBinary(const MyString& nickname) const = 0;
-	virtual User* readFromBinary(std::ifstream& file, const MyString& nickname) const = 0;
-	virtual User* createFromConsole() const = 0;
-	User* createFromConsoleOnLogin(const MyString& fileName) const;
-
-	virtual ~UserFactory() = default;
-};
-
-void saveToFile(const User& user);
-void removeFromFile(const User& user);
-void saveChangesToFile(const User& user);
