@@ -15,14 +15,22 @@
 
 System* System::instance = nullptr;
 
+System::System()
+	: admins(std::move(readAdminsFromFile(constants::ADMINS_FILE_PATH))),
+	players(std::move(readPlayersFromFile(constants::PLAYERS_FILE_PATH))),
+	deadSuperheroes(std::move(readSuperheroesFromFile(constants::DEAD_SUPERHEROES_FILE_PATH))),
+	superheroes(std::move(readSuperheroesFromFile(constants::DEAD_SUPERHEROES_FILE_PATH))) {}
+
+
 void System::freeSystem()
 {
+	saveAdminsToFile(constants::ADMINS_FILE_PATH, admins);
+	savePlayersToFile(constants::PLAYERS_FILE_PATH, players);
+	saveSuperheroesToFile(constants::SUPERHEROES_FILE_PATH, superheroes);
+	saveSuperheroesToFile(constants::DEAD_SUPERHEROES_FILE_PATH, deadSuperheroes);
+
 	delete System::instance;
 	System::instance = nullptr;
-
-	AdminFactory::freeInstance();
-	PlayerFactory::freeInstance();
-	SuperHeroFactory::freeInstance();
 }
 
 void System::freeInstance()
