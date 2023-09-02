@@ -1,6 +1,7 @@
 #pragma once
 #include "MyString.h"
 #include "Entity.h"
+#include "MyVector.hpp"
 
 enum class SuperHeroPowerType
 {
@@ -33,6 +34,8 @@ class SuperHero : public Entity
 	void setPrice() noexcept;
 	void setPower(unsigned long long power);
 
+	explicit SuperHero();
+
 public:
 	SuperHero(const MyString& firstName, const MyString& lastName, const MyString& nickname, unsigned power, SuperHeroPowerType powerType);
 	unsigned getPower() const noexcept;
@@ -54,32 +57,12 @@ public:
 	void printShortInfo() const;
 	void printFullInfo() const;
 
-	friend class SuperHeroFactory;
-};
-
-class SuperHeroFactory
-{
-	static SuperHeroFactory* instance;
-	SuperHeroFactory() = default;
-public:
-	static SuperHeroFactory* getInstance();
-
-	SuperHeroFactory(const SuperHeroFactory&) = delete;
-	SuperHeroFactory& operator=(const SuperHeroFactory&) = delete;
-
-	SuperHero* readFromBinary(std::ifstream&) const;
-	SuperHero* readFromBinary(const MyString& fileName, const MyString& nickname) const;
-	SuperHero* readFromBinary(std::ifstream&, const MyString& nickname) const;
-	SuperHero* createFromConsole() const;
-
-	static void freeInstance();
-	virtual ~SuperHeroFactory() = default;
+	friend SuperHero readSuperheroFromFile(std::ifstream& file);
+	friend MyVector<SuperHero> readSuperheroesFromFile(const MyString& fileName);
 };
 
 void saveSuperheroToFile(std::ofstream& file, const SuperHero& superhero);
-void saveSuperheroToFile(const MyString& fileName, const SuperHero& superhero);
-void removeSuperheroFromFile(const MyString& fileName, const MyString& nickname);
-void removeSuperheroFromFile(const MyString& fileName, const SuperHero& superhero);
-SuperHero* buy(const MyString& nickname);
-void sell(const SuperHero& superheroToSell);
-void printSuperheroes(const MyString& fileName);
+void saveSuperheroesToFile(const MyString& fileName, const MyVector<SuperHero>& superhero);
+SuperHero createSuperheroFromConsole();
+SuperHero readSuperheroFromFile(std::ifstream& file);
+MyVector<SuperHero> readSuperheroesFromFile(const MyString& fileName);

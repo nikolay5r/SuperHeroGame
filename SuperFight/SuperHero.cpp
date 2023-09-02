@@ -8,6 +8,9 @@
 #include "File_Error.h"
 #include "HelperFunctions.h"
 #include "Entity.h"
+#include "Regex_Error.h"
+#include "Input_Error.h"
+
 
 const unsigned SuperHero::xpNeededPerLevel[10] = { 3, 5, 10, 20, 30, 40, 50, 75, 90, 100 };
 
@@ -215,192 +218,11 @@ uint8_t SuperHero::getAllowedPowerUpgrades() const noexcept
 	return allowedPowerUpgrades;
 }
 
-/// 
-
-SuperHeroFactory* SuperHeroFactory::getInstance()
-{
-	if (!instance)
-	{
-		SuperHeroFactory::instance = new SuperHeroFactory();
-	}
-
-	return SuperHeroFactory::instance;
-}
-
-
-SuperHeroFactory* SuperHeroFactory::instance = nullptr;
-
-SuperHero* SuperHeroFactory::readFromBinary(std::ifstream& file) const
-{
-	if (!file.is_open())
-	{
-		throw File_Error("File couldn't open!");
-	}
-
-	size_t n;
-	file.read((char*)&n, sizeof(n));
-	char* firstName = new char[n + 1];
-	file.read(firstName, n + 1);
-
-	file.read((char*)&n, sizeof(n));
-	char* lastName = new char[n + 1];
-	file.read(lastName, n + 1);
-
-	file.read((char*)&n, sizeof(n));
-	char* nickname = new char[n + 1];
-	file.read(nickname, n + 1);
-
-	unsigned power = 0;
-	file.read((char*)&power, sizeof(power));
-	unsigned temp = 0;
-	file.read((char*)&temp, sizeof(temp));
-	SuperHeroPowerType type = static_cast<SuperHeroPowerType>(temp);
-
-	SuperHero* superhero = new SuperHero(firstName, lastName, nickname, power, type);
-
-	file.read((char*)&temp, sizeof(temp));
-	superhero->position = static_cast<SuperHeroPosition>(temp);
-
-	file.read((char*)&superhero->price, sizeof(superhero->price));
-	file.read((char*)&superhero->level, sizeof(superhero->level));
-	file.read((char*)&superhero->xp, sizeof(superhero->xp));
-	file.read((char*)&superhero->powerLevel, sizeof(superhero->powerLevel));
-	file.read((char*)&superhero->allowedPowerUpgrades, sizeof(superhero->allowedPowerUpgrades));
-
-	return superhero;
-}
-
-SuperHero* SuperHeroFactory::readFromBinary(const MyString& fileName, const MyString& nickname) const
-{
-	std::ifstream file(fileName.c_str(), std::ios::binary);
-	SuperHero* superhero = nullptr;
-	try
-	{
-		if (!file.is_open())
-		{
-			throw File_Error("File couldn't open!");
-		}
-
-		superhero = readFromBinary(file, nickname);
-		file.close();
-		return superhero;
-	}
-	catch (const File_Error&)
-	{
-		std::cerr << "File error occured when trying to read superhero from binary file by nickname!" << std::endl;
-		delete superhero;
-		file.close();
-		throw;
-	}
-	catch (...)
-	{
-		delete superhero;
-		file.close();
-		throw;
-	}
-}
-
-SuperHero* SuperHeroFactory::readFromBinary(std::ifstream& file, const MyString& nickname) const
-{
-	if (!file.is_open())
-	{
-		throw File_Error("File couldn't open!");
-	}
-
-	SuperHero* curr = nullptr;
-	try
-	{
-		while (!helper::isEOF(file))
-		{
-			curr = readFromBinary(file);
-			if (curr->getNickname() == nickname)
-			{
-				return curr;
-			}
-			delete curr;
-			curr = nullptr;
-		}
-		throw std::invalid_argument("Nickname is not valid!");
-	}
-	catch (const File_Error&)
-	{
-		std::cerr << "File error occured when trying to read superhero from opened binary file by nickname!" << std::endl;
-		delete curr;
-		throw;
-	}
-	catch (...)
-	{
-		delete curr;
-		throw;
-	}
-}
-
-SuperHero* SuperHeroFactory::createFromConsole() const
-{
-	MyString firstName;
-	MyString lastName;
-	MyString nickname;
-	unsigned power = 0;
-	unsigned typeAsUnsigned = 0;
-	SuperHeroPowerType type;
-
-	std::cout << "Enter first name of the superhero: ";
-	std::cin >> firstName;
-	validation::isNameValid(firstName);
-
-	std::cout << "Enter last name of the superhero: ";
-	std::cin >> lastName;
-	validation::isNameValid(lastName);
-
-	std::cout << "Enter nickname of the superhero: ";
-	std::cin >> nickname;
-	validation::isNicknameValid(nickname);
-
-	std::cout << "Enter power of the superhero: ";
-	std::cin >> power;
-	validation::isPowerValid(power);
-
-	std::cout << "Enter power type of the superhero:" << std::endl
-		<< "  - 0 for Air;" << std::endl
-		<< "  - 1 for Water;" << std::endl
-		<< "  - 2 for Earth;" << std::endl
-		<< "  - 3 for Fire;" << std::endl
-		<< "Power type: ";
-	std::cin >> typeAsUnsigned;
-
-	switch (typeAsUnsigned)
-	{
-	case 0:
-		type = SuperHeroPowerType::Air;
-		break;
-	case 1:
-		type = SuperHeroPowerType::Water;
-		break;
-	case 2:
-		type = SuperHeroPowerType::Earth;
-		break;
-	case 3:
-		type = SuperHeroPowerType::Fire;
-		break;
-	default:
-		throw std::invalid_argument("The power type you entered is not valid!");
-		break;
-	}
-
-	return new SuperHero(firstName, lastName, nickname, power, type);
-}
-
-void SuperHeroFactory::freeInstance()
-{
-	delete SuperHeroFactory::instance;
-	SuperHeroFactory::instance = nullptr;
-}
-
 void saveSuperheroToFile(std::ofstream& file, const SuperHero& superhero)
 {
 	if (!file.is_open())
 	{
-		throw File_Error("File couldn't open!");
+		throw File_Error("Something went wrong when saving a superhero!");
 	}
 
 	size_t size = strlen(superhero.getFirstName().c_str());
@@ -440,126 +262,183 @@ void saveSuperheroToFile(std::ofstream& file, const SuperHero& superhero)
 	file.write((const char*)&n, sizeof(n));
 }
 
-SuperHero* buy(const MyString& nickname)
+void saveSuperheroesToFile(const MyString& fileName, const MyVector<SuperHero>& superheroes)
 {
-	SuperHero* superhero = nullptr;
+	std::ofstream file(fileName.c_str(), std::ios::binary | std::ios::trunc);
+
 	try
 	{
-		SuperHeroFactory* factory = SuperHeroFactory::getInstance();
-		superhero = factory->readFromBinary(constants::MARKET_SUPERHEROES_FILE_PATH, nickname);
-		removeSuperheroFromFile(constants::MARKET_SUPERHEROES_FILE_PATH, *superhero);
-		saveSuperheroToFile(constants::SOLD_SUPERHEROES_FILE_PATH, *superhero);
+		if (!file.is_open())
+		{
+			throw File_Error("Couldn't open database when saving superheroes!");
+		}
 
-		return superhero;
+		size_t size = superheroes.size();
+		file.write((const char*)&size, sizeof(size));
+
+		for (size_t i = 0; i < size; i++)
+		{
+			saveSuperheroToFile(file, superheroes[i]);
+		}
 	}
-	catch (const File_Error&)
+	catch (const File_Error& err)
 	{
-		std::cerr << "File error occured when trying to execute buy algorithm!" << std::endl;
-		delete superhero;
-		throw;
+		std::cerr << err.what() << std::endl;
+		exit(EXIT_FAILURE);
+	}
+	catch (const std::exception& err)
+	{
+		std::cerr << "Error caught when trying to save multiple superheroes!\n" << err.what() << std::endl;
+		exit(EXIT_FAILURE);
 	}
 	catch (...)
 	{
-		delete superhero;
-		throw;
+		std::cerr << "Something went wrong when tryin to save multiple superheroes!" << std::endl;
+		exit(EXIT_FAILURE);
 	}
-}
-
-void removeSuperheroFromFile(const MyString& fileName, const MyString& nickname)
-{
-	SuperHero* superhero = nullptr;
-	try
-	{
-		SuperHeroFactory* factory = SuperHeroFactory::getInstance();
-		superhero = factory->readFromBinary(fileName, nickname);
-		removeSuperheroFromFile(fileName, *superhero);
-		delete superhero;
-	}
-	catch (const File_Error&)
-	{
-		std::cerr << "File error occured when trying to remove a superhero from file by nickname!" << std::endl;
-		delete superhero;
-		throw;
-	}
-	catch (...)
-	{
-		delete superhero;
-		throw;
-	}
-}
-
-void removeSuperheroFromFile(const MyString& fileName, const SuperHero& superhero)
-{
-	int indexStart = -1;
-	int indexEnd = -1;
-	helper::getStartIndexAndEndIndexOfEntityInFile(fileName, indexStart, indexEnd, superhero);
-	helper::deleteDataFromFile(fileName, indexStart, indexEnd);
-}
-
-void saveSuperheroToFile(const MyString& fileName, const SuperHero& superhero)
-{
-	std::ofstream file(fileName.c_str(), std::ios::binary | std::ios::app);
-
-	if (!file.is_open())
-	{
-		throw File_Error("File couldn't open!");
-	}
-
-	saveSuperheroToFile(file, superhero);
 
 	file.close();
 }
 
-void sell(const SuperHero& superheroToSell)
+SuperHero readSuperheroFromFile(std::ifstream& file)
 {
-	try
-	{
-		saveSuperheroToFile(constants::MARKET_SUPERHEROES_FILE_PATH, superheroToSell);
-		removeSuperheroFromFile(constants::SOLD_SUPERHEROES_FILE_PATH, superheroToSell);
-	}
-	catch (const File_Error&)
-	{
-		std::cerr << "File error occured when trying to execute sell algorithm!" << std::endl;
-		throw;
-	}
-	catch (...)
-	{
-		throw;
-	}
-}
-void printSuperheroes(const MyString& fileName)
-{
-	std::ifstream file(fileName.c_str(), std::ios::in | std::ios::binary);;
-
 	if (!file.is_open())
 	{
-		throw File_Error("File couldn't open!");
+		throw File_Error("Couldn't open database when reading a superhero!");
 	}
 
-	unsigned countOfPrintedSuperheroes = 0;
+	size_t size = 0;
+	file.read((char*)&size, sizeof(size));
+	char* firstName = new char[size + 1];
+	file.read(firstName, size + 1);
+
+	file.read((char*)&size, sizeof(size));
+	char* lastName = new char[size + 1];
+	file.read(lastName, size + 1);
+
+	file.read((char*)&size, sizeof(size));
+	char* nickname = new char[size + 1];
+	file.read(nickname, size + 1);
+
+	unsigned power = 0;
+	file.read((char*)&power, sizeof(p));
+
+	SuperHeroPowerType type;
+	file.read((char*)&type, sizeof(type));
+
+	SuperHero superhero(firstName, lastName, nickname, power, type);
+	file.read((char*)&superhero.position, sizeof(superhero.position));
+	file.read((char*)&superhero.price, sizeof(superhero.price));
+	file.read((char*)&superhero.level, sizeof(superhero.level));
+	file.read((char*)&superhero.xp, sizeof(superhero.xp));
+	file.read((char*)&superhero.powerLevel, sizeof(superhero.powerLevel));
+	file.read((char*)&superhero.allowedPowerUpgrades, sizeof(superhero.allowedPowerUpgrades));
+
+	return superhero;
+}
+
+MyVector<SuperHero> readSuperheroesFromFile(const MyString& fileName)
+{
+	std::ifstream file(fileName.c_str(), std::ios::binary);
+
 	try
 	{
-		for (int i = 1; !helper::isEOF(file); i++)
+		if (!file.is_open())
 		{
-			std::cout << i << ". ";
-			SuperHeroFactory* factory = SuperHeroFactory::getInstance();
-			SuperHero* superhero = factory->readFromBinary(file);
-			superhero->printShortInfo();
-			countOfPrintedSuperheroes++;
-			delete superhero;
+			throw File_Error("Couldn't open database when reading superheroes!");
 		}
-		std::cout << std::endl;
-		file.close();
+
+		size_t size = 0;
+		file.read((char*)&size, sizeof(size));
+
+		MyVector<SuperHero> superheroes(size);
+
+		for (size_t i = 0; i < size; i++)
+		{
+			superheroes[i] = std::move(readSuperheroFromFile(file));
+		}
 	}
-	catch (const File_Error&)
+	catch (const File_Error& err)
 	{
-		std::cerr << "File error occured when trying to execute print superheroes algorithm!" << std::endl;
-		file.close();
-		throw;
+		std::cerr << "File Error: " << err.what() << std::endl;
+		exit(EXIT_FAILURE);
+	}
+	catch (const std::exception& err)
+	{
+		std::cerr << "Error caught when trying to read multiple superheroes!\n" << err.what() << std::endl;
+		exit(EXIT_FAILURE);
 	}
 	catch (...)
 	{
-		file.close();
-		throw;
+		std::cerr << "Something went wrong when trying to read multiple superheroes!" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+
+	file.close();
+}
+
+SuperHero createSuperheroFromConsole()
+{
+	MyString firstName, lastName, nickname;
+	unsigned long long power, type;
+	try
+	{
+		std::cout << "Creating superhero: " << std::endl;
+		std::cout << "    Enter first name: ";
+		std::cin >> firstName;
+
+		validation::nameValidation(firstName);
+		std::cout << "    Enter last name: ";
+		std::cin >> lastName;
+		validation::nameValidation(lastName);
+		std::cout << "    Enter nickname: ";
+		std::cin >> nickname;
+		validation::nicknameValidation(nickname);
+		std::cout << "    Enter power (" << constants::MIN_INITIAL_POWER << " - " << constants::MAX_INITIAL_POWER << "):";
+		std::cin >> power;
+		validation::powerValidation(power);
+
+		std::cout << "    Enter power type (" << (unsigned)SuperHeroPowerType::Air << "  - Air | "
+			<< (unsigned)SuperHeroPowerType::Water << " - Water | "
+			<< (unsigned)SuperHeroPowerType::Earth << " - Earth | "
+			<< (unsigned)SuperHeroPowerType::Fire << " - Fire):";
+		std::cin >> type;
+
+		return SuperHero(firstName, lastName, nickname, power, static_cast<SuperHeroPowerType>(type));
+	}
+	catch (const Regex_Error& err)
+	{
+		std::cerr << "Regex Error: " << err.what() << std::endl;
+		createSuperheroFromConsole();
+	}
+	catch (const Input_Error& err)
+	{
+		std::cerr << "Input Error: " << err.what() << std::endl;
+		createSuperheroFromConsole();
+	}
+	catch (const std::length_error& err)
+	{
+		std::cerr << "Length Error: " << err.what() << std::endl;
+		createSuperheroFromConsole();
+	}
+	catch (const std::invalid_argument& err)
+	{
+		std::cerr << "Invalid Error: " << err.what() << std::endl;
+		createSuperheroFromConsole();
+	}
+	catch (const std::bad_cast& err)
+	{
+		std::cerr << "Bad Cast Error: " << err.what() << std::endl;
+		createSuperheroFromConsole();
+	}
+	catch (const std::exception& err)
+	{
+		std::cerr << "Something went wrong when creating superhero from console! " << std::endl << err.what() << std::endl;
+		exit(EXIT_FAILURE);
+	}
+	catch (...)
+	{
+		std::cerr << "Something went wrong when creating superhero from console! " << std::endl;
+		exit(EXIT_FAILURE);
 	}
 }
