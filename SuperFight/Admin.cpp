@@ -1,12 +1,16 @@
+#include <utility>
+#include <fstream>
+
 #include "Admin.h"
 #include "User.h"
 #include "Validation.h"
-#include <utility>
-#include <fstream>
+#include "Input_Error.h"
+#include "Regex_Error.h"
 #include "File_Error.h"
 #include "HelperFunctions.h"
 #include "Constants.h"
 #include "SystemConfigurations.h"
+#include "MyVector.hpp"
 
 Admin::Admin(const MyString& firstName, const MyString& lastName, const MyString& nickname, const MyString& email, const MyString& password)
 	: User(firstName, lastName, nickname, email, password, UserRole::Admin) {}
@@ -25,168 +29,12 @@ void Admin::printFullInfo() const
 	std::cout << fullName << " | " << nickname << " | " << email << std::endl;
 }
 
-UserFactory* AdminFactory::instance = nullptr;
-
-User* AdminFactory::readFromBinary() const
-{
-	std::ifstream file(constants::ADMINS_FILE_PATH.c_str(), std::ios::binary);
-
-	User* admin = readFromBinary(file);
-	file.close();
-
-	return admin;
-}
-
-void AdminFactory::freeInstance()
-{
-	delete AdminFactory::instance;
-	AdminFactory::instance = nullptr;
-}
-
-User* AdminFactory::readFromBinary(std::ifstream& file) const
+void saveAdminToFile(std::ofstream& file, const Admin& admin)
 {
 	if (!file.is_open())
 	{
-		throw File_Error("File couldn't open!");
+		throw File_Error("Couldn't open database when reading an admin!");
 	}
-
-	size_t n;
-	file.read((char*)&n, sizeof(n));
-	char* firstName = new char[n + 1];
-	file.read(firstName, n + 1);
-
-	file.read((char*)&n, sizeof(n));
-	char* lastName = new char[n + 1];
-	file.read(lastName, n + 1);
-
-	file.read((char*)&n, sizeof(n));
-	char* nickname = new char[n + 1];
-	file.read(nickname, n + 1);
-
-	file.read((char*)&n, sizeof(n));
-	char* email = new char[n + 1];
-	file.read(email, n + 1);
-
-	file.read((char*)&n, sizeof(n));
-	char* password = new char[n + 1];
-	file.read(password, n + 1);
-
-	Admin* admin = new Admin(firstName, lastName, nickname, email, password);
-
-	delete[] firstName;
-	delete[] lastName;
-	delete[] nickname;
-	delete[] email;
-	delete[] password;
-
-	return admin;
-}
-
-User* AdminFactory::readFromBinary(const MyString& nickname) const
-{
-	std::ifstream file(constants::ADMINS_FILE_PATH.c_str(), std::ios::binary);
-
-	if (!file.is_open())
-	{
-		throw File_Error("File couldn't open!");
-	}
-
-	User* user = readFromBinary(file, nickname);
-
-	file.close();
-	return user;
-}
-
-User* AdminFactory::readFromBinary(std::ifstream& file, const MyString& nickname) const
-{
-	User* curr = nullptr;
-
-	if (!file.is_open())
-	{
-		throw File_Error("File couldn't open!");
-	}
-
-	while (!helper::isEOF(file))
-	{
-		curr = readFromBinary(file);
-		if (curr->getNickname() == nickname)
-		{
-			return curr;
-		}
-		delete curr;
-		if (file.eof())
-		{
-			break;
-		}
-	}
-
-	throw std::invalid_argument("Nickname is not valid!");
-}
-
-User* AdminFactory::createFromConsole() const
-{
-	MyString firstName;
-	MyString lastName;
-	MyString nickname;
-	MyString email;
-	MyString password;
-
-	std::cout << "Enter first name of the admin: ";
-	std::cin >> firstName;
-	validation::isNameValid(firstName);
-
-	std::cout << "Enter last name of the admin: ";
-	std::cin >> lastName;
-	validation::isNameValid(lastName);
-
-	std::cout << "Enter nickname of the admin: ";
-	std::cin >> nickname;
-	validation::isNicknameValid(nickname);
-
-	std::cout << "Enter password for the admin: ";
-	std::cin >> password;
-	validation::isPasswordValid(password);
-
-	std::cout << "Enter email of the admin: ";
-	std::cin >> email;
-	validation::isEmailValid(email);
-
-	try
-	{
-		std::ifstream file(constants::ADMINS_FILE_PATH.c_str(), std::ios::binary);
-		readFromBinary(file, nickname);
-		file.close();
-	}
-	catch (const std::invalid_argument&)
-	{
-		return new Admin(firstName, lastName, nickname, email, password);
-	}
-
-	throw std::invalid_argument("User with that nickname already exists!");
-
-}
-
-UserFactory* AdminFactory::getInstance()
-{
-	if (AdminFactory::instance == nullptr)
-	{
-		AdminFactory::instance = new AdminFactory();
-	}
-
-	return AdminFactory::instance;
-}
-
-
-void saveAdminToFile(const Admin& admin)
-{
-	std::ofstream file(constants::ADMINS_FILE_PATH.c_str(), std::ios::binary | std::ios::app);
-
-	if (!file.is_open())
-	{
-		throw File_Error("File couldn't open!");
-	}
-
-	int index = file.tellp();
 
 	size_t size = admin.getFirstName().length();
 	file.write((const char*)&size, sizeof(size));
@@ -207,38 +55,176 @@ void saveAdminToFile(const Admin& admin)
 	size = admin.getPassword().length();
 	file.write((const char*)&size, sizeof(size));
 	file.write(admin.getPassword().c_str(), size + 1);
+}
+
+void saveAdminsToFile(const MyString& fileName, const MyVector<Admin>& admins)
+{
+	std::ofstream file(fileName.c_str(), std::ios::binary | std::ios::trunc);
+
+	try
+	{
+		if (!file.is_open())
+		{
+			throw File_Error("Couldn't open database when saving admins!");
+		}
+
+		size_t size = admins.size();
+		file.write((const char*)&size, sizeof(size));
+
+		for (size_t i = 0; i < size; i++)
+		{
+			saveAdminToFile(file, admins[i]);
+		}
+	}
+	catch (const File_Error& err)
+	{
+		std::cerr << err.what() << std::endl;
+		exit(EXIT_FAILURE);
+	}
+	catch (const std::exception& err)
+	{
+		std::cerr << "Exception was thrown when trying to save multiple admins!\n" << err.what() << std::endl;
+		exit(EXIT_FAILURE);
+	}
+	catch (...)
+	{
+		std::cerr << "Something went wrong when tryin to save multiple admins!" << std::endl;
+		exit(EXIT_FAILURE);
+	}
 
 	file.close();
 }
 
-void removeAdminFromFile(const Admin& admin)
+MyVector<Admin> readAdminsFromFile(const MyString& fileName)
 {
-	int indexStart = -1;
-	int indexEnd = -1;
+	std::ifstream file(fileName.c_str(), std::ios::binary);
 
-	helper::getStartIndexAndEndIndexOfEntityInFile(constants::ADMINS_FILE_PATH, indexStart, indexEnd, admin);
-	helper::deleteDataFromFile(constants::ADMINS_FILE_PATH, indexStart, indexEnd);
-	configs::decrementCountOfAdmins();
+	try
+	{
+		if (!file.is_open())
+		{
+			throw File_Error("Couldn't open database when reading admins!");
+		}
+
+		size_t size = 0;
+		file.read((char*)&size, sizeof(size));
+
+		MyVector<Admin> admins(size);
+
+		for (size_t i = 0; i < size; i++)
+		{
+			admins[i] = std::move(readAdminFromFile(file));
+		}
+		file.close();
+		return admins;
+	}
+	catch (const File_Error& err)
+	{
+		std::cerr << "File Error: " << err.what() << std::endl;
+		exit(EXIT_FAILURE);
+	}
+	catch (const std::exception& err)
+	{
+		std::cerr << "Exception was thrown when trying to read multiple admins!\n" << err.what() << std::endl;
+		exit(EXIT_FAILURE);
+	}
+	catch (...)
+	{
+		std::cerr << "Something went wrong when trying to read multiple admins!" << std::endl;
+		exit(EXIT_FAILURE);
+	}
 }
 
-void printAdmins()
+Admin readAdminFromFile(std::ifstream& file)
 {
-	std::ifstream file(constants::ADMINS_FILE_PATH.c_str(), std::ios::in | std::ios::binary);;
-
 	if (!file.is_open())
 	{
-		throw File_Error("File couldn't open!");
+		throw File_Error("Couldn't open database when reading a superhero!");
 	}
 
-	unsigned countOfPrintedAdmins = 0;
-	for (int i = 1; !helper::isEOF(file); i++)
+	size_t size = 0;
+	file.read((char*)&size, sizeof(size));
+	char* firstName = new char[size + 1];
+	file.read(firstName, size + 1);
+
+	file.read((char*)&size, sizeof(size));
+	char* lastName = new char[size + 1];
+	file.read(lastName, size + 1);
+
+	file.read((char*)&size, sizeof(size));
+	char* nickname = new char[size + 1];
+	file.read(nickname, size + 1);
+
+	file.read((char*)&size, sizeof(size));
+	char* email = new char[size + 1];
+	file.read(email, size + 1);
+
+	file.read((char*)&size, sizeof(size));
+	char* password = new char[size + 1];
+	file.read(password, size + 1);
+
+	Admin admin(firstName, lastName, nickname, email, password);
+
+	delete[] firstName;
+	delete[] lastName;
+	delete[] nickname;
+	delete[] email;
+	delete[] password;
+
+	return admin;
+}
+
+Admin createAdminFromConsole()
+{
+	MyString firstName, lastName, nickname, email, password;
+	try
 	{
-		std::cout << i << ". ";
-		UserFactory* factory = AdminFactory::getInstance();
-		User* admin = factory->readFromBinary(file);
-		admin->printShortInfo();
-		delete admin;
+		std::cout << "Creating admin: " << std::endl;
+		std::cout << "    Enter first name: ";
+		std::cin >> firstName;
+		std::cout << "    Enter last name: ";
+		std::cin >> lastName;
+		std::cout << "    Enter nickname: ";
+		std::cin >> nickname;
+		std::cout << "    Enter email: ";
+		std::cin >> email;
+		std::cout << "    Enter password: ";
+		std::cin >> password;
+		return Admin(firstName, lastName, nickname, email, password);
 	}
-	std::cout << std::endl;
-	file.close();
+	catch (const Regex_Error& err)
+	{
+		std::cerr << "Regex Error: " << err.what() << std::endl;
+		createAdminFromConsole();
+	}
+	catch (const Input_Error& err)
+	{
+		std::cerr << "Input Error: " << err.what() << std::endl;
+		createAdminFromConsole();
+	}
+	catch (const std::length_error& err)
+	{
+		std::cerr << "Length Error: " << err.what() << std::endl;
+		createAdminFromConsole();
+	}
+	catch (const std::invalid_argument& err)
+	{
+		std::cerr << "Invalid Error: " << err.what() << std::endl;
+		createAdminFromConsole();
+	}
+	catch (const std::bad_cast& err)
+	{
+		std::cerr << "Bad Cast Error: " << err.what() << std::endl;
+		createAdminFromConsole();
+	}
+	catch (const std::exception& err)
+	{
+		std::cerr << "Exception was thrown when creating an admin from console! " << std::endl << err.what() << std::endl;
+		exit(EXIT_FAILURE);
+	}
+	catch (...)
+	{
+		std::cerr << "Something went wrong when creating an admin from console! " << std::endl;
+		exit(EXIT_FAILURE);
+	}
 }

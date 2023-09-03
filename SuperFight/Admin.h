@@ -1,5 +1,6 @@
 #pragma once
 #include "User.h"
+#include "MyVector.hpp"
 
 class Admin : public User
 {
@@ -10,33 +11,10 @@ public:
 
 	void printShortInfo() const override;
 	void printFullInfo() const override;
-
-
-	friend class AdminFactory;
 };
 
-class AdminFactory : public UserFactory
-{
-	static UserFactory* instance;
-	AdminFactory() = default;
-public:
-
-	static UserFactory* getInstance();
-
-	AdminFactory(const AdminFactory&) = delete;
-	AdminFactory& operator=(const AdminFactory&) = delete;
-
-	User* readFromBinary() const override;
-	User* readFromBinary(std::ifstream& file) const override;
-	User* readFromBinary(const MyString& nicknameToFind) const override;
-	User* readFromBinary(std::ifstream& file, const MyString& nicknameToFind) const override;
-
-	User* createFromConsole() const override;
-
-	static void freeInstance();
-	~AdminFactory() = default;
-};
-
-void saveAdminToFile(const Admin& admin);
-void removeAdminFromFile(const Admin& admin);
-void printAdmins();
+MyVector<Admin> readAdminsFromFile(const MyString& fileName);
+Admin readAdminFromFile(std::ifstream& file);
+Admin createAdminFromConsole();
+void saveAdminToFile(std::ofstream& file, const Admin& admin);
+void saveAdminsToFile(const MyString& fileName, const MyVector<Admin>& admins);
