@@ -1,10 +1,11 @@
+#include <iostream>
+#include <fstream>
+#include <cstdlib>
+
 #include "SuperHero.h"
 #include "MyString.h"
 #include "Validation.h"
 #include "Constants.h"
-#include <iostream>
-#include <fstream>
-#include <cstdlib>
 #include "File_Error.h"
 #include "HelperFunctions.h"
 #include "Entity.h"
@@ -27,10 +28,7 @@ void SuperHero::setPrice() noexcept
 
 void SuperHero::setPower(unsigned long long power)
 {
-	if ((level == 1 && powerLevel == 0 && power > constants::MAX_POWER_ON_FIRST_LEVEL) || power < constants::MIN_POWER)
-	{
-		throw std::invalid_argument("Invalid power!");
-	}
+	validation::powerValidation(power);
 	this->power = power;
 }
 
@@ -327,6 +325,11 @@ SuperHero readSuperheroFromFile(std::ifstream& file)
 	file.read((char*)&type, sizeof(type));
 
 	SuperHero superhero(firstName, lastName, nickname, power, type);
+
+	delete[] firstName;
+	delete[] lastName;
+	delete[] nickname;
+
 	file.read((char*)&superhero.position, sizeof(superhero.position));
 	file.read((char*)&superhero.price, sizeof(superhero.price));
 	file.read((char*)&superhero.level, sizeof(superhero.level));
@@ -386,24 +389,18 @@ SuperHero createSuperheroFromConsole()
 		std::cout << "Creating superhero: " << std::endl;
 		std::cout << "    Enter first name: ";
 		std::cin >> firstName;
-
-		validation::nameValidation(firstName);
 		std::cout << "    Enter last name: ";
 		std::cin >> lastName;
-		validation::nameValidation(lastName);
 		std::cout << "    Enter nickname: ";
 		std::cin >> nickname;
-		validation::nicknameValidation(nickname);
 		std::cout << "    Enter power (" << constants::MIN_INITIAL_POWER << " - " << constants::MAX_INITIAL_POWER << "):";
 		std::cin >> power;
-		validation::powerValidation(power);
-
 		std::cout << "    Enter power type (" << (unsigned)SuperHeroPowerType::Air << "  - Air | "
 			<< (unsigned)SuperHeroPowerType::Water << " - Water | "
 			<< (unsigned)SuperHeroPowerType::Earth << " - Earth | "
 			<< (unsigned)SuperHeroPowerType::Fire << " - Fire):";
 		std::cin >> type;
-
+		validation::powerTypeValidation(type);
 		return SuperHero(firstName, lastName, nickname, power, static_cast<SuperHeroPowerType>(type));
 	}
 	catch (const Regex_Error& err)
@@ -433,12 +430,12 @@ SuperHero createSuperheroFromConsole()
 	}
 	catch (const std::exception& err)
 	{
-		std::cerr << "Something went wrong when creating superhero from console! " << std::endl << err.what() << std::endl;
+		std::cerr << "Something went wrong when creating a superhero from console! " << std::endl << err.what() << std::endl;
 		exit(EXIT_FAILURE);
 	}
 	catch (...)
 	{
-		std::cerr << "Something went wrong when creating superhero from console! " << std::endl;
+		std::cerr << "Something went wrong when creating a superhero from console! " << std::endl;
 		exit(EXIT_FAILURE);
 	}
 }

@@ -1,13 +1,16 @@
+#include <iostream>
+#include <stdexcept>
+#include <fstream>
+
 #include "Player.h"
 #include "SuperHero.h"
 #include "Constants.h"
 #include "Validation.h"
-#include <iostream>
-#include <stdexcept>
-#include <fstream>
+#include "Regex_Error.h"
+#include "Input_Error.h"
 #include "File_Error.h"
 #include "HelperFunctions.h"
-#include "SystemConfigurations.h"
+//#include "SystemConfigurations.h"
 
 void Player::checkIfSuperheroIsOwnedAlready(const MyString& nickname) const
 {
@@ -376,222 +379,12 @@ const SuperHero& Player::getSuperhero(const MyString& nickname) const
 	return getSuperhero(index);
 }
 
-User* PlayerFactory::readFromBinary() const
-{
-	std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::binary);
-
-	if (!file.is_open())
-	{
-		throw File_Error("File couldn't open!");
-	}
-
-	try
-	{
-		User* player = readFromBinary(file);
-
-		file.close();
-		return player;
-	}
-	catch (const File_Error&)
-	{
-		std::cerr << "File error occurred when trying to read a player from binary file!" << std::endl;
-		file.close();
-		throw;
-	}
-	catch (...)
-	{
-		file.close();
-		throw;
-	}
-
-}
-
-User* PlayerFactory::readFromBinary(std::ifstream& file) const
-{
-	Player* player = nullptr;
-	SuperHero* superhero = nullptr;
-
-	if (!file.is_open())
-	{
-		throw File_Error("File couldn't open!");
-	}
-	try
-	{
-		size_t n;
-		file.read((char*)&n, sizeof(n));
-		char* firstName = new char[n + 1];
-		file.read(firstName, n + 1);
-
-		file.read((char*)&n, sizeof(n));
-		char* lastName = new char[n + 1];
-		file.read(lastName, n + 1);
-
-		file.read((char*)&n, sizeof(n));
-		char* nickname = new char[n + 1];
-		file.read(nickname, n + 1);
-
-		file.read((char*)&n, sizeof(n));
-		char* email = new char[n + 1];
-		file.read(email, n + 1);
-
-		file.read((char*)&n, sizeof(n));
-		char* password = new char[n + 1];
-		file.read(password, n + 1);
-
-		player = new Player(firstName, lastName, nickname, email, password);
-
-		delete[] firstName;
-		delete[] lastName;
-		delete[] nickname;
-		delete[] email;
-		delete[] password;
-
-		size_t count;
-		file.read((char*)&count, sizeof(count));
-		SuperHeroFactory* factory = SuperHeroFactory::getInstance();
-		for (size_t i = 0; i < count; i++)
-		{
-			superhero = factory->readFromBinary(file);
-			player->addSuperHero(*superhero);
-			delete superhero;
-		}
-
-		return player;
-	}
-	catch (const File_Error&)
-	{
-		std::cerr << "File error occurred when trying to read a player from opened binary file!" << std::endl;
-		delete superhero;
-		delete player;
-		throw;
-	}
-	catch (...)
-	{
-		delete superhero;
-		delete player;
-		throw;
-	}
-}
-
-User* PlayerFactory::readFromBinary(const MyString& nicknameToFind) const
-{
-	std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::binary);
-
-	if (!file.is_open())
-	{
-		throw File_Error("File couldn't open!");
-	}
-
-	try
-	{
-		User* user = readFromBinary(file, nicknameToFind);
-
-		file.close();
-		return user;
-	}
-	catch (const File_Error&)
-	{
-		std::cerr << "File error occurred when trying to read a player from binary file by nickname!" << std::endl;
-		file.close();
-		throw;
-	}
-	catch (...)
-	{
-		file.close();
-		throw;
-	}
-}
-
-User* PlayerFactory::readFromBinary(std::ifstream& file, const MyString& nicknameToFind) const
+void savePlayerToFile(std::ofstream& file, const Player& player)
 {
 	if (!file.is_open())
 	{
-		throw File_Error("File couldn't open!");
+		throw File_Error("Couldn't open database when reading a player!");
 	}
-
-	while (!helper::isEOF(file))
-	{
-		User* curr = readFromBinary(file);
-		if (curr->getNickname() == nicknameToFind)
-		{
-			return curr;
-		}
-		delete curr;
-	}
-
-	throw std::invalid_argument("Nickname is not valid!");
-}
-
-UserFactory* PlayerFactory::instance = nullptr;
-
-void PlayerFactory::freeInstance()
-{
-	delete PlayerFactory::instance;
-	PlayerFactory::instance = nullptr;
-}
-
-UserFactory* PlayerFactory::getInstance()
-{
-	if (PlayerFactory::instance == nullptr)
-	{
-		PlayerFactory::instance = new PlayerFactory();
-	}
-
-	return PlayerFactory::instance;
-}
-
-User* PlayerFactory::createFromConsole() const
-{
-	MyString firstName;
-	MyString lastName;
-	MyString nickname;
-	MyString email;
-	MyString password;
-
-	std::cout << "Enter first name of the player: ";
-	std::cin >> firstName;
-	validation::isNameValid(firstName);
-
-	std::cout << "Enter last name of the player: ";
-	std::cin >> lastName;
-	validation::isNameValid(lastName);
-
-	std::cout << "Enter nickname of the player: ";
-	std::cin >> nickname;
-	validation::isNicknameValid(nickname);
-
-	std::cout << "Enter password for the player: ";
-	std::cin >> password;
-	validation::isPasswordValid(password);
-
-	std::cout << "Enter email of the player: ";
-	std::cin >> email;
-	validation::isEmailValid(email);
-
-	try
-	{
-		std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::binary);
-		readFromBinary(file, nickname);
-		file.close();
-	}
-	catch (const std::invalid_argument&)
-	{
-		return new Player(firstName, lastName, nickname, email, password);
-	}
-
-	throw std::invalid_argument("User with that nickname already exists!");
-}
-
-void savePlayerToFile(const Player& player)
-{
-	std::ofstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::binary | std::ios::app);
-
-	if (!file.is_open())
-	{
-		throw File_Error("File couldn't open!");
-	}
-
-	int index = file.tellp();
 
 	size_t size = player.getFirstName().length();
 	file.write((const char*)&size, sizeof(size));
@@ -622,87 +415,183 @@ void savePlayerToFile(const Player& player)
 	{
 		saveSuperheroToFile(file, superheroes[i]);
 	}
-
-	file.close();
 }
 
-void removePlayerFromFile(const MyString& nickname)
+void savePlayersToFile(const MyString& fileName, const MyVector<Player>& players)
 {
-	User* player = nullptr;
+	std::ofstream file(fileName.c_str(), std::ios::binary | std::ios::trunc);
+
 	try
 	{
-		UserFactory* factory = PlayerFactory::getInstance();
-		player = factory->readFromBinary(nickname);
-		removePlayerFromFile(*player);
+		if (!file.is_open())
+		{
+			throw File_Error("Couldn't open database when saving players!");
+		}
+
+		size_t size = players.size();
+		file.write((const char*)&size, sizeof(size));
+
+		for (size_t i = 0; i < size; i++)
+		{
+			savePlayerToFile(file, players[i]);
+		}
 	}
-	catch (const File_Error&)
+	catch (const File_Error& err)
 	{
-		std::cerr << "File error occured when trying to remove a superhero from file by nickname!" << std::endl;
-		delete player;
-		throw;
+		std::cerr << err.what() << std::endl;
+		exit(EXIT_FAILURE);
+	}
+	catch (const std::exception& err)
+	{
+		std::cerr << "Exception was thrown when trying to save multiple players!\n" << err.what() << std::endl;
+		exit(EXIT_FAILURE);
 	}
 	catch (...)
 	{
-		delete player;
-		throw;
-	}
-}
-
-void removePlayerFromFile(const Player& player)
-{
-	int indexStart = -1;
-	int indexEnd = -1;
-
-	helper::getStartIndexAndEndIndexOfEntityInFile(constants::PLAYERS_FILE_PATH, indexStart, indexEnd, player);
-	helper::deleteDataFromFile(constants::PLAYERS_FILE_PATH, indexStart, indexEnd);
-}
-
-void printPlayers()
-{
-	std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::binary);;
-
-	if (!file.is_open())
-	{
-		throw File_Error("File couldn't open!");
-	}
-
-	for (int i = 1; !helper::isEOF(file); i++)
-	{
-		std::cout << i << ". ";
-		UserFactory* factory = PlayerFactory::getInstance();
-		User* player = factory->readFromBinary(file);
-		player->printShortInfo();
-		delete player;
-		std::cout << std::endl;
+		std::cerr << "Something went wrong when tryin to save multiple players!" << std::endl;
+		exit(EXIT_FAILURE);
 	}
 
 	file.close();
 }
 
-void printPlayersForAdmins()
+MyVector<Player> readPlayersFromFile(const MyString& fileName)
 {
-	std::ifstream file(constants::PLAYERS_FILE_PATH.c_str(), std::ios::binary);;
+	std::ifstream file(fileName.c_str(), std::ios::binary);
 
-	if (!file.is_open())
+	try
 	{
-		throw File_Error("File couldn't open!");
-	}
+		if (!file.is_open())
+		{
+			throw File_Error("Couldn't open database when reading superheroes!");
+		}
 
-	for (int i = 1; !helper::isEOF(file); i++)
+		size_t size = 0;
+		file.read((char*)&size, sizeof(size));
+
+		MyVector<Player> players(size);
+
+		for (size_t i = 0; i < size; i++)
+		{
+			players[i] = std::move(readPlayerFromFile(file));
+		}
+
+		file.close();
+		return players;
+	}
+	catch (const File_Error& err)
 	{
-		std::cout << i << ".  ";
-		UserFactory* factory = PlayerFactory::getInstance();
-		User* player = factory->readFromBinary(file);
-		player->printFullInfo();
-		delete player;
-		std::cout << std::endl;
+		std::cerr << "File Error: " << err.what() << std::endl;
+		exit(EXIT_FAILURE);
 	}
-
-	file.close();
+	catch (const std::exception& err)
+	{
+		std::cerr << "Exception was thrown when trying to read multiple players!\n" << err.what() << std::endl;
+		exit(EXIT_FAILURE);
+	}
+	catch (...)
+	{
+		std::cerr << "Something went wrong when trying to read multiple players!" << std::endl;
+		exit(EXIT_FAILURE);
+	}
 }
 
-void savePlayerChangesToFile(const Player& player)
+Player readPlayerFromFile(std::ifstream& file)
 {
-	removePlayerFromFile(player);
-	savePlayerToFile(player);
+	if (!file.is_open())
+	{
+		throw File_Error("Couldn't open database when reading a superhero!");
+	}
+
+	size_t size = 0;
+	file.read((char*)&size, sizeof(size));
+	char* firstName = new char[size + 1];
+	file.read(firstName, size + 1);
+
+	file.read((char*)&size, sizeof(size));
+	char* lastName = new char[size + 1];
+	file.read(lastName, size + 1);
+
+	file.read((char*)&size, sizeof(size));
+	char* nickname = new char[size + 1];
+	file.read(nickname, size + 1);
+
+	file.read((char*)&size, sizeof(size));
+	char* email = new char[size + 1];
+	file.read(email, size + 1);
+
+	file.read((char*)&size, sizeof(size));
+	char* password = new char[size + 1];
+	file.read(password, size + 1);
+
+	Player player(firstName, lastName, nickname, email, password);
+
+	delete[] firstName;
+	delete[] lastName;
+	delete[] nickname;
+	delete[] email;
+	delete[] password;
+
+	file.read((const char*)&size, sizeof(size));
+	for (size_t i = 0; i < size; i++)
+	{
+		player.addSuperHero(std::move(readSuperheroFromFile(file)));
+	}
+
+	return player;
+}
+
+Player createPlayerFromConsole()
+{
+	MyString firstName, lastName, nickname, email, password;
+	try
+	{
+		std::cout << "Creating player: " << std::endl;
+		std::cout << "    Enter first name: ";
+		std::cin >> firstName;
+		std::cout << "    Enter last name: ";
+		std::cin >> lastName;
+		std::cout << "    Enter nickname: ";
+		std::cin >> nickname;
+		std::cout << "    Enter email: ";
+		std::cin >> email;
+		std::cout << "    Enter password: ";
+		std::cin >> password;
+		return Player(firstName, lastName, nickname, email, password);
+	}
+	catch (const Regex_Error& err)
+	{
+		std::cerr << "Regex Error: " << err.what() << std::endl;
+		createPlayerFromConsole();
+	}
+	catch (const Input_Error& err)
+	{
+		std::cerr << "Input Error: " << err.what() << std::endl;
+		createPlayerFromConsole();
+	}
+	catch (const std::length_error& err)
+	{
+		std::cerr << "Length Error: " << err.what() << std::endl;
+		createPlayerFromConsole();
+	}
+	catch (const std::invalid_argument& err)
+	{
+		std::cerr << "Invalid Error: " << err.what() << std::endl;
+		createPlayerFromConsole();
+	}
+	catch (const std::bad_cast& err)
+	{
+		std::cerr << "Bad Cast Error: " << err.what() << std::endl;
+		createPlayerFromConsole();
+	}
+	catch (const std::exception& err)
+	{
+		std::cerr << "Exception was thrown when creating a player from console! " << std::endl << err.what() << std::endl;
+		exit(EXIT_FAILURE);
+	}
+	catch (...)
+	{
+		std::cerr << "Something went wrong when creating a player from console! " << std::endl;
+		exit(EXIT_FAILURE);
+	}
 }

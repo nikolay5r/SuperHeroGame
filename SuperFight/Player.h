@@ -62,34 +62,10 @@ public:
 	const SuperHero& getSuperhero(unsigned index) const;
 	const SuperHero& getSuperhero(const MyString& nickname) const;
 	const MyVector<SuperHero>& getSuperHeroes() const;
-
-	friend class PlayerFactory;
 };
 
-class PlayerFactory : public UserFactory
-{
-	static UserFactory* instance;
-	PlayerFactory() = default;
-public:
-	static UserFactory* getInstance();
-
-	PlayerFactory(const PlayerFactory&) = delete;
-	PlayerFactory& operator=(const PlayerFactory&) = delete;
-
-	User* readFromBinary() const override;
-	User* readFromBinary(std::ifstream& file) const override;
-	User* readFromBinary(const MyString& nicknameToFind) const override;
-	User* readFromBinary(std::ifstream& file, const MyString& nicknameToFind) const override;
-
-	User* createFromConsole() const override;
-
-	static void freeInstance();
-	~PlayerFactory() = default;
-};
-
-void savePlayerToFile(const Player& player);
-void removePlayerFromFile(const MyString& nickname);
-void removePlayerFromFile(const Player& player);
-void printPlayers();
-void printPlayersForAdmins();
-void savePlayerChangesToFile(const Player& player);
+MyVector<Player> readPlayersFromFile(const MyString& fileName);
+Player readPlayerFromFile(std::ifstream& file);
+Player createPlayerFromConsole();
+void savePlayerToFile(std::ofstream& file, const Player& player);
+void savePlayersToFile(const MyString& fileName, const MyVector<Player>& players);

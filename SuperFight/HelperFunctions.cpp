@@ -118,7 +118,7 @@ bool helper::isUpper(char a)
 
 bool helper::isLower(char a)
 {
-	return !isUpper(a);
+	return a >= 'a' && a <= 'z';
 }
 
 bool helper::isDigit(char a)
