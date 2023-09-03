@@ -286,7 +286,7 @@ void saveSuperheroesToFile(const MyString& fileName, const MyVector<SuperHero>& 
 	}
 	catch (const std::exception& err)
 	{
-		std::cerr << "Error caught when trying to save multiple superheroes!\n" << err.what() << std::endl;
+		std::cerr << "Exception was thrown when trying to save multiple superheroes!\n" << err.what() << std::endl;
 		exit(EXIT_FAILURE);
 	}
 	catch (...)
@@ -360,6 +360,9 @@ MyVector<SuperHero> readSuperheroesFromFile(const MyString& fileName)
 		{
 			superheroes[i] = std::move(readSuperheroFromFile(file));
 		}
+
+		file.close();
+		return superheroes;
 	}
 	catch (const File_Error& err)
 	{
@@ -368,7 +371,7 @@ MyVector<SuperHero> readSuperheroesFromFile(const MyString& fileName)
 	}
 	catch (const std::exception& err)
 	{
-		std::cerr << "Error caught when trying to read multiple superheroes!\n" << err.what() << std::endl;
+		std::cerr << "Exception was thrown when trying to read multiple superheroes!\n" << err.what() << std::endl;
 		exit(EXIT_FAILURE);
 	}
 	catch (...)
@@ -376,8 +379,6 @@ MyVector<SuperHero> readSuperheroesFromFile(const MyString& fileName)
 		std::cerr << "Something went wrong when trying to read multiple superheroes!" << std::endl;
 		exit(EXIT_FAILURE);
 	}
-
-	file.close();
 }
 
 SuperHero createSuperheroFromConsole()
@@ -430,7 +431,7 @@ SuperHero createSuperheroFromConsole()
 	}
 	catch (const std::exception& err)
 	{
-		std::cerr << "Something went wrong when creating a superhero from console! " << std::endl << err.what() << std::endl;
+		std::cerr << "Exception was throw when creating a superhero from console! " << std::endl << err.what() << std::endl;
 		exit(EXIT_FAILURE);
 	}
 	catch (...)
