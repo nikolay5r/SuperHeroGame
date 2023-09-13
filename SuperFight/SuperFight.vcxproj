@@ -133,7 +133,6 @@
     <ClCompile Include="File_Error.cpp" />
     <ClCompile Include="HelperFunctions.cpp" />
     <ClCompile Include="Input_Error.cpp" />
-    <ClCompile Include="MyString.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerSystem.cpp" />
@@ -152,7 +151,6 @@
     <ClInclude Include="File_Error.h" />
     <ClInclude Include="HelperFunctions.h" />
     <ClInclude Include="Input_Error.h" />
-    <ClInclude Include="MyString.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerSystem.h" />
     <ClInclude Include="Regex_Error.h" />
