@@ -153,7 +153,6 @@
     <ClInclude Include="HelperFunctions.h" />
     <ClInclude Include="Input_Error.h" />
     <ClInclude Include="MyString.h" />
-    <ClInclude Include="MyVector.hpp" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerSystem.h" />
     <ClInclude Include="Regex_Error.h" />

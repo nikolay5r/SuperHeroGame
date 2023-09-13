@@ -89,9 +89,6 @@
     <ClInclude Include="SuperHero.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MyVector.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Admin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
