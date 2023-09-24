@@ -1,7 +1,7 @@
 #pragma once
-#include "MyString.h"
+#include <cstring>
 #include "Entity.h"
-#include "MyVector.hpp"
+#include <vector>
 
 enum class SuperHeroPowerType
 {
@@ -37,7 +37,7 @@ class SuperHero : public Entity
 	explicit SuperHero();
 
 public:
-	SuperHero(const MyString& firstName, const MyString& lastName, const MyString& nickname, unsigned power, SuperHeroPowerType powerType);
+	SuperHero(const std::string& firstName, const std::string& lastName, const std::string& nickname, unsigned power, SuperHeroPowerType powerType);
 	unsigned getPower() const noexcept;
 	unsigned getPrice() const noexcept;
 	SuperHeroPowerType getPowerType() const noexcept;
@@ -58,11 +58,11 @@ public:
 	void printFullInfo() const;
 
 	friend SuperHero readSuperheroFromFile(std::ifstream& file);
-	friend MyVector<SuperHero> readSuperheroesFromFile(const MyString& fileName);
+	friend std::vector<SuperHero> readSuperheroesFromFile(const std::string& fileName);
 };
 
 void saveSuperheroToFile(std::ofstream& file, const SuperHero& superhero);
-void saveSuperheroesToFile(const MyString& fileName, const MyVector<SuperHero>& superhero);
+void saveSuperheroesToFile(const std::string& fileName, const std::vector<SuperHero>& superhero);
 SuperHero createSuperheroFromConsole();
 SuperHero readSuperheroFromFile(std::ifstream& file);
-MyVector<SuperHero> readSuperheroesFromFile(const MyString& fileName);
+std::vector<SuperHero> readSuperheroesFromFile(const std::string& fileName);

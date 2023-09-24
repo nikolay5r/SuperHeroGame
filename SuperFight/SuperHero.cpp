@@ -1,9 +1,9 @@
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
+#include <cstring>
 
 #include "SuperHero.h"
-#include "MyString.h"
 #include "Validation.h"
 #include "Constants.h"
 #include "File_Error.h"
@@ -32,7 +32,7 @@ void SuperHero::setPower(unsigned long long power)
 	this->power = power;
 }
 
-SuperHero::SuperHero(const MyString& firstName, const MyString& lastName, const MyString& nickname, unsigned power, SuperHeroPowerType powerType)
+SuperHero::SuperHero(const std::string& firstName, const std::string& lastName, const std::string& nickname, unsigned power, SuperHeroPowerType powerType)
 	: Entity(firstName, lastName, nickname)
 {
 	this->powerType = powerType;
@@ -260,7 +260,7 @@ void saveSuperheroToFile(std::ofstream& file, const SuperHero& superhero)
 	file.write((const char*)&n, sizeof(n));
 }
 
-void saveSuperheroesToFile(const MyString& fileName, const MyVector<SuperHero>& superheroes)
+void saveSuperheroesToFile(const std::string& fileName, const std::vector<SuperHero>& superheroes)
 {
 	std::ofstream file(fileName.c_str(), std::ios::binary | std::ios::trunc);
 
@@ -319,7 +319,7 @@ SuperHero readSuperheroFromFile(std::ifstream& file)
 	file.read(nickname, size + 1);
 
 	unsigned power = 0;
-	file.read((char*)&power, sizeof(p));
+	file.read((char*)&power, sizeof(power));
 
 	SuperHeroPowerType type;
 	file.read((char*)&type, sizeof(type));
@@ -340,7 +340,7 @@ SuperHero readSuperheroFromFile(std::ifstream& file)
 	return superhero;
 }
 
-MyVector<SuperHero> readSuperheroesFromFile(const MyString& fileName)
+std::vector<SuperHero> readSuperheroesFromFile(const std::string& fileName)
 {
 	std::ifstream file(fileName.c_str(), std::ios::binary);
 
@@ -354,7 +354,12 @@ MyVector<SuperHero> readSuperheroesFromFile(const MyString& fileName)
 		size_t size = 0;
 		file.read((char*)&size, sizeof(size));
 
-		MyVector<SuperHero> superheroes(size);
+		if (size == 0)
+		{
+			return std::vector<SuperHero>();
+		}
+
+		std::vector<SuperHero> superheroes(size);
 
 		for (size_t i = 0; i < size; i++)
 		{
@@ -383,60 +388,23 @@ MyVector<SuperHero> readSuperheroesFromFile(const MyString& fileName)
 
 SuperHero createSuperheroFromConsole()
 {
-	MyString firstName, lastName, nickname;
+	std::string firstName, lastName, nickname;
 	unsigned long long power, type;
-	try
-	{
-		std::cout << "Creating superhero: " << std::endl;
-		std::cout << "    Enter first name: ";
-		std::cin >> firstName;
-		std::cout << "    Enter last name: ";
-		std::cin >> lastName;
-		std::cout << "    Enter nickname: ";
-		std::cin >> nickname;
-		std::cout << "    Enter power (" << constants::MIN_INITIAL_POWER << " - " << constants::MAX_INITIAL_POWER << "):";
-		std::cin >> power;
-		std::cout << "    Enter power type (" << (unsigned)SuperHeroPowerType::Air << "  - Air | "
-			<< (unsigned)SuperHeroPowerType::Water << " - Water | "
-			<< (unsigned)SuperHeroPowerType::Earth << " - Earth | "
-			<< (unsigned)SuperHeroPowerType::Fire << " - Fire):";
-		std::cin >> type;
-		validation::powerTypeValidation(type);
-		return SuperHero(firstName, lastName, nickname, power, static_cast<SuperHeroPowerType>(type));
-	}
-	catch (const Regex_Error& err)
-	{
-		std::cerr << "Regex Error: " << err.what() << std::endl;
-		createSuperheroFromConsole();
-	}
-	catch (const Input_Error& err)
-	{
-		std::cerr << "Input Error: " << err.what() << std::endl;
-		createSuperheroFromConsole();
-	}
-	catch (const std::length_error& err)
-	{
-		std::cerr << "Length Error: " << err.what() << std::endl;
-		createSuperheroFromConsole();
-	}
-	catch (const std::invalid_argument& err)
-	{
-		std::cerr << "Invalid Error: " << err.what() << std::endl;
-		createSuperheroFromConsole();
-	}
-	catch (const std::bad_cast& err)
-	{
-		std::cerr << "Bad Cast Error: " << err.what() << std::endl;
-		createSuperheroFromConsole();
-	}
-	catch (const std::exception& err)
-	{
-		std::cerr << "Exception was throw when creating a superhero from console! " << std::endl << err.what() << std::endl;
-		exit(EXIT_FAILURE);
-	}
-	catch (...)
-	{
-		std::cerr << "Something went wrong when creating a superhero from console! " << std::endl;
-		exit(EXIT_FAILURE);
-	}
+
+	std::cout << "Creating superhero: " << std::endl;
+	std::cout << "    Enter first name: ";
+	std::cin >> firstName;
+	std::cout << "    Enter last name: ";
+	std::cin >> lastName;
+	std::cout << "    Enter nickname: ";
+	std::cin >> nickname;
+	std::cout << "    Enter power (" << constants::MIN_INITIAL_POWER << " - " << constants::MAX_INITIAL_POWER << "):";
+	std::cin >> power;
+	std::cout << "    Enter power type (" << (unsigned)SuperHeroPowerType::Air << "  - Air | "
+		<< (unsigned)SuperHeroPowerType::Water << " - Water | "
+		<< (unsigned)SuperHeroPowerType::Earth << " - Earth | "
+		<< (unsigned)SuperHeroPowerType::Fire << " - Fire):";
+	std::cin >> type;
+	validation::powerTypeValidation(type);
+	return SuperHero(firstName, lastName, nickname, power, static_cast<SuperHeroPowerType>(type));
 }
