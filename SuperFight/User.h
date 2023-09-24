@@ -1,9 +1,9 @@
 #pragma once
 #include <iostream>
-#include "MyString.h"
+#include <cstring>
 #include "User.h"
 #include "Entity.h"
-#include "MyVector.hpp"
+#include <vector>
 
 enum class UserRole
 {
@@ -14,17 +14,17 @@ enum class UserRole
 class User : public Entity
 {
 protected:
-	MyString email;
-	MyString password;
+	std::string email;
+	std::string password;
 	UserRole role;
 
-	void setEmail(const MyString& email);
-	void setPassword(const MyString& password);
+	void setEmail(const std::string& email);
+	void setPassword(const std::string& password);
 public:
-	User(const MyString& firstName, const MyString& lastName, const MyString& nickname, const MyString& email, const MyString& password, UserRole role);
+	User(const std::string& firstName, const std::string& lastName, const std::string& nickname, const std::string& email, const std::string& password, UserRole role);
 
-	const MyString& getPassword() const noexcept;
-	const MyString& getEmail() const noexcept;
+	const std::string& getPassword() const noexcept;
+	const std::string& getEmail() const noexcept;
 	UserRole getRole() const noexcept;
 
 	virtual ~User() = default;

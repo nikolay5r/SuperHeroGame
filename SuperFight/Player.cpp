@@ -12,7 +12,7 @@
 #include "HelperFunctions.h"
 //#include "SystemConfigurations.h"
 
-void Player::checkIfSuperheroIsOwnedAlready(const MyString& nickname) const
+void Player::checkIfSuperheroIsOwnedAlready(const std::string& nickname) const
 {
 	if (nicknameToIndex(nickname) != std::string::npos)
 	{
@@ -28,7 +28,7 @@ void Player::attestIndex(size_t index) const
 	}
 }
 
-size_t Player::nicknameToIndex(const MyString& nickname) const noexcept
+size_t Player::nicknameToIndex(const std::string& nickname) const noexcept
 {
 	size_t size = superHeroes.size();
 
@@ -43,7 +43,7 @@ size_t Player::nicknameToIndex(const MyString& nickname) const noexcept
 	return std::string::npos;
 }
 
-Player::Player(const MyString& firstName, const MyString& lastName, const MyString& nickname, const MyString& email, const MyString& password)
+Player::Player(const std::string& firstName, const std::string& lastName, const std::string& nickname, const std::string& email, const std::string& password)
 	: User(firstName, lastName, nickname, email, password, UserRole::Player), superHeroes(constants::MAX_NUMBER_OF_SUPERHEROES_PER_PLAYER) {}
 
 Player::Player(const User& user) : User(user) {}
@@ -73,7 +73,7 @@ void Player::addSuperHero(SuperHero&& superHero)
 	superHeroes.push_back(std::move(superHero));
 }
 
-void Player::addSuperHero(const MyString& firstName, const MyString& lastName, const MyString& nickname, unsigned power, SuperHeroPowerType powerType)
+void Player::addSuperHero(const std::string& firstName, const std::string& lastName, const std::string& nickname, unsigned power, SuperHeroPowerType powerType)
 {
 	checkIfSuperheroIsOwnedAlready(nickname);
 	if (superHeroes.size() == constants::MAX_NUMBER_OF_SUPERHEROES_PER_PLAYER)
@@ -118,7 +118,7 @@ void Player::buySuperHero(SuperHero&& superHero)
 	addSuperHero(std::move(superHero));
 }
 
-void Player::buySuperHero(const MyString& firstName, const MyString& lastName, const MyString& nickname, unsigned power, SuperHeroPowerType powerType)
+void Player::buySuperHero(const std::string& firstName, const std::string& lastName, const std::string& nickname, unsigned power, SuperHeroPowerType powerType)
 {
 	checkIfSuperheroIsOwnedAlready(nickname);
 	addSuperHero(firstName, lastName, nickname, power, powerType);
@@ -130,7 +130,7 @@ void Player::buySuperHero(const MyString& firstName, const MyString& lastName, c
 	coins -= superHeroes[superHeroes.size() - 1].getPrice();
 }
 
-void Player::removeSuperHero(const MyString& nickname)
+void Player::removeSuperHero(const std::string& nickname)
 {
 	size_t index = nicknameToIndex(nickname);
 	removeSuperHero(index);
@@ -143,10 +143,10 @@ void Player::removeSuperHero(size_t index)
 		throw std::invalid_argument("Invalid index of superhero when trying to delete!");
 	}
 
-	superHeroes.pop_at(index);
+	superHeroes.erase(superHeroes.begin() + index);
 }
 
-void Player::sellSuperHero(const MyString& nickname)
+void Player::sellSuperHero(const std::string& nickname)
 {
 	size_t index = nicknameToIndex(nickname);
 	removeSuperHero(index);
@@ -185,7 +185,7 @@ int Player::attack(Player& defender, size_t defenderIndex)
 	return attack(attackerIndex, defender, defenderIndex);
 }
 
-int Player::attack(Player& defender, const MyString& defenderNickname)
+int Player::attack(Player& defender, const std::string& defenderNickname)
 {
 	size_t defenderIndex = defender.nicknameToIndex(defenderNickname);
 	return attack(defender, defenderIndex);
@@ -198,7 +198,7 @@ int Player::attack(size_t attackerIndex, Player& defender)
 	return attack(attackerIndex, defender, defenderIndex);
 }
 
-int Player::attack(const MyString& attackerNickname, Player& defender)
+int Player::attack(const std::string& attackerNickname, Player& defender)
 {
 	size_t attackerIndex = nicknameToIndex(attackerNickname);
 	return attack(attackerIndex, defender);
@@ -210,7 +210,7 @@ int Player::attack(size_t attackerIndex, Player& defender, size_t defenderIndex)
 
 	unsigned attackerPower = superHeroes[attackerIndex].getPower();
 
-	if (defender.superHeroes.isEmpty())
+	if (defender.superHeroes.empty())
 	{
 		defender.coins = defender.coins < attackerPower ? 0 : defender.coins - attackerPower;
 		return 2;
@@ -254,7 +254,7 @@ int Player::attack(size_t attackerIndex, Player& defender, size_t defenderIndex)
 
 }
 
-int Player::attack(const MyString& attackerNickname, Player& defender, const MyString& defenderNickname)
+int Player::attack(const std::string& attackerNickname, Player& defender, const std::string& defenderNickname)
 {
 	size_t attackerIndex = nicknameToIndex(attackerNickname);
 	size_t defenderIndex = defender.nicknameToIndex(defenderNickname);
@@ -279,7 +279,7 @@ void Player::powerUpSuperHero(size_t index)
 	}
 }
 
-void Player::powerUpSuperHero(const MyString& nickname)
+void Player::powerUpSuperHero(const std::string& nickname)
 {
 	size_t index = nicknameToIndex(nickname);
 	powerUpSuperHero(index);
@@ -301,7 +301,7 @@ void Player::levelUpSuperHero(size_t index)
 	}
 }
 
-void Player::levelUpSuperHero(const MyString& nickname)
+void Player::levelUpSuperHero(const std::string& nickname)
 {
 	size_t index = nicknameToIndex(nickname);
 	powerUpSuperHero(index);
@@ -320,7 +320,7 @@ void Player::changePositionOfSuperHero(size_t index)
 	}
 }
 
-void Player::changePositionOfSuperHero(const MyString& nickname)
+void Player::changePositionOfSuperHero(const std::string& nickname)
 {
 	size_t index = nicknameToIndex(nickname);
 	changePositionOfSuperHero(index);
@@ -357,7 +357,7 @@ size_t Player::getNumberOfSuperHeroes() const
 	return superHeroes.size();
 }
 
-const MyVector<SuperHero>& Player::getSuperHeroes() const
+const std::vector<SuperHero>& Player::getSuperHeroes() const
 {
 	return superHeroes;
 }
@@ -373,7 +373,7 @@ const SuperHero& Player::getSuperhero(unsigned index) const
 	return superHeroes[index];
 }
 
-const SuperHero& Player::getSuperhero(const MyString& nickname) const
+const SuperHero& Player::getSuperhero(const std::string& nickname) const
 {
 	unsigned index = nicknameToIndex(nickname);
 	return getSuperhero(index);
@@ -409,7 +409,7 @@ void savePlayerToFile(std::ofstream& file, const Player& player)
 	size = player.getNumberOfSuperHeroes();
 	file.write((const char*)&size, sizeof(size));
 
-	const MyVector<SuperHero>& superheroes = player.getSuperHeroes();
+	const std::vector<SuperHero>& superheroes = player.getSuperHeroes();
 
 	for (size_t i = 0; i < size; i++)
 	{
@@ -417,7 +417,7 @@ void savePlayerToFile(std::ofstream& file, const Player& player)
 	}
 }
 
-void savePlayersToFile(const MyString& fileName, const MyVector<Player>& players)
+void savePlayersToFile(const std::string& fileName, const std::vector<Player>& players)
 {
 	std::ofstream file(fileName.c_str(), std::ios::binary | std::ios::trunc);
 
@@ -439,23 +439,23 @@ void savePlayersToFile(const MyString& fileName, const MyVector<Player>& players
 	catch (const File_Error& err)
 	{
 		std::cerr << err.what() << std::endl;
-		exit(EXIT_FAILURE);
+		throw;
 	}
 	catch (const std::exception& err)
 	{
 		std::cerr << "Exception was thrown when trying to save multiple players!\n" << err.what() << std::endl;
-		exit(EXIT_FAILURE);
+		throw;
 	}
 	catch (...)
 	{
 		std::cerr << "Something went wrong when tryin to save multiple players!" << std::endl;
-		exit(EXIT_FAILURE);
+		throw;
 	}
 
 	file.close();
 }
 
-MyVector<Player> readPlayersFromFile(const MyString& fileName)
+std::vector<Player> readPlayersFromFile(const std::string& fileName)
 {
 	std::ifstream file(fileName.c_str(), std::ios::binary);
 
@@ -469,7 +469,12 @@ MyVector<Player> readPlayersFromFile(const MyString& fileName)
 		size_t size = 0;
 		file.read((char*)&size, sizeof(size));
 
-		MyVector<Player> players(size);
+		if (size == 0)
+		{
+			return std::vector<Player>();
+		}
+
+		std::vector<Player> players(size);
 
 		for (size_t i = 0; i < size; i++)
 		{
@@ -532,7 +537,7 @@ Player readPlayerFromFile(std::ifstream& file)
 	delete[] email;
 	delete[] password;
 
-	file.read((const char*)&size, sizeof(size));
+	file.read((char*)&size, sizeof(size));
 	for (size_t i = 0; i < size; i++)
 	{
 		player.addSuperHero(std::move(readSuperheroFromFile(file)));
@@ -543,55 +548,18 @@ Player readPlayerFromFile(std::ifstream& file)
 
 Player createPlayerFromConsole()
 {
-	MyString firstName, lastName, nickname, email, password;
-	try
-	{
-		std::cout << "Creating player: " << std::endl;
-		std::cout << "    Enter first name: ";
-		std::cin >> firstName;
-		std::cout << "    Enter last name: ";
-		std::cin >> lastName;
-		std::cout << "    Enter nickname: ";
-		std::cin >> nickname;
-		std::cout << "    Enter email: ";
-		std::cin >> email;
-		std::cout << "    Enter password: ";
-		std::cin >> password;
-		return Player(firstName, lastName, nickname, email, password);
-	}
-	catch (const Regex_Error& err)
-	{
-		std::cerr << "Regex Error: " << err.what() << std::endl;
-		createPlayerFromConsole();
-	}
-	catch (const Input_Error& err)
-	{
-		std::cerr << "Input Error: " << err.what() << std::endl;
-		createPlayerFromConsole();
-	}
-	catch (const std::length_error& err)
-	{
-		std::cerr << "Length Error: " << err.what() << std::endl;
-		createPlayerFromConsole();
-	}
-	catch (const std::invalid_argument& err)
-	{
-		std::cerr << "Invalid Error: " << err.what() << std::endl;
-		createPlayerFromConsole();
-	}
-	catch (const std::bad_cast& err)
-	{
-		std::cerr << "Bad Cast Error: " << err.what() << std::endl;
-		createPlayerFromConsole();
-	}
-	catch (const std::exception& err)
-	{
-		std::cerr << "Exception was thrown when creating a player from console! " << std::endl << err.what() << std::endl;
-		exit(EXIT_FAILURE);
-	}
-	catch (...)
-	{
-		std::cerr << "Something went wrong when creating a player from console! " << std::endl;
-		exit(EXIT_FAILURE);
-	}
+	std::string firstName, lastName, nickname, email, password;
+
+	std::cout << "Creating player: " << std::endl;
+	std::cout << "    Enter first name: ";
+	std::cin >> firstName;
+	std::cout << "    Enter last name: ";
+	std::cin >> lastName;
+	std::cout << "    Enter nickname: ";
+	std::cin >> nickname;
+	std::cout << "    Enter email: ";
+	std::cin >> email;
+	std::cout << "    Enter password: ";
+	std::cin >> password;
+	return Player(firstName, lastName, nickname, email, password);
 }

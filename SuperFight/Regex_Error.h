@@ -1,11 +1,12 @@
 #pragma once
-#include "MyString.h"
+#include <iostream>
+
 class Regex_Error
 {
-	MyString message = "";
+	std::string message = "";
 public:
 	explicit Regex_Error(const char* message);
-	explicit Regex_Error(const MyString& message);
+	explicit Regex_Error(const std::string& message);
 
 	virtual ~Regex_Error() noexcept = default;
 

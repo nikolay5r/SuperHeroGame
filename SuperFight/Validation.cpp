@@ -1,14 +1,14 @@
 #include "Validation.h"
 #include "HelperFunctions.h"
-#include "MyString.h"
 #include "Constants.h"
 #include "Regex_Error.h"
 #include "Input_Error.h"
 
+#include <cstring>
 #include <string>
 #include <stdexcept>
 
-void validation::nameValidation(const MyString& name)
+void validation::nameValidation(const std::string& name)
 {
 	if (helper::isLower(name[0]))
 	{
@@ -26,7 +26,7 @@ void validation::nameValidation(const MyString& name)
 	}
 }
 
-void validation::nicknameValidation(const MyString& nickname) //at least 3 characters
+void validation::nicknameValidation(const std::string& nickname) //at least 3 characters
 {
 	size_t nicknameLength = nickname.length();
 
@@ -48,7 +48,7 @@ void validation::nicknameValidation(const MyString& nickname) //at least 3 chara
 	}
 }
 
-void validation::emailValidation(const MyString& email) //email@abv.bg
+void validation::emailValidation(const std::string& email) //email@abv.bg
 {
 	size_t emailLength = email.length();
 
@@ -59,7 +59,7 @@ void validation::emailValidation(const MyString& email) //email@abv.bg
 		throw Regex_Error("Invalid Email! Missing '@' in your Email!");
 	}
 
-	MyString lastPart = email.substr(index + 1);
+	std::string lastPart = email.substr(index + 1);
 
 	if (lastPart.length() == 0)
 	{
@@ -76,7 +76,7 @@ void validation::emailValidation(const MyString& email) //email@abv.bg
 	}
 }
 
-void validation::passwordValidation(const MyString& password) //at least one capital, one lower and one number, at least 5 characters and maximum of 16
+void validation::passwordValidation(const std::string& password) //at least one capital, one lower and one number, at least 5 characters and maximum of 16
 {
 	int countNumbers = 0;
 	int countCapitalLetters = 0;

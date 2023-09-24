@@ -1,7 +1,9 @@
 #include "Entity.h"
 #include "Validation.h"
+#include <iostream>
+#include <cstring>
 
-Entity::Entity(const MyString& firstName, const MyString& lastName, const MyString& nickname)
+Entity::Entity(const std::string& firstName, const std::string& lastName, const std::string& nickname)
 {
 	setFirstName(firstName);
 	setLastName(lastName);
@@ -9,18 +11,18 @@ Entity::Entity(const MyString& firstName, const MyString& lastName, const MyStri
 	setNickname(nickname);
 }
 
-void Entity::setFirstName(const MyString& firstName)
+void Entity::setFirstName(const std::string& firstName)
 {
 	validation::nameValidation(firstName);
 	this->firstName = firstName;
 }
 
-void Entity::setLastName(const MyString& lastName)
+void Entity::setLastName(const std::string& lastName)
 {
 	validation::nameValidation(lastName);
 	this->lastName = lastName;
 }
-void Entity::setNickname(const MyString& nickname)
+void Entity::setNickname(const std::string& nickname)
 {
 	validation::nicknameValidation(nickname);
 	this->nickname = nickname;
@@ -31,22 +33,22 @@ void Entity::setFullName()
 	fullName = firstName + " " + lastName;
 }
 
-const MyString& Entity::getNickname() const noexcept
+const std::string& Entity::getNickname() const noexcept
 {
 	return nickname;
 }
 
-const MyString& Entity::getFullName() const noexcept
+const std::string& Entity::getFullName() const noexcept
 {
 	return fullName;
 }
 
-const MyString& Entity::getFirstName() const noexcept
+const std::string& Entity::getFirstName() const noexcept
 {
 	return firstName;
 }
 
-const MyString& Entity::getLastName() const noexcept
+const std::string& Entity::getLastName() const noexcept
 {
 	return lastName;
 }

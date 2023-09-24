@@ -1,13 +1,12 @@
 #pragma once
-
-#include "MyString.h"
+#include <iostream>
 
 namespace validation
 {
-	void nameValidation(const MyString& name);
-	void emailValidation(const MyString& email);
-	void passwordValidation(const MyString& password);
-	void nicknameValidation(const MyString& nickname);
+	void nameValidation(const std::string& name);
+	void emailValidation(const std::string& email);
+	void passwordValidation(const std::string& password);
+	void nicknameValidation(const std::string& nickname);
 	void powerValidation(unsigned long long power);
 	void powerTypeValidation(unsigned long long powerType);
 }

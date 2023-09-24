@@ -1,11 +1,11 @@
 #pragma once
 #include "User.h"
-#include "MyVector.hpp"
+#include <vector>
 
 class Admin : public User
 {
 public:
-	Admin(const MyString& firstName, const MyString& lastName, const MyString& nickname, const MyString& email, const MyString& password);
+	Admin(const std::string& firstName, const std::string& lastName, const std::string& nickname, const std::string& email, const std::string& password);
 	Admin(const User& user);
 	Admin(User&& user);
 
@@ -13,8 +13,8 @@ public:
 	void printFullInfo() const override;
 };
 
-MyVector<Admin> readAdminsFromFile(const MyString& fileName);
+std::vector<Admin> readAdminsFromFile(const std::string& fileName);
 Admin readAdminFromFile(std::ifstream& file);
 Admin createAdminFromConsole();
 void saveAdminToFile(std::ofstream& file, const Admin& admin);
-void saveAdminsToFile(const MyString& fileName, const MyVector<Admin>& admins);
+void saveAdminsToFile(const std::string& fileName, const std::vector<Admin>& admins);

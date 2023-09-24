@@ -1,5 +1,6 @@
 #include <utility>
 #include <fstream>
+#include <vector>
 
 #include "Admin.h"
 #include "User.h"
@@ -10,9 +11,8 @@
 #include "HelperFunctions.h"
 #include "Constants.h"
 #include "SystemConfigurations.h"
-#include "MyVector.hpp"
 
-Admin::Admin(const MyString& firstName, const MyString& lastName, const MyString& nickname, const MyString& email, const MyString& password)
+Admin::Admin(const std::string& firstName, const std::string& lastName, const std::string& nickname, const std::string& email, const std::string& password)
 	: User(firstName, lastName, nickname, email, password, UserRole::Admin) {}
 
 Admin::Admin(const User& user) : User(user) {}
@@ -57,7 +57,7 @@ void saveAdminToFile(std::ofstream& file, const Admin& admin)
 	file.write(admin.getPassword().c_str(), size + 1);
 }
 
-void saveAdminsToFile(const MyString& fileName, const MyVector<Admin>& admins)
+void saveAdminsToFile(const std::string& fileName, const std::vector<Admin>& admins)
 {
 	std::ofstream file(fileName.c_str(), std::ios::binary | std::ios::trunc);
 
@@ -95,7 +95,7 @@ void saveAdminsToFile(const MyString& fileName, const MyVector<Admin>& admins)
 	file.close();
 }
 
-MyVector<Admin> readAdminsFromFile(const MyString& fileName)
+std::vector<Admin> readAdminsFromFile(const std::string& fileName)
 {
 	std::ifstream file(fileName.c_str(), std::ios::binary);
 
@@ -109,7 +109,12 @@ MyVector<Admin> readAdminsFromFile(const MyString& fileName)
 		size_t size = 0;
 		file.read((char*)&size, sizeof(size));
 
-		MyVector<Admin> admins(size);
+		if (size == 0)
+		{
+			return std::vector<Admin>();
+		}
+
+		std::vector<Admin> admins(size);
 
 		for (size_t i = 0; i < size; i++)
 		{
@@ -176,55 +181,17 @@ Admin readAdminFromFile(std::ifstream& file)
 
 Admin createAdminFromConsole()
 {
-	MyString firstName, lastName, nickname, email, password;
-	try
-	{
-		std::cout << "Creating admin: " << std::endl;
-		std::cout << "    Enter first name: ";
-		std::cin >> firstName;
-		std::cout << "    Enter last name: ";
-		std::cin >> lastName;
-		std::cout << "    Enter nickname: ";
-		std::cin >> nickname;
-		std::cout << "    Enter email: ";
-		std::cin >> email;
-		std::cout << "    Enter password: ";
-		std::cin >> password;
-		return Admin(firstName, lastName, nickname, email, password);
-	}
-	catch (const Regex_Error& err)
-	{
-		std::cerr << "Regex Error: " << err.what() << std::endl;
-		createAdminFromConsole();
-	}
-	catch (const Input_Error& err)
-	{
-		std::cerr << "Input Error: " << err.what() << std::endl;
-		createAdminFromConsole();
-	}
-	catch (const std::length_error& err)
-	{
-		std::cerr << "Length Error: " << err.what() << std::endl;
-		createAdminFromConsole();
-	}
-	catch (const std::invalid_argument& err)
-	{
-		std::cerr << "Invalid Error: " << err.what() << std::endl;
-		createAdminFromConsole();
-	}
-	catch (const std::bad_cast& err)
-	{
-		std::cerr << "Bad Cast Error: " << err.what() << std::endl;
-		createAdminFromConsole();
-	}
-	catch (const std::exception& err)
-	{
-		std::cerr << "Exception was thrown when creating an admin from console! " << std::endl << err.what() << std::endl;
-		exit(EXIT_FAILURE);
-	}
-	catch (...)
-	{
-		std::cerr << "Something went wrong when creating an admin from console! " << std::endl;
-		exit(EXIT_FAILURE);
-	}
+	std::string firstName, lastName, nickname, email, password;
+	std::cout << "Creating admin: " << std::endl;
+	std::cout << "    Enter first name: ";
+	std::cin >> firstName;
+	std::cout << "    Enter last name: ";
+	std::cin >> lastName;
+	std::cout << "    Enter nickname: ";
+	std::cin >> nickname;
+	std::cout << "    Enter email: ";
+	std::cin >> email;
+	std::cout << "    Enter password: ";
+	std::cin >> password;
+	return Admin(firstName, lastName, nickname, email, password);
 }

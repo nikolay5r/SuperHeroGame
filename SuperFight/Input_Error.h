@@ -1,11 +1,12 @@
 #pragma once
-#include "MyString.h"
+#include <iostream>
+
 class Input_Error
 {
-	MyString message = "";
+	std::string message = "";
 public:
 	explicit Input_Error(const char* message);
-	explicit Input_Error(const MyString& message);
+	explicit Input_Error(const std::string& message);
 
 	virtual ~Input_Error() noexcept = default;
 

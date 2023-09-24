@@ -1,5 +1,5 @@
 #pragma once
-#include "MyString.h"
+#include <cstring>
 
 namespace constants
 {
@@ -9,6 +9,7 @@ namespace constants
 	const size_t MAX_PASSWORD_LENGTH = 16;
 	const size_t MAX_USERNAME_LENGTH = 16;
 	const unsigned MAX_POWER_ON_FIRST_LEVEL = 50;
+	const unsigned PRINT_COUNT = 10;
 	const unsigned MIN_INITIAL_POWER = 5;
 	const unsigned MAX_INITIAL_POWER = 50;
 	const unsigned MAX_LEVEL = 50;
@@ -24,9 +25,9 @@ namespace constants
 
 	const unsigned ENTITIES_TO_LOAD = 15;
 
-	const MyString PLAYERS_FILE_PATH = "players.bin";
-	const MyString ADMINS_FILE_PATH = "admins.bin";
-	const MyString SUPERHEROES_FILE_PATH = "superheroes.bin";
-	const MyString DEAD_SUPERHEROES_FILE_PATH = "deadSuperheroes.bin";
-	const MyString CONFIGS_FILE_PATH = "configs.bin";
+	const std::string PLAYERS_FILE_PATH = "players.bin";
+	const std::string ADMINS_FILE_PATH = "admins.bin";
+	const std::string SUPERHEROES_FILE_PATH = "superheroes.bin";
+	const std::string DEAD_SUPERHEROES_FILE_PATH = "deadSuperheroes.bin";
+	const std::string CONFIGS_FILE_PATH = "configs.bin";
 }

@@ -1,26 +1,27 @@
 #pragma once
-#include "MyString.h"
+#include <iostream>
+#include <cstring>
 
 class Entity
 {
 protected:
-	MyString firstName;
-	MyString lastName;
-	MyString nickname;
-	MyString fullName;
+	std::string firstName;
+	std::string lastName;
+	std::string nickname;
+	std::string fullName;
 
-	void setFirstName(const MyString& firstName);
-	void setLastName(const MyString& lastName);
-	void setNickname(const MyString& nickname);
+	void setFirstName(const std::string& firstName);
+	void setLastName(const std::string& lastName);
+	void setNickname(const std::string& nickname);
 	void setFullName();
 public:
 
-	Entity(const MyString& firstName, const MyString& lastName, const MyString& nickname);
+	Entity(const std::string& firstName, const std::string& lastName, const std::string& nickname);
 
-	const MyString& getNickname() const noexcept;
-	const MyString& getFullName() const noexcept;
-	const MyString& getFirstName() const noexcept;
-	const MyString& getLastName() const noexcept;
+	const std::string& getNickname() const noexcept;
+	const std::string& getFullName() const noexcept;
+	const std::string& getFirstName() const noexcept;
+	const std::string& getLastName() const noexcept;
 
 	virtual void printShortInfo() const = 0;
 	virtual void printFullInfo() const = 0;

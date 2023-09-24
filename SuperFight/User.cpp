@@ -7,19 +7,19 @@
 #include <fstream>
 #include <iostream>
 
-void User::setEmail(const MyString& email)
+void User::setEmail(const std::string& email)
 {
 	validation::emailValidation(email);
 	this->email = email;
 }
 
-void User::setPassword(const MyString& password)
+void User::setPassword(const std::string& password)
 {
-	validation::isPasswordValid(password);
+	validation::passwordValidation(password);
 	this->password = password;
 }
 
-User::User(const MyString& firstName, const MyString& lastName, const MyString& nickname, const MyString& email, const MyString& password, UserRole role)
+User::User(const std::string& firstName, const std::string& lastName, const std::string& nickname, const std::string& email, const std::string& password, UserRole role)
 	: Entity(firstName, lastName, nickname), role(role)
 {
 	setEmail(email);
@@ -31,12 +31,12 @@ UserRole User::getRole() const noexcept
 	return role;
 }
 
-const MyString& User::getPassword() const noexcept
+const std::string& User::getPassword() const noexcept
 {
 	return password;
 }
 
-const MyString& User::getEmail() const noexcept
+const std::string& User::getEmail() const noexcept
 {
 	return email;
 }
