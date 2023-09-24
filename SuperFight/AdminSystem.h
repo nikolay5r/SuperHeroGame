@@ -6,21 +6,19 @@ class AdminSystem : public System
 	AdminSystem() = default;
 	void logout() override;
 	void login() override;
-	void reg() override;
-	void showMarket() const override;
-	void showSoldMarket() const;
-	void showPlayers() const override;
-	void showAdmins() const;
-	void deleteProfile() override;
+	void showMarket() override;
+	void showGraveyard();
+	void showPlayers() override;
+	void showAdmins();
+	void deleteOwnProfile() override;
 	void showProfile() override;
-	void deleteSuperheroFromMarket() const;
-	void deleteSuperheroFromSold() const;
-	void deletePlayer() const;
-	void addPlayer() const;
-	void addAdmin() const;
-	void addSuperhero() const;
-	void addSuperheroFromSold() const;
-	void handleEmptyMarket() const;
+	void deleteSuperhero(std::vector<SuperHero>& superheroes);
+	void deletePlayer();
+	void addPlayer();
+	void addAdmin();
+	void addSuperheroToMarket();
+	void addSuperheroFromGraveyard();
+	void handleEmptyMarket();
 public:
 
 	static System* getInstance();

@@ -1,6 +1,7 @@
 #pragma once
+#include <vector>
+#include <cstring>
 #include "User.h"
-#include "MyVector.hpp"
 #include "Player.h"
 #include "Admin.h"
 #include "SuperHero.h"
@@ -8,24 +9,27 @@
 class System
 {
 protected:
-	MyVector<Player> players;
-	MyVector<Admin> admins;
-	MyVector<SuperHero> superheroes;
-	MyVector<SuperHero> deadSuperheroes;
+	std::vector<Player> players;
+	std::vector<Admin> admins;
+	std::vector<SuperHero> marketSuperheroes;
+	std::vector<SuperHero> deadSuperheroes;
 
 	User* currentUser = nullptr;
+
+	template<typename T>
+	int findIndexOfEntity(const std::vector<T>& collection, const std::string& nickname);
 
 	static System* instance;
 	System();
 
 	virtual void logout() = 0;
 	virtual void login() = 0;
-	virtual void showMarket() const = 0;
-	virtual void showPlayers() const = 0;
-	virtual void deleteProfile() = 0;
+	virtual void showMarket() = 0;
+	virtual void showPlayers() = 0;
+	virtual void deleteOwnProfile() = 0;
 	virtual void showProfile() = 0;
 	void freeSystem();
-	void loadSystem();
+
 public:
 	System(const System&) = delete;
 	System& operator=(const System&) = delete;
